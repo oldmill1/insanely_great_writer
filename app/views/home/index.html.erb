@@ -1,3 +1,11 @@
 <main class="home" data-controller="home-click" data-action="click->home-click#log">
-  <h1 class="home__title">Insanely Great</h1>
+  <div class="home__note">
+    <%= render "shared/ig_note",
+      title: "description, image or a",
+      content: "Write your sticky note content here.\nYou can pass any text into IGNote.",
+      variant: "blue",
+      mode: "expanded",
+      width: "28rem",
+      height: "12rem" %>
+  </div>
 </main>
