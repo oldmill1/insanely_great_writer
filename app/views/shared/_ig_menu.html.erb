@@ -1,0 +1,47 @@
+<%
+  raise ArgumentError, "IGMenu requires :items" unless local_assigns.key?(:items)
+
+  ig_items = Array(items)
+  menu_classes = ["ig-menu"]
+  menu_classes << class_name if local_assigns[:class_name].present?
+
+  style_rules = []
+
+  menu_width = ig_menu_css_size(local_assigns[:width])
+  if menu_width.present?
+    style_rules << "--ig-menu-width: #{menu_width}"
+  end
+
+  menu_height = ig_menu_css_size(local_assigns[:height])
+  if menu_height.present?
+    style_rules << "--ig-menu-height: #{menu_height}"
+    menu_classes << "ig-menu--scrollable"
+  end
+%>
+
+<div
+  class="<%= menu_classes.join(" ") %>"
+  role="menu"
+  aria-orientation="vertical"
+  <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
+>
+  <% ig_items.each do |raw_item| %>
+    <% raise ArgumentError, "IGMenu item must be a hash" unless raw_item.respond_to?(:to_h) %>
+    <% item = raw_item.to_h.with_indifferent_access %>
+    <% label = item[:label] || raise(ArgumentError, "IGMenu item requires :label") %>
+    <% intent = item[:intent] || raise(ArgumentError, "IGMenu item requires :intent") %>
+    <% kind = item[:kind] || raise(ArgumentError, "IGMenu item requires :kind") %>
+    <% payload = ig_menu_payload_data(item[:payload]) %>
+
+    <%= button_tag label,
+      type: "button",
+      role: "menuitem",
+      class: "ig-menu__item",
+      disabled: item[:disabled] == true,
+      data: {
+        intent: intent,
+        kind: kind,
+        payload: payload
+      } %>
+  <% end %>
+</div>

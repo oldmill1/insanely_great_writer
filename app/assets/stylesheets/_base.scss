@@ -19,6 +19,16 @@ body {
 body {
   background: v.$color-bg;
   color: v.$color-text;
+  cursor: url("#{v.$cursor-path}") 4 4, auto;
   font-family: v.$font-sans;
   line-height: v.$line-height-base;
+}
+
+a,
+button,
+input[type="submit"],
+input[type="button"],
+label[for],
+select {
+  cursor: url("#{v.$cursor-path}") 4 4, pointer;
 }
