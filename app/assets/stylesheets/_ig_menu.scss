@@ -24,7 +24,7 @@
 .ig-menu::before {
   content: "";
   position: absolute;
-  inset: -1px;
+  inset: 0;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   pointer-events: none;
@@ -33,6 +33,7 @@
 .ig-menu--scrollable {
   max-height: var(--ig-menu-height);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .ig-menu__item {
