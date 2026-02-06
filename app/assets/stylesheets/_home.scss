@@ -15,3 +15,9 @@
   letter-spacing: 0.02em;
   text-transform: none;
 }
+
+.sandbox-notes {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: center;
+}

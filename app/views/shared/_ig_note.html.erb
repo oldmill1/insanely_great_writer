@@ -1,0 +1,38 @@
+<%
+  raise ArgumentError, "IGNote requires :content" unless local_assigns.key?(:content)
+
+  note_variant = ig_note_variant(local_assigns[:variant])
+  note_mode = ig_note_mode(local_assigns[:mode])
+  note_title = local_assigns[:title].presence || "Note"
+
+  note_classes = ["ig-note", "ig-note--#{note_variant}", "ig-note--#{note_mode}"]
+  note_classes << class_name if local_assigns[:class_name].present?
+
+  style_rules = []
+  note_width = ig_css_size(local_assigns[:width])
+  style_rules << "--ig-note-width: #{note_width}" if note_width.present?
+
+  note_height = ig_css_size(local_assigns[:height])
+  if note_height.present? && note_mode == "expanded"
+    style_rules << "--ig-note-height: #{note_height}"
+  end
+%>
+
+<section
+  class="<%= note_classes.join(" ") %>"
+  role="note"
+  aria-label="<%= note_title %>"
+  data-note-variant="<%= note_variant %>"
+  data-note-mode="<%= note_mode %>"
+  <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
+>
+  <header class="ig-note__titlebar">
+    <span class="ig-note__chrome ig-note__chrome--left" aria-hidden="true"></span>
+    <h2 class="ig-note__title"><%= note_title %></h2>
+    <span class="ig-note__chrome ig-note__chrome--right" aria-hidden="true"></span>
+  </header>
+
+  <div class="ig-note__body">
+    <%= simple_format(content.to_s, {}, sanitize: true) %>
+  </div>
+</section>

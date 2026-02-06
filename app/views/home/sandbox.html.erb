@@ -23,6 +23,23 @@
       ],
       width: "22rem",
       height: "16rem" %>
+  <% elsif @sandbox_component == "ig_note" %>
+    <div class="sandbox-notes">
+      <%= render "shared/ig_note",
+        title: "description, image or a",
+        content: "Write your sticky note content here.\nYou can pass any text into IGNote.",
+        variant: "blue",
+        mode: "expanded",
+        width: "42rem",
+        height: "18rem" %>
+
+      <%= render "shared/ig_note",
+        title: "collapsed",
+        content: "This is hidden in collapsed mode.",
+        variant: "yellow",
+        mode: "collapsed",
+        width: "42rem" %>
+    </div>
   <% else %>
     <h1 class="home__title">Insanely Great</h1>
   <% end %>

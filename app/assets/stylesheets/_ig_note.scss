@@ -1,0 +1,105 @@
+@use "variables" as v;
+
+.ig-note {
+  --ig-note-width: min(42rem, 92vw);
+  --ig-note-height: 22rem;
+  --ig-note-bg: #fff8b3;
+  --ig-note-titlebar-bg: #fef08a;
+  --ig-note-border: rgba(15, 23, 42, 0.55);
+  --ig-note-text: #0f172a;
+  --ig-note-chrome: rgba(56, 189, 248, 0.95);
+
+  width: var(--ig-note-width);
+  min-height: 5.6rem;
+  height: var(--ig-note-height);
+  border: 1px solid var(--ig-note-border);
+  border-radius: 0;
+  background: var(--ig-note-bg);
+  color: var(--ig-note-text);
+  box-shadow: 0 14px 26px rgba(2, 6, 23, 0.28);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ig-note__titlebar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.55rem;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--ig-note-border);
+  background: var(--ig-note-titlebar-bg);
+}
+
+.ig-note__title {
+  margin: 0;
+  font-family: v.$font-mono;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.05;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ig-note__chrome {
+  width: 0.86rem;
+  height: 0.86rem;
+  border: 1px solid color-mix(in srgb, var(--ig-note-chrome) 65%, #0f172a 35%);
+  background: var(--ig-note-chrome);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.ig-note__body {
+  flex: 1;
+  padding: 0.95rem 1.05rem 1.1rem;
+  font-family: "Courier New", "Space Mono", monospace;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  overflow: auto;
+}
+
+.ig-note__body > p {
+  margin: 0 0 0.8rem;
+}
+
+.ig-note__body > p:last-child {
+  margin-bottom: 0;
+}
+
+.ig-note--collapsed {
+  height: auto;
+  min-height: 0;
+}
+
+.ig-note--collapsed .ig-note__body {
+  display: none;
+}
+
+.ig-note--white {
+  --ig-note-bg: #f8fafc;
+  --ig-note-titlebar-bg: #f1f5f9;
+  --ig-note-border: rgba(30, 41, 59, 0.6);
+  --ig-note-text: #111827;
+  --ig-note-chrome: #e2e8f0;
+}
+
+.ig-note--blue {
+  --ig-note-bg: #b7f2ff;
+  --ig-note-titlebar-bg: #8fe8ff;
+  --ig-note-border: rgba(15, 23, 42, 0.55);
+  --ig-note-text: #05202b;
+  --ig-note-chrome: #67e8f9;
+}
+
+.ig-note--yellow {
+  --ig-note-bg: #fff6a9;
+  --ig-note-titlebar-bg: #ffef78;
+  --ig-note-border: rgba(30, 41, 59, 0.58);
+  --ig-note-text: #2f2500;
+  --ig-note-chrome: #fde047;
+}
