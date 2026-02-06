@@ -16,6 +16,7 @@ export default class extends Controller {
 
   start(event) {
     if (event.button !== 0) return
+    if (event.target.closest(".ig-note__toggle")) return
     if (this.hasHandleSelectorValue && !event.target.closest(this.handleSelectorValue)) return
 
     const rect = this.element.getBoundingClientRect()
