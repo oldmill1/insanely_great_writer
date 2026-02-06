@@ -1,0 +1,24 @@
+@use "variables" as v;
+
+:root {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: v.$color-bg;
+  color: v.$color-text;
+  font-family: v.$font-sans;
+  line-height: v.$line-height-base;
+}
