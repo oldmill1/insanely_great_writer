@@ -1,0 +1,29 @@
+<main class="home">
+  <% if @sandbox_component == "ig_menu" %>
+    <%= render "shared/ig_menu",
+      items: [
+        {
+          label: "Create Scene",
+          intent: "create",
+          kind: "scene",
+          payload: { source: "sandbox", chapter_id: 1 }
+        },
+        {
+          label: "Create Character",
+          intent: "create",
+          kind: "character",
+          payload: { source: "sandbox" }
+        },
+        {
+          label: "Create Location",
+          intent: "create",
+          kind: "location",
+          disabled: true
+        }
+      ],
+      width: "22rem",
+      height: "16rem" %>
+  <% else %>
+    <h1 class="home__title">Insanely Great</h1>
+  <% end %>
+</main>
