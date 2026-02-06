@@ -27,3 +27,11 @@
   left: 48px;
   top: 55px;
 }
+
+.home__note .ig-note__titlebar {
+  cursor: grab;
+}
+
+.home__note.is-dragging .ig-note__titlebar {
+  cursor: grabbing;
+}

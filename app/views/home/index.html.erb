@@ -1,6 +1,16 @@
 <main class="home" data-controller="home-click" data-action="click->home-click#log">
   <h1 class="home__title">manuscriptOS</h1>
-  <div class="home__note">
+  <div
+    class="home__note"
+    data-controller="draggable"
+    data-draggable-handle-selector-value=".ig-note__titlebar"
+    data-action="
+      pointerdown->draggable#start
+      pointermove->draggable#move
+      pointerup->draggable#end
+      pointercancel->draggable#end
+    "
+  >
     <%= render "shared/ig_note",
       title: "description, image or a",
       content: "Write your sticky note content here.\nYou can pass any text into IGNote.",
