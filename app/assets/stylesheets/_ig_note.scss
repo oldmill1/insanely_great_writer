@@ -31,6 +31,8 @@
   padding: 0.3rem 0.5rem;
   border-bottom: 1px solid var(--ig-note-border);
   background: var(--ig-note-titlebar-bg);
+  cursor: pointer;
+  user-select: none;
 }
 
 .ig-note__title {
@@ -54,10 +56,21 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
+.ig-note__toggle {
+  appearance: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ig-note__toggle:focus-visible {
+  outline: 2px solid rgba(15, 23, 42, 0.65);
+  outline-offset: 1px;
+}
+
 .ig-note__body {
   flex: 1;
   padding: 0.95rem 1.05rem 1.1rem;
-  font-family: "Courier New", "Space Mono", monospace;
+  font-family: "Space Mono", "Courier", monospace;
   font-size: 1.1rem;
   line-height: 1.35;
   white-space: pre-wrap;
