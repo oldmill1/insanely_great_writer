@@ -60,15 +60,13 @@
   font-family: "Courier New", "Space Mono", monospace;
   font-size: 1.1rem;
   line-height: 1.35;
+  white-space: pre-wrap;
+  cursor: text;
   overflow: auto;
 }
 
-.ig-note__body > p {
-  margin: 0 0 0.8rem;
-}
-
-.ig-note__body > p:last-child {
-  margin-bottom: 0;
+.ig-note__body:focus-visible {
+  outline: none;
 }
 
 .ig-note--collapsed {

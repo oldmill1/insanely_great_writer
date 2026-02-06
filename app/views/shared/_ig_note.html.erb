@@ -32,7 +32,11 @@
     <span class="ig-note__chrome ig-note__chrome--right" aria-hidden="true"></span>
   </header>
 
-  <div class="ig-note__body">
-    <%= simple_format(content.to_s, {}, sanitize: true) %>
-  </div>
+  <div
+    class="ig-note__body"
+    contenteditable="true"
+    role="textbox"
+    aria-multiline="true"
+    spellcheck="true"
+  ><%= sanitize(content.to_s) %></div>
 </section>
