@@ -3,16 +3,31 @@
 .ig-menu {
   --ig-menu-width: 20rem;
 
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.45rem;
   width: var(--ig-menu-width);
-  padding: 0.5rem;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.8);
-  box-shadow: 0 14px 40px rgba(2, 6, 23, 0.35);
-  backdrop-filter: blur(18px);
+  padding: 0.75rem;
+  border: 1px solid rgba(252, 231, 243, 0.45);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(186, 230, 253, 0.2), transparent 40%),
+    radial-gradient(circle at 90% 8%, rgba(216, 180, 254, 0.18), transparent 38%),
+    rgba(30, 41, 59, 0.7);
+  box-shadow:
+    0 16px 38px rgba(2, 6, 23, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px) saturate(115%);
+}
+
+.ig-menu::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  pointer-events: none;
 }
 
 .ig-menu--scrollable {
@@ -23,23 +38,25 @@
 .ig-menu__item {
   appearance: none;
   width: 100%;
-  padding: 0.65rem 0.8rem;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  background: transparent;
-  color: v.$color-text;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(219, 234, 254, 0.34);
+  border-radius: 14px;
+  background: linear-gradient(140deg, rgba(254, 243, 199, 0.18), rgba(196, 181, 253, 0.15));
+  color: #f8fafc;
   font-family: v.$font-sans;
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.012em;
   line-height: 1.25;
   text-align: left;
-  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+  text-shadow: 0 1px 0 rgba(15, 23, 42, 0.35);
+  transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease, box-shadow 140ms ease;
 }
 
 .ig-menu__item:hover:not(:disabled) {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(148, 163, 184, 0.35);
+  background: linear-gradient(140deg, rgba(254, 215, 226, 0.35), rgba(191, 219, 254, 0.33));
+  border-color: rgba(250, 245, 255, 0.8);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.28);
 }
 
 .ig-menu__item:active:not(:disabled) {
@@ -48,13 +65,16 @@
 
 .ig-menu__item:focus-visible {
   outline: none;
-  border-color: rgba(147, 197, 253, 0.95);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+  border-color: rgba(252, 231, 243, 0.95);
+  box-shadow:
+    0 0 0 3px rgba(244, 114, 182, 0.24),
+    0 6px 14px rgba(15, 23, 42, 0.3);
 }
 
 .ig-menu__item:disabled {
-  color: rgba(148, 163, 184, 0.55);
-  background: rgba(15, 23, 42, 0.6);
+  color: rgba(226, 232, 240, 0.5);
+  background: rgba(100, 116, 139, 0.28);
+  border-color: rgba(148, 163, 184, 0.22);
   cursor: not-allowed;
-  opacity: 0.8;
+  opacity: 0.75;
 }
