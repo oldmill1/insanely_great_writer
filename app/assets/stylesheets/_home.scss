@@ -58,3 +58,11 @@
   position: absolute;
   pointer-events: auto;
 }
+
+.home__desktop-item .ig-shortcut {
+  cursor: grab;
+}
+
+.home__desktop-item.is-dragging .ig-shortcut {
+  cursor: grabbing;
+}

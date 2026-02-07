@@ -2,7 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static values = {
-    handleSelector: String
+    handleSelector: String,
+    persistPath: String
   }
 
   connect() {
@@ -12,6 +13,7 @@ export default class extends Controller {
     this.startY = 0
     this.originLeft = 0
     this.originTop = 0
+    this.moved = false
   }
 
   start(event) {
@@ -27,6 +29,7 @@ export default class extends Controller {
     this.startY = event.clientY
     this.originLeft = rect.left
     this.originTop = rect.top
+    this.moved = false
 
     this.element.classList.add("is-dragging")
     this.element.setPointerCapture(event.pointerId)
@@ -41,10 +44,14 @@ export default class extends Controller {
 
     this.element.style.left = `${Math.round(this.originLeft + deltaX)}px`
     this.element.style.top = `${Math.round(this.originTop + deltaY)}px`
+    this.moved = true
   }
 
-  end(event) {
+  async end(event) {
     if (!this.dragging || event.pointerId !== this.pointerId) return
+
+    const nextLeft = parseInt(this.element.style.left || `${Math.round(this.originLeft)}`, 10)
+    const nextTop = parseInt(this.element.style.top || `${Math.round(this.originTop)}`, 10)
 
     this.dragging = false
     this.pointerId = null
@@ -52,6 +59,28 @@ export default class extends Controller {
 
     if (this.element.hasPointerCapture(event.pointerId)) {
       this.element.releasePointerCapture(event.pointerId)
+    }
+
+    if (this.hasPersistPathValue && this.moved) {
+      await this.persistPosition(nextLeft, nextTop)
+    }
+  }
+
+  async persistPosition(x, y) {
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    try {
+      await fetch(this.persistPathValue, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({ x, y })
+      })
+    } catch (error) {
+      console.error("[draggable] failed to persist position", error)
     }
   }
 }

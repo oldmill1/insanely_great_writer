@@ -17,6 +17,17 @@ export default class extends Controller {
       item.className = "home__desktop-item"
       item.style.left = `${Math.round(Number(shortcut.x) || 0)}px`
       item.style.top = `${Math.round(Number(shortcut.y) || 0)}px`
+      item.dataset.controller = "draggable"
+      item.dataset.draggableHandleSelectorValue = ".ig-shortcut"
+      if (shortcut.id) {
+        item.dataset.draggablePersistPathValue = `/shortcuts/${shortcut.id}/position`
+      }
+      item.dataset.action = [
+        "pointerdown->draggable#start",
+        "pointermove->draggable#move",
+        "pointerup->draggable#end",
+        "pointercancel->draggable#end"
+      ].join(" ")
 
       item.appendChild(this.buildShortcut(shortcut))
       this.element.appendChild(item)

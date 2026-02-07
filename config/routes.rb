@@ -12,4 +12,5 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#index"
   get "sandbox" => "home#sandbox"
+  patch "shortcuts/:id/position" => "shortcuts#update_position"
 end
