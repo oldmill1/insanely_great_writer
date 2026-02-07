@@ -12,18 +12,12 @@
   min-height: 100vh;
   padding: clamp(1.25rem, 2.5vw, 2.5rem);
   color: #c2c7cf;
-  border-radius: 1.8rem;
-  overflow: hidden;
   background:
     radial-gradient(circle at 18% 12%, rgba(92, 102, 116, 0.16), transparent 42%),
     radial-gradient(circle at 82% 90%, rgba(50, 58, 69, 0.2), transparent 46%),
     linear-gradient(180deg, #090e0a 0%, #070b08 100%);
   font-family: "VT323", "Courier New", monospace;
   text-shadow: 0 0 4px rgba(190, 198, 210, 0.26);
-  transform: perspective(1200px) rotateX(0.7deg) scale(0.997);
-  box-shadow:
-    inset 0 0 0 1px rgba(168, 178, 191, 0.08),
-    inset 0 0 80px rgba(0, 0, 0, 0.45);
 }
 
 .doc-terminal-screen::before {
@@ -40,16 +34,6 @@
       transparent 1px,
       transparent 4px
     );
-}
-
-.doc-terminal-screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at center, rgba(0, 0, 0, 0) 56%, rgba(0, 0, 0, 0.34) 100%),
-    radial-gradient(circle at center, rgba(208, 216, 226, 0.05) 0%, rgba(208, 216, 226, 0) 62%);
 }
 
 .doc-terminal-path,
