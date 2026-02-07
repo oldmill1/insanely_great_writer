@@ -4,13 +4,21 @@
 
   shortcut_size = local_assigns[:size].to_i
   shortcut_size = 64 unless [32, 64, 128].include?(shortcut_size)
+  shortcut_selected = local_assigns.key?(:isSelected) ? local_assigns[:isSelected] : local_assigns[:is_selected]
+  shortcut_selected = shortcut_selected == true
 
   shortcut_classes = ["ig-shortcut"]
   shortcut_classes << "ig-shortcut--#{shortcut_size}"
+  shortcut_classes << "ig-shortcut--selected" if shortcut_selected
   shortcut_classes << class_name if local_assigns[:class_name].present?
 %>
 
-<button type="button" class="<%= shortcut_classes.join(" ") %>" data-size="<%= shortcut_size %>">
+<button
+  type="button"
+  class="<%= shortcut_classes.join(" ") %>"
+  data-size="<%= shortcut_size %>"
+  aria-pressed="<%= shortcut_selected %>"
+>
   <img class="ig-shortcut__thumbnail" src="<%= thumbnail %>" alt="" aria-hidden="true">
   <span class="ig-shortcut__label"><%= label %></span>
 </button>

@@ -37,7 +37,9 @@ export default class extends Controller {
   buildShortcut(shortcut) {
     const button = document.createElement("button")
     button.type = "button"
-    button.className = "ig-shortcut ig-shortcut--64"
+    const selected = shortcut.isSelected === true || shortcut.is_selected === true
+    button.className = selected ? "ig-shortcut ig-shortcut--64 ig-shortcut--selected" : "ig-shortcut ig-shortcut--64"
+    button.setAttribute("aria-pressed", String(selected))
 
     if (shortcut.id) {
       button.dataset.shortcutId = String(shortcut.id)

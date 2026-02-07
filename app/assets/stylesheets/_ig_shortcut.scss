@@ -63,6 +63,14 @@
   background: rgba(148, 163, 184, 0.13);
 }
 
+.ig-shortcut--selected {
+  border: 1px solid rgba(125, 211, 252, 0.95);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(17, 24, 39, 0.92));
+  box-shadow:
+    0 0 0 2px rgba(56, 189, 248, 0.28),
+    0 10px 20px rgba(2, 6, 23, 0.45);
+}
+
 .ig-shortcut:focus-visible {
   outline: 2px solid rgba(125, 211, 252, 0.95);
   outline-offset: 2px;
