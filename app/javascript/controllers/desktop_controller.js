@@ -58,9 +58,8 @@ export default class extends Controller {
     const button = document.createElement("button")
     button.type = "button"
     const shortcutId = shortcut.id != null ? String(shortcut.id) : null
-    const selected = this.isShortcutSelected(shortcut, shortcutId)
-    button.className = selected ? "ig-shortcut ig-shortcut--64 ig-shortcut--selected" : "ig-shortcut ig-shortcut--64"
-    button.setAttribute("aria-pressed", String(selected))
+    button.className = "ig-shortcut ig-shortcut--64"
+    button.setAttribute("aria-pressed", "false")
     button.dataset.action = "click->desktop#selectShortcut"
 
     if (shortcutId) {
@@ -94,8 +93,14 @@ export default class extends Controller {
   applySelectionState() {
     this.element.querySelectorAll(".ig-shortcut").forEach((button) => {
       const isSelected = button.dataset.shortcutId === this.selectedShortcutId
-      button.classList.toggle("ig-shortcut--selected", isSelected)
       button.setAttribute("aria-pressed", String(isSelected))
+      
+      if (isSelected) {
+        button.style.outline = '2px solid #78C9F1'
+        button.style.outlineOffset = '-2px'
+      } else {
+        button.style.outline = 'none'
+      }
     })
   }
 }
