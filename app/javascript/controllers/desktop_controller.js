@@ -82,14 +82,6 @@ export default class extends Controller {
     return button
   }
 
-  isShortcutSelected(shortcut, shortcutId) {
-    if (this.selectedShortcutId) {
-      return shortcutId === this.selectedShortcutId
-    }
-
-    return shortcut.isSelected === true || shortcut.is_selected === true
-  }
-
   applySelectionState() {
     this.element.querySelectorAll(".ig-shortcut").forEach((button) => {
       const isSelected = button.dataset.shortcutId === this.selectedShortcutId
