@@ -1,114 +1,80 @@
-@use "variables" as v;
+@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
 
-.doc-editor-page {
+.doc-terminal-page {
   min-height: 100vh;
-  padding: 0;
-  display: block;
-  background:
-    radial-gradient(circle at 18% 14%, rgba(123, 164, 214, 0.24), transparent 28%),
-    radial-gradient(circle at 82% 86%, rgba(141, 133, 178, 0.2), transparent 30%),
-    linear-gradient(180deg, #1f2834 0%, #182230 48%, #111a25 100%);
-}
-
-.doc-editor-window {
-  width: 100%;
-  min-height: 100vh;
-  border: 2px solid #0d1724;
-  box-shadow: 0 0 0 2px #4a5b72, 10px 12px 0 rgba(5, 10, 17, 0.62);
-  background: #2b3646;
-  display: flex;
-  flex-direction: column;
-}
-
-.doc-editor-window__titlebar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.35rem 0.55rem;
-  border-bottom: 1px solid #0d1724;
-  background: linear-gradient(180deg, #4a5d75 0%, #2a3a4d 100%);
-  color: #e6eef9;
-}
-
-.doc-editor-window__traffic-lights {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.doc-editor-window__traffic-lights span {
-  width: 0.8rem;
-  height: 0.8rem;
-  border: 1px solid #122136;
-  background: linear-gradient(180deg, #8ea3bb 0%, #536a86 100%);
-}
-
-.doc-editor-window__title,
-.doc-editor-window__meta {
   margin: 0;
-  font-family: "Geneva", "Chicago", v.$font-sans;
-  font-size: 0.78rem;
-  font-weight: 700;
+  padding: 0;
+  background: #050806;
 }
 
-.doc-editor-window__title {
-  text-align: center;
-}
-
-.doc-editor-window__meta {
-  text-align: right;
-}
-
-.doc-editor-canvas {
-  flex: 1;
-  display: flex;
-  padding: clamp(0.8rem, 2vw, 1.5rem);
+.doc-terminal-screen {
+  position: relative;
+  min-height: 100vh;
+  padding: clamp(1.25rem, 2.5vw, 2.5rem);
+  color: #c2c7cf;
+  border-radius: 1.8rem;
+  overflow: hidden;
   background:
+    radial-gradient(circle at 18% 12%, rgba(92, 102, 116, 0.16), transparent 42%),
+    radial-gradient(circle at 82% 90%, rgba(50, 58, 69, 0.2), transparent 46%),
+    linear-gradient(180deg, #090e0a 0%, #070b08 100%);
+  font-family: "VT323", "Courier New", monospace;
+  text-shadow: 0 0 4px rgba(190, 198, 210, 0.26);
+  transform: perspective(1200px) rotateX(0.7deg) scale(0.997);
+  box-shadow:
+    inset 0 0 0 1px rgba(168, 178, 191, 0.08),
+    inset 0 0 80px rgba(0, 0, 0, 0.45);
+}
+
+.doc-terminal-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(130deg, rgba(205, 214, 224, 0.03) 0%, rgba(205, 214, 224, 0) 45%),
     repeating-linear-gradient(
-      90deg,
-      rgba(96, 121, 156, 0.2) 0,
-      rgba(96, 121, 156, 0.2) 1px,
+      180deg,
+      rgba(190, 198, 210, 0.014) 0,
+      rgba(190, 198, 210, 0.014) 1px,
       transparent 1px,
-      transparent 18px
-    ),
-    #233142;
+      transparent 4px
+    );
 }
 
-.doc-editor-paper {
-  width: min(48rem, 100%);
-  margin: 0 auto;
-  min-height: 100%;
-  border: 1px solid #101a27;
-  background: #1a212b;
-  box-shadow: 0 2px 0 #3a4b60, 0 14px 20px rgba(4, 9, 16, 0.46);
-  padding: clamp(1rem, 2.2vw, 1.8rem);
-  display: flex;
-  flex-direction: column;
+.doc-terminal-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(0, 0, 0, 0) 56%, rgba(0, 0, 0, 0.34) 100%),
+    radial-gradient(circle at center, rgba(208, 216, 226, 0.05) 0%, rgba(208, 216, 226, 0) 62%);
 }
 
-.doc-editor-paper__title {
-  margin: 0 0 0.8rem;
-  color: #e7edf6;
-  font-family: "Times New Roman", v.$font-serif;
-  font-size: clamp(1.4rem, 2.2vw, 2rem);
-  line-height: 1.2;
+.doc-terminal-path,
+.doc-terminal-title,
+.doc-terminal-content {
+  position: relative;
+  z-index: 1;
 }
 
-.doc-editor-paper__content {
-  display: block;
-  width: 100%;
-  min-height: 0;
-  flex: 1;
-  border: 0;
-  resize: vertical;
-  background: transparent;
-  color: #d6e1f0;
-  font-family: "Times New Roman", v.$font-serif;
-  font-size: clamp(1rem, 1.4vw, 1.15rem);
-  line-height: 1.65;
+.doc-terminal-path {
+  margin: 0 0 0.9rem;
+  opacity: 0.8;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+}
+
+.doc-terminal-title {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+.doc-terminal-content {
+  margin: 0;
   white-space: pre-wrap;
-}
-
-.doc-editor-paper__content:focus {
-  outline: none;
+  font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+  line-height: 1.35;
 }
