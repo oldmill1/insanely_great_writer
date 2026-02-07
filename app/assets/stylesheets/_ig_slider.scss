@@ -1,0 +1,142 @@
+@use "variables" as v;
+
+.ig-slider {
+  --ig-slider-width: min(42rem, 92vw);
+  --ig-slider-percent: 50%;
+  --ig-slider-track-height: 1rem;
+
+  width: var(--ig-slider-width);
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ig-slider__label {
+  display: block;
+  margin: 0;
+  color: #d1d5db;
+  font-family: v.$font-mono;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.ig-slider__control {
+  padding: 0 0.16rem;
+}
+
+.ig-slider__input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ig-slider__input::-webkit-slider-runnable-track {
+  height: var(--ig-slider-track-height);
+  border-style: solid;
+  border-width: 1px;
+  border-top-color: rgba(255, 255, 255, 0.32);
+  border-left-color: rgba(255, 255, 255, 0.32);
+  border-right-color: rgba(2, 6, 23, 0.82);
+  border-bottom-color: rgba(2, 6, 23, 0.82);
+  border-radius: 0.28rem;
+  background: linear-gradient(
+    90deg,
+    #2c3a52 0,
+    #2c3a52 var(--ig-slider-percent),
+    #737f90 var(--ig-slider-percent),
+    #9aa4b1 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.15) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.45) inset;
+}
+
+.ig-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.6rem;
+  height: 1.9rem;
+  margin-top: -0.54rem;
+  border: 1px solid #0f172a;
+  border-radius: 0.15rem;
+  background: linear-gradient(180deg, #9ea9bf 0%, #5b6ba0 40%, #394f95 100%);
+  clip-path: polygon(8% 0, 92% 0, 92% 66%, 50% 100%, 8% 66%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 1px 4px rgba(2, 6, 23, 0.58);
+}
+
+.ig-slider__input::-moz-range-track {
+  height: var(--ig-slider-track-height);
+  border-style: solid;
+  border-width: 1px;
+  border-top-color: rgba(255, 255, 255, 0.32);
+  border-left-color: rgba(255, 255, 255, 0.32);
+  border-right-color: rgba(2, 6, 23, 0.82);
+  border-bottom-color: rgba(2, 6, 23, 0.82);
+  border-radius: 0.28rem;
+  background: #9aa4b1;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.15) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.45) inset;
+}
+
+.ig-slider__input::-moz-range-progress {
+  height: var(--ig-slider-track-height);
+  border-radius: 0.28rem;
+  background: #2c3a52;
+}
+
+.ig-slider__input::-moz-range-thumb {
+  width: 1.6rem;
+  height: 1.9rem;
+  border: 1px solid #0f172a;
+  border-radius: 0.15rem;
+  background: linear-gradient(180deg, #9ea9bf 0%, #5b6ba0 40%, #394f95 100%);
+  clip-path: polygon(8% 0, 92% 0, 92% 66%, 50% 100%, 8% 66%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 1px 4px rgba(2, 6, 23, 0.58);
+}
+
+.ig-slider__input:focus-visible {
+  outline: none;
+}
+
+.ig-slider__input:focus-visible::-webkit-slider-runnable-track {
+  box-shadow:
+    0 0 0 1px rgba(125, 211, 252, 0.8),
+    0 0 0 3px rgba(2, 6, 23, 0.65),
+    0 1px 0 rgba(255, 255, 255, 0.15) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.45) inset;
+}
+
+.ig-slider__input:focus-visible::-moz-range-track {
+  box-shadow:
+    0 0 0 1px rgba(125, 211, 252, 0.8),
+    0 0 0 3px rgba(2, 6, 23, 0.65),
+    0 1px 0 rgba(255, 255, 255, 0.15) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.45) inset;
+}
+
+.ig-slider__ticks {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0 0.62rem;
+  width: 100%;
+}
+
+.ig-slider__tick {
+  width: 0.18rem;
+  height: 0.74rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14);
+}

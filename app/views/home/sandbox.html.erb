@@ -65,6 +65,26 @@
       <%= render "shared/ig_button", label: "Locked", disabled: true, width: "8.5rem" %>
       <%= render "shared/ig_button", label: "Pressed", width: "8.5rem", pressed: true, data: { intent: "pressed_demo", kind: "toggle" } %>
     </section>
+  <% elsif @sandbox_component == "ig_slider" %>
+    <section style="display: grid; gap: 1rem; justify-items: start;">
+      <%= render "shared/ig_slider",
+        label: "Separate timing for display sleep",
+        min: 0,
+        max: 120,
+        value: 30,
+        step: 10,
+        ticks: 13,
+        width: "min(84rem, 96vw)" %>
+
+      <%= render "shared/ig_slider",
+        label: "Speaker output level",
+        min: 0,
+        max: 100,
+        value: 68,
+        step: 1,
+        ticks: 11,
+        width: "min(44rem, 92vw)" %>
+    </section>
   <% else %>
     <h1 class="home__title">Insanely Great</h1>
   <% end %>

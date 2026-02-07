@@ -1,0 +1,54 @@
+<%
+  slider_min = local_assigns.fetch(:min, 0).to_f
+  slider_max = local_assigns.fetch(:max, 100).to_f
+  slider_max = slider_min + 1 if slider_max <= slider_min
+
+  slider_step = local_assigns[:step].presence || 1
+  default_value = ((slider_min + slider_max) / 2.0)
+  raw_value = local_assigns.key?(:value) ? local_assigns[:value].to_f : default_value
+  slider_value = [[raw_value, slider_max].min, slider_min].max
+
+  ticks_count = local_assigns[:ticks].to_i
+  ticks_count = 12 if ticks_count < 2
+
+  slider_id = local_assigns[:id].presence || "ig-slider-#{SecureRandom.hex(5)}"
+  slider_label = local_assigns[:label].presence
+  slider_aria_label = local_assigns[:aria_label].presence || slider_label || "IG Slider"
+
+  slider_classes = ["ig-slider"]
+  slider_classes << class_name if local_assigns[:class_name].present?
+
+  slider_width = ig_css_size(local_assigns[:width])
+  slider_percent = (((slider_value - slider_min) / (slider_max - slider_min)) * 100.0).round(4)
+  wrapper_style_rules = []
+  wrapper_style_rules << "--ig-slider-width: #{slider_width}" if slider_width.present?
+  input_style = "--ig-slider-percent: #{slider_percent}%"
+%>
+
+<section class="<%= slider_classes.join(" ") %>" <% if wrapper_style_rules.any? %>style="<%= wrapper_style_rules.join("; ") %>"<% end %>>
+  <% if slider_label.present? %>
+    <label class="ig-slider__label" for="<%= slider_id %>"><%= slider_label %></label>
+  <% end %>
+
+  <div class="ig-slider__control">
+    <input
+      id="<%= slider_id %>"
+      class="ig-slider__input"
+      type="range"
+      min="<%= slider_min %>"
+      max="<%= slider_max %>"
+      step="<%= slider_step %>"
+      value="<%= slider_value %>"
+      style="<%= input_style %>"
+      aria-label="<%= slider_aria_label %>"
+      data-controller="ig-slider"
+      data-action="input->ig-slider#sync change->ig-slider#sync"
+    >
+  </div>
+
+  <div class="ig-slider__ticks" aria-hidden="true">
+    <% ticks_count.times do %>
+      <span class="ig-slider__tick"></span>
+    <% end %>
+  </div>
+</section>
