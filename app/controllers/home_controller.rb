@@ -4,8 +4,10 @@ class HomeController < ApplicationController
     @desktop_shortcuts = Shortcut.order(created_at: :asc).limit(1).map do |shortcut|
       {
         id: shortcut.id,
-        x: shortcut.x,
-        y: shortcut.y,
+        top: shortcut.top,
+        right: shortcut.right,
+        bottom: shortcut.bottom,
+        left: shortcut.left,
         thumbnail: shortcut.thumbnail,
         label: shortcut.label
       }

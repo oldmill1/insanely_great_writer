@@ -11,6 +11,21 @@
     class="home__note"
     data-controller="draggable"
     data-draggable-handle-selector-value=".ig-note__titlebar"
+    <% if @note %>data-draggable-persist-path-value="/notes/<%= @note.id %>/position"<% end %>
+    <% if @note&.top.present? %>
+      data-draggable-top-value="<%= @note.top %>"
+    <% elsif @note&.bottom.present? %>
+      data-draggable-bottom-value="<%= @note.bottom %>"
+    <% else %>
+      data-draggable-top-value="55"
+    <% end %>
+    <% if @note&.left.present? %>
+      data-draggable-left-value="<%= @note.left %>"
+    <% elsif @note&.right.present? %>
+      data-draggable-right-value="<%= @note.right %>"
+    <% else %>
+      data-draggable-left-value="48"
+    <% end %>
     data-action="
       pointerdown->draggable#start
       pointermove->draggable#move

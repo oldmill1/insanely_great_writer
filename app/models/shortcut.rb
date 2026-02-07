@@ -1,6 +1,12 @@
 class Shortcut < ApplicationRecord
+  include EdgePositionable
+
   validates :label, presence: true
   validates :thumbnail, presence: true
-  validates :x, presence: true, numericality: { only_integer: true }
-  validates :y, presence: true, numericality: { only_integer: true }
+
+  private
+
+  def default_edge_offsets
+    { top: 0, left: 0 }
+  end
 end

@@ -3,11 +3,11 @@
 one:
   label: MyString
   thumbnail: MyString
-  x: 1
-  'y': 1
+  top: 1
+  left: 1
 
 two:
   label: MyString
   thumbnail: MyString
-  x: 1
-  'y': 1
+  top: 1
+  left: 1

@@ -1,12 +1,12 @@
-class ShortcutsController < ApplicationController
+class NotesController < ApplicationController
   POSITION_FIELDS = %i[top right bottom left].freeze
 
   def update_position
-    shortcut = Shortcut.find(params[:id])
+    note = Note.find(params[:id])
 
-    shortcut.update!(position_attributes)
+    note.update!(position_attributes)
 
-    render json: shortcut.slice(:id, :top, :right, :bottom, :left)
+    render json: note.slice(:id, :top, :right, :bottom, :left)
   end
 
   private

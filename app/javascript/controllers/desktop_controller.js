@@ -35,8 +35,7 @@ export default class extends Controller {
     this.shortcutsValue.forEach((shortcut) => {
       const item = document.createElement("div")
       item.className = "home__desktop-item"
-      item.style.left = `${Math.round(Number(shortcut.x) || 0)}px`
-      item.style.top = `${Math.round(Number(shortcut.y) || 0)}px`
+      this.applyEdgeOffsets(item, shortcut)
       item.dataset.controller = "draggable"
       item.dataset.draggableHandleSelectorValue = ".ig-shortcut"
       if (shortcut.id) {
@@ -52,6 +51,52 @@ export default class extends Controller {
       item.appendChild(this.buildShortcut(shortcut))
       this.element.appendChild(item)
     })
+  }
+
+  applyEdgeOffsets(element, shortcut) {
+    const top = this.toInteger(shortcut.top)
+    const right = this.toInteger(shortcut.right)
+    const bottom = this.toInteger(shortcut.bottom)
+    const left = this.toInteger(shortcut.left)
+
+    if (top != null) {
+      element.style.top = `${top}px`
+      element.style.bottom = "auto"
+      element.dataset.draggableTopValue = String(top)
+      delete element.dataset.draggableBottomValue
+    } else if (bottom != null) {
+      element.style.bottom = `${bottom}px`
+      element.style.top = "auto"
+      element.dataset.draggableBottomValue = String(bottom)
+      delete element.dataset.draggableTopValue
+    } else {
+      element.style.top = "0px"
+      element.style.bottom = "auto"
+      element.dataset.draggableTopValue = "0"
+      delete element.dataset.draggableBottomValue
+    }
+
+    if (left != null) {
+      element.style.left = `${left}px`
+      element.style.right = "auto"
+      element.dataset.draggableLeftValue = String(left)
+      delete element.dataset.draggableRightValue
+    } else if (right != null) {
+      element.style.right = `${right}px`
+      element.style.left = "auto"
+      element.dataset.draggableRightValue = String(right)
+      delete element.dataset.draggableLeftValue
+    } else {
+      element.style.left = "0px"
+      element.style.right = "auto"
+      element.dataset.draggableLeftValue = "0"
+      delete element.dataset.draggableRightValue
+    }
+  }
+
+  toInteger(value) {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? Math.round(parsed) : null
   }
 
   buildShortcut(shortcut) {
