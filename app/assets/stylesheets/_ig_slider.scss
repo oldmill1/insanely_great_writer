@@ -62,12 +62,16 @@
   width: 1.6rem;
   height: 1.9rem;
   margin-top: -0.54rem;
-  border: 1px solid #0f172a;
+  border: 1px solid #0b1120;
   border-radius: 0.15rem;
-  background: linear-gradient(180deg, #9ea9bf 0%, #5b6ba0 40%, #394f95 100%);
+  background:
+    linear-gradient(90deg, transparent 0 28%, rgba(37, 62, 156, 0.95) 28% 34%, transparent 34% 43%, rgba(37, 62, 156, 0.95) 43% 49%, transparent 49% 58%, rgba(37, 62, 156, 0.95) 58% 64%, transparent 64% 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(180deg, #a8b2c7 0%, #6f81b6 42%, #4a62aa 78%, #2f46a1 100%);
   clip-path: polygon(8% 0, 92% 0, 92% 66%, 50% 100%, 8% 66%);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.24) inset,
+    0 -1px 0 rgba(22, 33, 80, 0.62) inset,
     0 1px 4px rgba(2, 6, 23, 0.58);
 }
 
@@ -95,12 +99,16 @@
 .ig-slider__input::-moz-range-thumb {
   width: 1.6rem;
   height: 1.9rem;
-  border: 1px solid #0f172a;
+  border: 1px solid #0b1120;
   border-radius: 0.15rem;
-  background: linear-gradient(180deg, #9ea9bf 0%, #5b6ba0 40%, #394f95 100%);
+  background:
+    linear-gradient(90deg, transparent 0 28%, rgba(37, 62, 156, 0.95) 28% 34%, transparent 34% 43%, rgba(37, 62, 156, 0.95) 43% 49%, transparent 49% 58%, rgba(37, 62, 156, 0.95) 58% 64%, transparent 64% 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(180deg, #a8b2c7 0%, #6f81b6 42%, #4a62aa 78%, #2f46a1 100%);
   clip-path: polygon(8% 0, 92% 0, 92% 66%, 50% 100%, 8% 66%);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.24) inset,
+    0 -1px 0 rgba(22, 33, 80, 0.62) inset,
     0 1px 4px rgba(2, 6, 23, 0.58);
 }
 
