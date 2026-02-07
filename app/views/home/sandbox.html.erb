@@ -57,6 +57,14 @@
         <%= render "shared/ig_shortcut", thumbnail: "/icons/sound.png", label: "Sound Cue 128", size: 128 %>
       </div>
     </section>
+  <% elsif @sandbox_component == "ig_button" %>
+    <section style="display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center;">
+      <%= render "shared/ig_button", label: "Save Draft", width: "10rem", data: { intent: "save_draft", kind: "action" } %>
+      <%= render "shared/ig_button", label: "Rename", variant: "subtle", width: "8.5rem" %>
+      <%= render "shared/ig_button", label: "Delete", variant: "danger", width: "8.5rem" %>
+      <%= render "shared/ig_button", label: "Locked", disabled: true, width: "8.5rem" %>
+      <%= render "shared/ig_button", label: "Pressed", width: "8.5rem", pressed: true, data: { intent: "pressed_demo", kind: "toggle" } %>
+    </section>
   <% else %>
     <h1 class="home__title">Insanely Great</h1>
   <% end %>

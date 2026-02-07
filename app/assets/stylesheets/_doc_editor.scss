@@ -2,9 +2,8 @@
 
 .doc-editor-page {
   min-height: 100vh;
-  padding: clamp(1rem, 2vw, 2rem);
-  display: grid;
-  place-items: center;
+  padding: 0;
+  display: block;
   background:
     radial-gradient(circle at 18% 14%, rgba(123, 164, 214, 0.24), transparent 28%),
     radial-gradient(circle at 82% 86%, rgba(141, 133, 178, 0.2), transparent 30%),
@@ -12,10 +11,13 @@
 }
 
 .doc-editor-window {
-  width: min(72rem, 96vw);
+  width: 100%;
+  min-height: 100vh;
   border: 2px solid #0d1724;
   box-shadow: 0 0 0 2px #4a5b72, 10px 12px 0 rgba(5, 10, 17, 0.62);
   background: #2b3646;
+  display: flex;
+  flex-direction: column;
 }
 
 .doc-editor-window__titlebar {
@@ -57,69 +59,9 @@
   text-align: right;
 }
 
-.doc-editor-menu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  padding: 0.2rem 0.4rem;
-  border-bottom: 1px solid #1b2b41;
-  background: #314156;
-}
-
-.doc-editor-menu button,
-.doc-editor-toolbar button {
-  border: 1px solid #1f324a;
-  border-right-color: #0c1a2b;
-  border-bottom-color: #0c1a2b;
-  background: linear-gradient(180deg, #596f8b 0%, #3a4f69 100%);
-  color: #eff5ff;
-  font-family: "Geneva", "Chicago", v.$font-sans;
-  font-size: 0.76rem;
-  line-height: 1.1;
-  padding: 0.2rem 0.5rem;
-}
-
-.doc-editor-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  align-items: center;
-  padding: 0.4rem;
-  border-bottom: 1px solid #1b2b41;
-  background: linear-gradient(180deg, #3a4c62 0%, #29384b 100%);
-}
-
-.doc-editor-toolbar__group {
-  display: flex;
-  gap: 0.25rem;
-  align-items: center;
-}
-
-.doc-editor-toolbar__group--grow {
-  flex: 1;
-  min-width: 16rem;
-}
-
-.doc-editor-toolbar label {
-  color: #d6e3f4;
-  font-family: "Geneva", "Chicago", v.$font-sans;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.doc-editor-toolbar input {
-  flex: 1;
-  min-width: 10rem;
-  border: 1px solid #16283f;
-  background: #1c2a3a;
-  color: #edf4ff;
-  font-family: "Times New Roman", v.$font-serif;
-  font-size: 0.93rem;
-  padding: 0.22rem 0.4rem;
-}
-
 .doc-editor-canvas {
+  flex: 1;
+  display: flex;
   padding: clamp(0.8rem, 2vw, 1.5rem);
   background:
     repeating-linear-gradient(
@@ -135,10 +77,13 @@
 .doc-editor-paper {
   width: min(48rem, 100%);
   margin: 0 auto;
+  min-height: 100%;
   border: 1px solid #101a27;
   background: #1a212b;
   box-shadow: 0 2px 0 #3a4b60, 0 14px 20px rgba(4, 9, 16, 0.46);
   padding: clamp(1rem, 2.2vw, 1.8rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .doc-editor-paper__title {
@@ -152,7 +97,8 @@
 .doc-editor-paper__content {
   display: block;
   width: 100%;
-  min-height: min(60vh, 36rem);
+  min-height: 0;
+  flex: 1;
   border: 0;
   resize: vertical;
   background: transparent;

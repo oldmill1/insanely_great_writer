@@ -6,40 +6,9 @@
         <span></span>
         <span></span>
       </div>
-      <p class="doc-editor-window__title">Manuscript Writer 1.0 - <%= @document.title %></p>
-      <p class="doc-editor-window__meta">Mac OS 9</p>
+      <p class="doc-editor-window__title"><%= @document.title %></p>
+      <p class="doc-editor-window__meta">manuscriptOS</p>
     </header>
-
-    <nav class="doc-editor-menu" aria-label="Menu bar">
-      <button type="button">File</button>
-      <button type="button">Edit</button>
-      <button type="button">View</button>
-      <button type="button">Insert</button>
-      <button type="button">Format</button>
-      <button type="button">Window</button>
-      <button type="button">Help</button>
-    </nav>
-
-    <section class="doc-editor-toolbar" aria-label="Formatting toolbar">
-      <div class="doc-editor-toolbar__group">
-        <button type="button">Save</button>
-        <button type="button">Print</button>
-      </div>
-      <div class="doc-editor-toolbar__group">
-        <button type="button"><strong>B</strong></button>
-        <button type="button"><em>I</em></button>
-        <button type="button"><u>U</u></button>
-      </div>
-      <div class="doc-editor-toolbar__group">
-        <button type="button">Left</button>
-        <button type="button">Center</button>
-        <button type="button">Right</button>
-      </div>
-      <div class="doc-editor-toolbar__group doc-editor-toolbar__group--grow">
-        <label for="document_title">Title</label>
-        <input id="document_title" type="text" value="<%= @document.title %>" readonly>
-      </div>
-    </section>
 
     <section class="doc-editor-canvas">
       <article class="doc-editor-paper">

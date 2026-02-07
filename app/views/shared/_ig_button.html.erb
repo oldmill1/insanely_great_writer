@@ -1,0 +1,29 @@
+<%
+  raise ArgumentError, "IGButton requires :label" unless local_assigns.key?(:label)
+
+  variant = local_assigns[:variant].to_s.strip.downcase
+  variant = "primary" if variant.blank?
+  variant = "primary" unless %w[primary subtle danger].include?(variant)
+
+  button_classes = ["ig-button", "ig-button--#{variant}"]
+  button_classes << class_name if local_assigns[:class_name].present?
+
+  style_rules = []
+  button_width = ig_css_size(local_assigns[:width])
+  style_rules << "--ig-button-width: #{button_width}" if button_width.present?
+
+  button_options = {
+    type: local_assigns[:type].presence || "button",
+    class: button_classes.join(" "),
+    disabled: local_assigns[:disabled] == true,
+    data: local_assigns[:data],
+    style: style_rules.any? ? style_rules.join("; ") : nil
+  }
+
+  if local_assigns.key?(:pressed)
+    button_options[:"aria-pressed"] = local_assigns[:pressed] == true
+  end
+%>
+
+<%= button_tag label,
+  button_options %>

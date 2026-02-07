@@ -1,0 +1,98 @@
+@use "variables" as v;
+
+.ig-button {
+  --ig-button-width: auto;
+  --ig-button-top: #314059;
+  --ig-button-mid: #22314b;
+  --ig-button-bottom: #19273f;
+  --ig-button-face: #22324d;
+  --ig-button-text: #f3f4f6;
+  --ig-button-border-light: rgba(255, 255, 255, 0.26);
+  --ig-button-border-dark: rgba(2, 6, 23, 0.78);
+  --ig-button-glow: rgba(147, 197, 253, 0.55);
+
+  appearance: none;
+  min-width: 7.6rem;
+  width: var(--ig-button-width);
+  padding: 0.5rem 0.9rem 0.48rem;
+  border-style: solid;
+  border-width: 1px;
+  border-top-color: var(--ig-button-border-light);
+  border-left-color: var(--ig-button-border-light);
+  border-right-color: var(--ig-button-border-dark);
+  border-bottom-color: var(--ig-button-border-dark);
+  border-radius: 0.38rem;
+  background:
+    linear-gradient(180deg, var(--ig-button-top) 0%, var(--ig-button-mid) 60%, var(--ig-button-bottom) 100%);
+  box-shadow:
+    0 8px 18px rgba(2, 6, 23, 0.42),
+    0 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.62) inset;
+  color: var(--ig-button-text);
+  font-family: v.$font-mono;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(2, 6, 23, 0.75);
+  transition: background-color 90ms ease, box-shadow 90ms ease, transform 90ms ease;
+}
+
+.ig-button:hover:not(:disabled) {
+  --ig-button-top: #3a4a66;
+  --ig-button-mid: #2b3b57;
+  --ig-button-bottom: #1f2e49;
+}
+
+.ig-button:active:not(:disabled),
+.ig-button[aria-pressed="true"]:not(:disabled) {
+  transform: translateY(1px);
+  --ig-button-top: #121d31;
+  --ig-button-mid: #18253a;
+  --ig-button-bottom: #22324d;
+  border-top-color: rgba(2, 6, 23, 0.78);
+  border-left-color: rgba(2, 6, 23, 0.78);
+  border-right-color: rgba(255, 255, 255, 0.18);
+  border-bottom-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 1px 0 rgba(2, 6, 23, 0.68) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+.ig-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--ig-button-glow),
+    0 0 0 3px rgba(2, 6, 23, 0.7),
+    0 8px 18px rgba(2, 6, 23, 0.42),
+    0 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.62) inset;
+}
+
+.ig-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  color: #9ca3af;
+}
+
+.ig-button--subtle {
+  --ig-button-top: #334155;
+  --ig-button-mid: #273548;
+  --ig-button-bottom: #202d3f;
+  --ig-button-face: #273548;
+}
+
+.ig-button--danger {
+  --ig-button-top: #5b2f38;
+  --ig-button-mid: #46242d;
+  --ig-button-bottom: #311a22;
+  --ig-button-face: #46242d;
+  --ig-button-glow: rgba(248, 113, 113, 0.58);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-button {
+    transition: none;
+  }
+}
