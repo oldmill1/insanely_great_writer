@@ -1,4 +1,12 @@
-<main class="home" data-controller="home-click" data-action="click->home-click#log">
+<main
+  class="home"
+  data-controller="home-context-menu"
+  data-action="
+    contextmenu->home-context-menu#open
+    pointerdown->home-context-menu#close
+    keydown.esc@window->home-context-menu#closeWithEscape
+  "
+>
   <h1 class="home__title">manuscriptOS</h1>
   <section
     class="home__desktop"
@@ -43,4 +51,13 @@
         height: note[:height] %>
     </div>
   <% end %>
+
+  <div class="home__context-menu" data-home-context-menu-target="menu" hidden>
+    <%= render "shared/ig_menu",
+      items: [
+        { label: "New Scene", intent: "new_scene", kind: "action" },
+        { label: "New Draft", intent: "new_draft", kind: "action" },
+        { label: "New Book", intent: "new_book", kind: "action" }
+      ] %>
+  </div>
 </main>

@@ -64,3 +64,10 @@
 .home__desktop-item.is-dragging .ig-shortcut {
   cursor: grabbing;
 }
+
+.home__context-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+}

@@ -1,28 +1,24 @@
 <main class="home">
   <% if @sandbox_component == "ig_menu" %>
-    <%= render "shared/ig_menu",
-      items: [
-        {
-          label: "Create Scene",
-          intent: "create",
-          kind: "scene",
-          payload: { source: "sandbox", chapter_id: 1 }
-        },
-        {
-          label: "Create Character",
-          intent: "create",
-          kind: "character",
-          payload: { source: "sandbox" }
-        },
-        {
-          label: "Create Location",
-          intent: "create",
-          kind: "location",
-          disabled: true
-        }
-      ],
-      width: "22rem",
-      height: "16rem" %>
+    <section style="display: grid; gap: 1rem; justify-items: start;">
+      <%= render "shared/ig_menu",
+        items: [
+          { label: "Item 1", intent: "item_1", kind: "action" },
+          { label: "Item 2", intent: "item_2", kind: "action" },
+          { label: "Item 3", intent: "item_3", kind: "action" }
+        ],
+        width: "16rem" %>
+
+      <%= render "shared/ig_menu",
+        items: [
+          { label: "Item 1", intent: "item_1", kind: "action" },
+          { label: "Item 2", intent: "item_2", kind: "action" },
+          { label: "Item 3", intent: "item_3", kind: "action" },
+          "break",
+          { label: "Item 4", intent: "item_4", kind: "action" }
+        ],
+        width: "16rem" %>
+    </section>
   <% elsif @sandbox_component == "ig_note" %>
     <div class="sandbox-notes">
       <%= render "shared/ig_note",

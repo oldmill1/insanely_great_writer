@@ -26,8 +26,19 @@
   <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
 >
   <% ig_items.each do |raw_item| %>
-    <% raise ArgumentError, "IGMenu item must be a hash" unless raw_item.respond_to?(:to_h) %>
+    <% if raw_item.to_s.strip.downcase == "break" %>
+      <div class="ig-menu__separator" role="separator" aria-hidden="true"></div>
+      <% next %>
+    <% end %>
+
+    <% raise ArgumentError, "IGMenu item must be a hash or 'break'" unless raw_item.respond_to?(:to_h) %>
     <% item = raw_item.to_h.with_indifferent_access %>
+    <% kind = item[:kind].to_s.strip.downcase %>
+    <% if kind == "break" || kind == "separator" %>
+      <div class="ig-menu__separator" role="separator" aria-hidden="true"></div>
+      <% next %>
+    <% end %>
+
     <% label = item[:label] || raise(ArgumentError, "IGMenu item requires :label") %>
     <% intent = item[:intent] || raise(ArgumentError, "IGMenu item requires :intent") %>
     <% kind = item[:kind] || raise(ArgumentError, "IGMenu item requires :kind") %>
