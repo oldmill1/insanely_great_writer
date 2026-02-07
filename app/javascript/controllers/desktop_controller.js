@@ -95,6 +95,7 @@ export default class extends Controller {
   }
 
   toInteger(value) {
+    if (value == null || value === "") return null
     const parsed = Number(value)
     return Number.isFinite(parsed) ? Math.round(parsed) : null
   }

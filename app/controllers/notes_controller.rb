@@ -4,9 +4,11 @@ class NotesController < ApplicationController
   def update_position
     note = Note.find(params[:id])
 
-    note.update!(position_attributes)
-
-    render json: note.slice(:id, :top, :right, :bottom, :left)
+    if note.update(position_attributes)
+      render json: note.slice(:id, :top, :right, :bottom, :left)
+    else
+      render json: { errors: note.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   private

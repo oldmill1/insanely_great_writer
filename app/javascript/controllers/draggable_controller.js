@@ -175,7 +175,7 @@ export default class extends Controller {
     const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
 
     try {
-      await fetch(this.persistPathValue, {
+      const response = await fetch(this.persistPathValue, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -184,6 +184,11 @@ export default class extends Controller {
         },
         body: JSON.stringify(offsets)
       })
+
+      if (!response.ok) {
+        const payload = await response.text()
+        throw new Error(`HTTP ${response.status}: ${payload}`)
+      }
     } catch (error) {
       console.error("[draggable] failed to persist position", error)
     }

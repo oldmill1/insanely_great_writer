@@ -4,9 +4,11 @@ class ShortcutsController < ApplicationController
   def update_position
     shortcut = Shortcut.find(params[:id])
 
-    shortcut.update!(position_attributes)
-
-    render json: shortcut.slice(:id, :top, :right, :bottom, :left)
+    if shortcut.update(position_attributes)
+      render json: shortcut.slice(:id, :top, :right, :bottom, :left)
+    else
+      render json: { errors: shortcut.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   private
