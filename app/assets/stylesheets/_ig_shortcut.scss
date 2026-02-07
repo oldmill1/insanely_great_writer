@@ -1,11 +1,16 @@
 @use "variables" as v;
 
 .ig-shortcut {
+  --ig-shortcut-icon-size: 64px;
+  --ig-shortcut-width: 110px;
+  --ig-shortcut-label-size: 0.9rem;
+  --ig-shortcut-gap: 0.45rem;
+
   display: inline-flex;
-  width: 6.5rem;
+  width: var(--ig-shortcut-width);
   flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
+  gap: var(--ig-shortcut-gap);
   padding: 0.45rem 0.35rem 0.55rem;
   border: 0;
   border-radius: 12px;
@@ -17,8 +22,8 @@
 }
 
 .ig-shortcut__thumbnail {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: var(--ig-shortcut-icon-size);
+  height: var(--ig-shortcut-icon-size);
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
@@ -27,10 +32,31 @@
 
 .ig-shortcut__label {
   width: 100%;
-  font-size: 0.9rem;
+  font-size: var(--ig-shortcut-label-size);
   font-weight: 600;
   line-height: 1.15;
   overflow-wrap: break-word;
+}
+
+.ig-shortcut--32 {
+  --ig-shortcut-icon-size: 32px;
+  --ig-shortcut-width: 84px;
+  --ig-shortcut-label-size: 0.75rem;
+  --ig-shortcut-gap: 0.35rem;
+}
+
+.ig-shortcut--64 {
+  --ig-shortcut-icon-size: 64px;
+  --ig-shortcut-width: 110px;
+  --ig-shortcut-label-size: 0.9rem;
+  --ig-shortcut-gap: 0.45rem;
+}
+
+.ig-shortcut--128 {
+  --ig-shortcut-icon-size: 128px;
+  --ig-shortcut-width: 164px;
+  --ig-shortcut-label-size: 1rem;
+  --ig-shortcut-gap: 0.55rem;
 }
 
 .ig-shortcut:hover {

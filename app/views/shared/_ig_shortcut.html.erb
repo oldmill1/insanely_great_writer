@@ -2,11 +2,15 @@
   raise ArgumentError, "IGShortcut requires :thumbnail" unless local_assigns.key?(:thumbnail)
   raise ArgumentError, "IGShortcut requires :label" unless local_assigns.key?(:label)
 
+  shortcut_size = local_assigns[:size].to_i
+  shortcut_size = 64 unless [32, 64, 128].include?(shortcut_size)
+
   shortcut_classes = ["ig-shortcut"]
+  shortcut_classes << "ig-shortcut--#{shortcut_size}"
   shortcut_classes << class_name if local_assigns[:class_name].present?
 %>
 
-<button type="button" class="<%= shortcut_classes.join(" ") %>">
+<button type="button" class="<%= shortcut_classes.join(" ") %>" data-size="<%= shortcut_size %>">
   <img class="ig-shortcut__thumbnail" src="<%= thumbnail %>" alt="" aria-hidden="true">
   <span class="ig-shortcut__label"><%= label %></span>
 </button>
