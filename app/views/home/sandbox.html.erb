@@ -40,6 +40,12 @@
         mode: "collapsed",
         width: "42rem" %>
     </div>
+  <% elsif @sandbox_component == "ig_shortcut" %>
+    <section class="sandbox-desktop" aria-label="Desktop">
+      <div class="sandbox-desktop__item" style="left: 120px; top: 90px;">
+        <%= render "shared/ig_shortcut", thumbnail: "/write.png", label: "New Scene..." %>
+      </div>
+    </section>
   <% else %>
     <h1 class="home__title">Insanely Great</h1>
   <% end %>
