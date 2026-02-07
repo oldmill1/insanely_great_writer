@@ -28,6 +28,30 @@
   user-select: none;
   -webkit-user-drag: none;
   filter: drop-shadow(0 6px 12px rgba(2, 6, 23, 0.4));
+  transform-origin: center;
+}
+
+.ig-shortcut__thumbnail-burst {
+  position: fixed !important;
+  z-index: 120;
+  pointer-events: none;
+  margin: 0;
+  transform-origin: center !important;
+  animation: ig-shortcut-expand-fade 400ms ease-out forwards !important;
+  transform: scale(1);
+  opacity: 1;
+}
+
+@keyframes ig-shortcut-expand-fade {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
 
 .ig-shortcut__label {
@@ -67,4 +91,20 @@
   outline: 2px solid rgba(125, 211, 252, 0.95);
   outline-offset: 2px;
   background: rgba(148, 163, 184, 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-shortcut__thumbnail-burst {
+    animation: ig-shortcut-expand-fade-reduced 120ms linear forwards;
+  }
+}
+
+@keyframes ig-shortcut-expand-fade-reduced {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }

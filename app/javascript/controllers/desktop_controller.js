@@ -21,6 +21,46 @@ export default class extends Controller {
     this.selectByButton(event.currentTarget)
   }
 
+  animateShortcut(event) {
+    event.preventDefault()
+
+    const shortcutButton = event.currentTarget
+    const thumbnail = shortcutButton.querySelector(".ig-shortcut__thumbnail")
+    if (!thumbnail) return
+
+    const burst = this.createBurst(thumbnail, event.clientX, event.clientY)
+    if (!burst) return
+
+    document.body.appendChild(burst)
+
+    const cleanup = () => {
+      burst.remove()
+    }
+
+    burst.addEventListener("animationend", cleanup, { once: true })
+    window.setTimeout(cleanup, 600)
+  }
+
+  createBurst(thumbnail, clientX, clientY) {
+    const rect = thumbnail.getBoundingClientRect()
+    const width = Math.round(rect.width)
+    const height = Math.round(rect.height)
+    if (width <= 0 || height <= 0) return null
+
+    const burst = thumbnail.cloneNode(true)
+    
+    // Position the burst exactly where the original thumbnail is
+    burst.style.position = "fixed"
+    burst.style.left = `${rect.left}px`
+    burst.style.top = `${rect.top}px`
+    burst.style.width = `${width}px`
+    burst.style.height = `${height}px`
+
+    burst.classList.add("ig-shortcut__thumbnail-burst")
+
+    return burst
+  }
+
   selectByButton(shortcutButton) {
     const shortcutId = shortcutButton.dataset.shortcutId
     if (!shortcutId) return
@@ -106,7 +146,7 @@ export default class extends Controller {
     const shortcutId = shortcut.id != null ? String(shortcut.id) : null
     button.className = "ig-shortcut ig-shortcut--64"
     button.setAttribute("aria-pressed", "false")
-    button.dataset.action = "click->desktop#selectShortcut"
+    button.dataset.action = "click->desktop#selectShortcut dblclick->desktop#animateShortcut"
 
     if (shortcutId) {
       button.dataset.shortcutId = shortcutId
