@@ -14,6 +14,8 @@ export default class extends Controller {
     this.originLeft = 0
     this.originTop = 0
     this.moved = false
+    this.dragThreshold = 4
+    this.dragActivated = false
   }
 
   start(event) {
@@ -30,10 +32,8 @@ export default class extends Controller {
     this.originLeft = rect.left
     this.originTop = rect.top
     this.moved = false
+    this.dragActivated = false
 
-    this.element.classList.add("is-dragging")
-    this.element.setPointerCapture(event.pointerId)
-    event.preventDefault()
   }
 
   move(event) {
@@ -41,10 +41,20 @@ export default class extends Controller {
 
     const deltaX = event.clientX - this.startX
     const deltaY = event.clientY - this.startY
+    const movedEnough = Math.abs(deltaX) >= this.dragThreshold || Math.abs(deltaY) >= this.dragThreshold
+
+    if (!this.dragActivated && !movedEnough) return
+
+    if (!this.dragActivated) {
+      this.dragActivated = true
+      this.element.classList.add("is-dragging")
+      this.element.setPointerCapture(event.pointerId)
+    }
 
     this.element.style.left = `${Math.round(this.originLeft + deltaX)}px`
     this.element.style.top = `${Math.round(this.originTop + deltaY)}px`
     this.moved = true
+    event.preventDefault()
   }
 
   async end(event) {
@@ -52,16 +62,20 @@ export default class extends Controller {
 
     const nextLeft = parseInt(this.element.style.left || `${Math.round(this.originLeft)}`, 10)
     const nextTop = parseInt(this.element.style.top || `${Math.round(this.originTop)}`, 10)
+    const wasDragActivated = this.dragActivated
 
     this.dragging = false
     this.pointerId = null
-    this.element.classList.remove("is-dragging")
+    if (wasDragActivated) {
+      this.element.classList.remove("is-dragging")
+    }
+    this.dragActivated = false
 
     if (this.element.hasPointerCapture(event.pointerId)) {
       this.element.releasePointerCapture(event.pointerId)
     }
 
-    if (this.hasPersistPathValue && this.moved) {
+    if (this.hasPersistPathValue && this.moved && wasDragActivated) {
       await this.persistPosition(nextLeft, nextTop)
     }
   }

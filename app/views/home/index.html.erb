@@ -4,6 +4,7 @@
     class="home__desktop"
     aria-label="Desktop"
     data-controller="desktop"
+    data-action="click->desktop#select"
     data-desktop-shortcuts-value="<%= json_escape(@desktop_shortcuts.to_json) %>"
   ></section>
   <div

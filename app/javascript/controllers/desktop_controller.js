@@ -6,7 +6,27 @@ export default class extends Controller {
   }
 
   connect() {
+    this.selectedShortcutId = null
     this.render()
+  }
+
+  select(event) {
+    const shortcutButton = event.target.closest(".ig-shortcut")
+    if (!shortcutButton || !this.element.contains(shortcutButton)) return
+
+    this.selectByButton(shortcutButton)
+  }
+
+  selectShortcut(event) {
+    this.selectByButton(event.currentTarget)
+  }
+
+  selectByButton(shortcutButton) {
+    const shortcutId = shortcutButton.dataset.shortcutId
+    if (!shortcutId) return
+
+    this.selectedShortcutId = shortcutId
+    this.applySelectionState()
   }
 
   render() {
@@ -37,12 +57,14 @@ export default class extends Controller {
   buildShortcut(shortcut) {
     const button = document.createElement("button")
     button.type = "button"
-    const selected = shortcut.isSelected === true || shortcut.is_selected === true
+    const shortcutId = shortcut.id != null ? String(shortcut.id) : null
+    const selected = this.isShortcutSelected(shortcut, shortcutId)
     button.className = selected ? "ig-shortcut ig-shortcut--64 ig-shortcut--selected" : "ig-shortcut ig-shortcut--64"
     button.setAttribute("aria-pressed", String(selected))
+    button.dataset.action = "click->desktop#selectShortcut"
 
-    if (shortcut.id) {
-      button.dataset.shortcutId = String(shortcut.id)
+    if (shortcutId) {
+      button.dataset.shortcutId = shortcutId
     }
 
     const thumbnail = document.createElement("img")
@@ -59,5 +81,21 @@ export default class extends Controller {
     button.appendChild(label)
 
     return button
+  }
+
+  isShortcutSelected(shortcut, shortcutId) {
+    if (this.selectedShortcutId) {
+      return shortcutId === this.selectedShortcutId
+    }
+
+    return shortcut.isSelected === true || shortcut.is_selected === true
+  }
+
+  applySelectionState() {
+    this.element.querySelectorAll(".ig-shortcut").forEach((button) => {
+      const isSelected = button.dataset.shortcutId === this.selectedShortcutId
+      button.classList.toggle("ig-shortcut--selected", isSelected)
+      button.setAttribute("aria-pressed", String(isSelected))
+    })
   }
 }
