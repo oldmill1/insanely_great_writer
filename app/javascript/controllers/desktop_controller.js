@@ -1,0 +1,50 @@
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static values = {
+    shortcuts: Array
+  }
+
+  connect() {
+    this.render()
+  }
+
+  render() {
+    this.element.innerHTML = ""
+
+    this.shortcutsValue.forEach((shortcut) => {
+      const item = document.createElement("div")
+      item.className = "home__desktop-item"
+      item.style.left = `${Math.round(Number(shortcut.x) || 0)}px`
+      item.style.top = `${Math.round(Number(shortcut.y) || 0)}px`
+
+      item.appendChild(this.buildShortcut(shortcut))
+      this.element.appendChild(item)
+    })
+  }
+
+  buildShortcut(shortcut) {
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "ig-shortcut ig-shortcut--64"
+
+    if (shortcut.id) {
+      button.dataset.shortcutId = String(shortcut.id)
+    }
+
+    const thumbnail = document.createElement("img")
+    thumbnail.className = "ig-shortcut__thumbnail"
+    thumbnail.src = shortcut.thumbnail || ""
+    thumbnail.alt = ""
+    thumbnail.setAttribute("aria-hidden", "true")
+
+    const label = document.createElement("span")
+    label.className = "ig-shortcut__label"
+    label.textContent = shortcut.label || "Shortcut"
+
+    button.appendChild(thumbnail)
+    button.appendChild(label)
+
+    return button
+  }
+}

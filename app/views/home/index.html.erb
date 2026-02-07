@@ -1,5 +1,15 @@
+<% desktop_shortcuts = [
+  { id: "new_draft", x: 742, y: 67, thumbnail: "/icons/write.png", label: "New Draft" }
+] %>
+
 <main class="home" data-controller="home-click" data-action="click->home-click#log">
   <h1 class="home__title">manuscriptOS</h1>
+  <section
+    class="home__desktop"
+    aria-label="Desktop"
+    data-controller="desktop"
+    data-desktop-shortcuts-value="<%= json_escape(desktop_shortcuts.to_json) %>"
+  ></section>
   <div
     class="home__note"
     data-controller="draggable"

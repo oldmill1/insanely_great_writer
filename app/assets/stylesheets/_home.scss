@@ -46,3 +46,15 @@
 .home__note.is-dragging .ig-note__titlebar {
   cursor: grabbing;
 }
+
+.home__desktop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.home__desktop-item {
+  position: absolute;
+  pointer-events: auto;
+}
