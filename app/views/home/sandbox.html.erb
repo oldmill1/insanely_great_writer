@@ -43,13 +43,22 @@
   <% elsif @sandbox_component == "ig_shortcut" %>
     <section class="sandbox-desktop" aria-label="Desktop">
       <div class="sandbox-desktop__item" style="left: 70px; top: 90px;">
-        <%= render "shared/ig_shortcut", thumbnail: "/write.png", label: "New Scene 32", size: 32 %>
+        <%= render "shared/ig_shortcut", thumbnail: "/icons/write.png", label: "New Scene 32", size: 32 %>
       </div>
       <div class="sandbox-desktop__item" style="left: 240px; top: 90px;">
-        <%= render "shared/ig_shortcut", thumbnail: "/write.png", label: "New Scene 64", size: 64 %>
+        <%= render "shared/ig_shortcut", thumbnail: "/icons/write.png", label: "New Scene 64", size: 64 %>
       </div>
       <div class="sandbox-desktop__item" style="left: 450px; top: 70px;">
-        <%= render "shared/ig_shortcut", thumbnail: "/write.png", label: "New Scene 128", size: 128 %>
+        <%= render "shared/ig_shortcut", thumbnail: "/icons/write.png", label: "New Scene 128", size: 128 %>
+      </div>
+      <div class="sandbox-desktop__item" style="left: 70px; top: 285px;">
+        <%= render "shared/ig_shortcut", thumbnail: "/icons/sound.png", label: "Sound Cue 32", size: 32 %>
+      </div>
+      <div class="sandbox-desktop__item" style="left: 240px; top: 285px;">
+        <%= render "shared/ig_shortcut", thumbnail: "/icons/sound.png", label: "Sound Cue 64", size: 64 %>
+      </div>
+      <div class="sandbox-desktop__item" style="left: 450px; top: 265px;">
+        <%= render "shared/ig_shortcut", thumbnail: "/icons/sound.png", label: "Sound Cue 128", size: 128 %>
       </div>
     </section>
   <% else %>
