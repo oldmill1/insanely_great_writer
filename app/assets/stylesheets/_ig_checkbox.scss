@@ -1,0 +1,97 @@
+@use "variables" as v;
+
+.ig-checkbox {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e5ecf8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ig-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ig-checkbox__box {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-style: solid;
+  border-width: 1px;
+  border-top-color: rgba(255, 255, 255, 0.28);
+  border-left-color: rgba(255, 255, 255, 0.28);
+  border-right-color: rgba(2, 6, 23, 0.82);
+  border-bottom-color: rgba(2, 6, 23, 0.82);
+  border-radius: 0.2rem;
+  background: linear-gradient(180deg, #2a3a55 0%, #1e2c44 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.5) inset;
+  position: relative;
+}
+
+.ig-checkbox__box::after {
+  content: "";
+  position: absolute;
+  left: 0.28rem;
+  top: 0.08rem;
+  width: 0.3rem;
+  height: 0.58rem;
+  border-right: 2px solid #bfd5ff;
+  border-bottom: 2px solid #bfd5ff;
+  transform: rotate(42deg) scale(0.88);
+  opacity: 0;
+  transition: opacity 90ms ease;
+}
+
+.ig-checkbox__label {
+  font-family: v.$font-mono;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+
+.ig-checkbox__input:checked + .ig-checkbox__box {
+  background: linear-gradient(180deg, #385395 0%, #293f7c 100%);
+}
+
+.ig-checkbox__input:checked + .ig-checkbox__box::after {
+  opacity: 1;
+}
+
+.ig-checkbox__input:focus-visible + .ig-checkbox__box {
+  box-shadow:
+    0 0 0 1px rgba(125, 211, 252, 0.9),
+    0 0 0 3px rgba(2, 6, 23, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.5) inset;
+}
+
+.ig-checkbox__input:disabled + .ig-checkbox__box {
+  opacity: 0.62;
+}
+
+.ig-checkbox__input:disabled ~ .ig-checkbox__label {
+  color: #99a7bc;
+}
+
+.ig-checkbox:has(.ig-checkbox__input:disabled) {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-checkbox__box::after {
+    transition: none;
+  }
+}

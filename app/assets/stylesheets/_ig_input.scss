@@ -1,0 +1,81 @@
+@use "variables" as v;
+
+.ig-input {
+  --ig-input-width: min(24rem, 92vw);
+  --ig-input-label-color: #dbe4f3;
+  --ig-input-text: #f8fafc;
+  --ig-input-placeholder: #8ea0b9;
+  --ig-input-bg-top: #22324d;
+  --ig-input-bg-bottom: #1a2940;
+  --ig-input-border-light: rgba(255, 255, 255, 0.24);
+  --ig-input-border-dark: rgba(2, 6, 23, 0.8);
+  --ig-input-focus: rgba(125, 211, 252, 0.8);
+
+  width: var(--ig-input-width);
+  display: grid;
+  gap: 0.38rem;
+}
+
+.ig-input__label {
+  margin: 0;
+  color: var(--ig-input-label-color);
+  font-family: v.$font-mono;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.ig-input__field {
+  appearance: none;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.46rem 0.62rem;
+  border-style: solid;
+  border-width: 1px;
+  border-top-color: var(--ig-input-border-light);
+  border-left-color: var(--ig-input-border-light);
+  border-right-color: var(--ig-input-border-dark);
+  border-bottom-color: var(--ig-input-border-dark);
+  border-radius: 0.34rem;
+  background: linear-gradient(180deg, var(--ig-input-bg-top) 0%, var(--ig-input-bg-bottom) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.52) inset,
+    0 8px 18px rgba(2, 6, 23, 0.28);
+  color: var(--ig-input-text);
+  font-family: v.$font-mono;
+  font-size: 0.93rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  caret-color: #cfe8ff;
+  transition: box-shadow 90ms ease, border-color 90ms ease;
+}
+
+.ig-input__field::placeholder {
+  color: var(--ig-input-placeholder);
+  opacity: 1;
+}
+
+.ig-input__field:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--ig-input-focus),
+    0 0 0 3px rgba(2, 6, 23, 0.68),
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.52) inset,
+    0 8px 18px rgba(2, 6, 23, 0.28);
+}
+
+.ig-input__field:disabled {
+  cursor: not-allowed;
+  opacity: 0.66;
+  color: #9aa7b8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-input__field {
+    transition: none;
+  }
+}

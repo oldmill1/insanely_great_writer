@@ -85,6 +85,53 @@
         ticks: 11,
         width: "min(44rem, 92vw)" %>
     </section>
+  <% elsif @sandbox_component == "ig_input" %>
+    <section style="display: grid; gap: 0.9rem; justify-items: start;">
+      <%= render "shared/ig_input",
+        label: "Name",
+        type: "text",
+        name: "name",
+        placeholder: "Enter your name",
+        width: "22rem" %>
+
+      <%= render "shared/ig_input",
+        label: "Email",
+        type: "email",
+        name: "email",
+        placeholder: "name@example.com",
+        autocomplete: "email",
+        width: "22rem" %>
+
+      <%= render "shared/ig_input",
+        label: "Password",
+        type: "password",
+        name: "password",
+        placeholder: "••••••••",
+        autocomplete: "current-password",
+        width: "22rem" %>
+    </section>
+  <% elsif @sandbox_component == "ig_checkbox" %>
+    <section style="display: grid; gap: 0.8rem; justify-items: start;">
+      <%= render "shared/ig_checkbox",
+        label: "Unchecked (default)",
+        name: "checkbox_default" %>
+
+      <%= render "shared/ig_checkbox",
+        label: "Checked",
+        name: "checkbox_checked",
+        checked: true %>
+
+      <%= render "shared/ig_checkbox",
+        label: "Disabled",
+        name: "checkbox_disabled",
+        disabled: true %>
+
+      <%= render "shared/ig_checkbox",
+        label: "Checked + Disabled",
+        name: "checkbox_checked_disabled",
+        checked: true,
+        disabled: true %>
+    </section>
   <% else %>
     <h1 class="home__title">Insanely Great</h1>
   <% end %>

@@ -1,0 +1,25 @@
+<%
+  checkbox_id = local_assigns[:id].presence || "ig-checkbox-#{SecureRandom.hex(5)}"
+  checkbox_name = local_assigns[:name].presence || "ig_checkbox"
+  checkbox_value = local_assigns.key?(:value) ? local_assigns[:value] : "1"
+  checkbox_label = local_assigns[:label].presence || "Checkbox"
+  checkbox_checked = local_assigns[:checked] == true
+  checkbox_disabled = local_assigns[:disabled] == true
+
+  checkbox_classes = ["ig-checkbox"]
+  checkbox_classes << class_name if local_assigns[:class_name].present?
+%>
+
+<label class="<%= checkbox_classes.join(" ") %>" for="<%= checkbox_id %>">
+  <input
+    id="<%= checkbox_id %>"
+    class="ig-checkbox__input"
+    type="checkbox"
+    name="<%= checkbox_name %>"
+    value="<%= checkbox_value %>"
+    <%= "checked" if checkbox_checked %>
+    <%= "disabled" if checkbox_disabled %>
+  >
+  <span class="ig-checkbox__box" aria-hidden="true"></span>
+  <span class="ig-checkbox__label"><%= checkbox_label %></span>
+</label>

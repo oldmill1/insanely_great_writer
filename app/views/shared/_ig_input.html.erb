@@ -1,0 +1,39 @@
+<%
+  input_type = local_assigns[:type].to_s.strip.downcase
+  input_type = "text" if input_type.blank?
+  input_type = "text" unless %w[text email password].include?(input_type)
+
+  input_name = local_assigns[:name].presence || "ig_input"
+  input_id = local_assigns[:id].presence || "ig-input-#{SecureRandom.hex(5)}"
+  input_label = local_assigns[:label].presence
+  input_placeholder = local_assigns[:placeholder].presence
+  input_value = local_assigns[:value]
+  input_required = local_assigns[:required] == true
+  input_disabled = local_assigns[:disabled] == true
+  input_autocomplete = local_assigns[:autocomplete]
+
+  input_classes = ["ig-input"]
+  input_classes << class_name if local_assigns[:class_name].present?
+
+  style_rules = []
+  input_width = ig_css_size(local_assigns[:width])
+  style_rules << "--ig-input-width: #{input_width}" if input_width.present?
+%>
+
+<section class="<%= input_classes.join(" ") %>" <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>>
+  <% if input_label.present? %>
+    <label class="ig-input__label" for="<%= input_id %>"><%= input_label %></label>
+  <% end %>
+
+  <input
+    id="<%= input_id %>"
+    class="ig-input__field"
+    type="<%= input_type %>"
+    name="<%= input_name %>"
+    value="<%= input_value %>"
+    placeholder="<%= input_placeholder %>"
+    <%= "required" if input_required %>
+    <%= "disabled" if input_disabled %>
+    <% if input_autocomplete.present? %>autocomplete="<%= input_autocomplete %>"<% end %>
+  >
+</section>
