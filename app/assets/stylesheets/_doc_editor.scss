@@ -48,7 +48,8 @@
   margin: 0;
   flex: 1;
   min-height: 0;
-  background: slategray;
+  background: darkslateblue;
+  border-radius: 42px;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -61,4 +62,19 @@
 
 .doc-terminal-content:focus {
   outline: none;
+}
+
+.doc-terminal-bottom-bar {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.55rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  border-top: 1px solid rgba(194, 199, 207, 0.22);
+  color: rgba(194, 199, 207, 0.92);
+  font-size: clamp(0.85rem, 1.25vw, 1rem);
+  line-height: 1.2;
 }
