@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
 
 .doc-terminal-page {
-  min-height: 100vh;
+  height: 100vh;
   margin: 0;
   padding: 0;
   background: #050806;
@@ -9,10 +9,11 @@
 
 .doc-terminal-screen {
   position: relative;
-  min-height: 100vh;
+  height: 100%;
   padding: clamp(1.25rem, 2.5vw, 2.5rem);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   color: #c2c7cf;
   background:#101417;
   font-family: "Space Mono", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
@@ -28,12 +29,14 @@
 }
 
 .doc-terminal-path {
+  flex: 0 0 auto;
   margin: 0 0 0.9rem;
   opacity: 0.8;
   font-size: clamp(1.15rem, 2vw, 1.4rem);
 }
 
 .doc-terminal-title {
+  flex: 0 0 auto;
   margin: 0 0 1rem;
   font-size: clamp(1.5rem, 3vw, 2.2rem);
   font-family: "Space Mono", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
@@ -43,7 +46,9 @@
 
 .doc-terminal-content {
   margin: 0;
-  height: calc(100vh - 170px);
+  flex: 1;
+  min-height: 0;
+  background: slategray;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
