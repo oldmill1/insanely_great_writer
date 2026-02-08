@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_08_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_08_133000) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
@@ -40,6 +40,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_08_120000) do
     t.integer "top"
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_shortcuts_on_document_id", unique: true
+  end
+
+  create_table "users", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "timezone", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "shortcuts", "documents"
