@@ -1,9 +1,15 @@
-<!-- auth-bg-pattern.svg (v2) -->
+<!-- auth-bg-pattern-dark.svg -->
 <svg xmlns="http://www.w3.org/2000/svg" width="240" height="80" viewBox="0 0 240 80">
   <defs>
-    <pattern id="waveTile" patternUnits="userSpaceOnUse" width="240" height="80">
-      <g fill="none" stroke="#000" stroke-opacity="0.07" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-        <!-- 5 rows, tighter like the reference -->
+    <pattern id="waveTileDark" patternUnits="userSpaceOnUse" width="240" height="80">
+      <g fill="none"
+         stroke="#ffffff"
+         stroke-opacity="0.05"
+         stroke-width="1"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+        
+        <!-- 5 rows, same geometry -->
         <path d="M0 12 C30 6 30 18 60 12 C90 6 90 18 120 12 C150 6 150 18 180 12 C210 6 210 18 240 12" />
         <path d="M0 28 C30 22 30 34 60 28 C90 22 90 34 120 28 C150 22 150 34 180 28 C210 22 210 34 240 28" />
         <path d="M0 44 C30 38 30 50 60 44 C90 38 90 50 120 44 C150 38 150 50 180 44 C210 38 210 50 240 44" />
@@ -14,5 +20,5 @@
   </defs>
 
   <!-- Transparent background; only the waves render -->
-  <rect width="100%" height="100%" fill="url(#waveTile)" />
+  <rect width="100%" height="100%" fill="url(#waveTileDark)" />
 </svg>

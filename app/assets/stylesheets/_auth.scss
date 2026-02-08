@@ -7,9 +7,10 @@
   min-height: 100vh;
   padding: 2.4rem clamp(1rem, 3vw, 2.8rem) 1.8rem;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.1)),
-    #d8d8da;
-  color: #101214;
+    radial-gradient(120% 120% at 18% 0%, rgba(63, 91, 173, 0.28), rgba(8, 12, 20, 0)),
+    radial-gradient(90% 90% at 82% 25%, rgba(31, 172, 165, 0.16), rgba(8, 12, 20, 0)),
+    linear-gradient(180deg, #0f1625 0%, #090d16 100%);
+  color: #e7edf8;
   overflow: hidden;
   cursor: default;
 }
@@ -17,10 +18,10 @@
 .auth-shell__bg-pattern {
   position: absolute;
   inset: 40% 0 16%;
-  background-image: url("/auth/auth-bg-pattern.svg");
+  background-image: url("/auth/bg-pattern-dark.svg");
   background-repeat: repeat-x;
   background-size: auto 10.5rem;
-  opacity: 0.78;
+  opacity: 0.18;
   pointer-events: none;
   z-index: 0;
 }
@@ -43,7 +44,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  color: #15181c;
+  color: #f3f7ff;
   text-decoration: none;
   font-family: v.$font-ig-sans;
   font-size: 1.15rem;
@@ -62,14 +63,14 @@
 }
 
 .auth-shell__language {
-  color: #252931;
+  color: #c7d6ef;
   font-family: v.$font-mono;
   font-size: 0.95rem;
   font-weight: 700;
 }
 
 .auth-shell__top-link {
-  color: #13161a;
+  color: #f1f6ff;
   text-decoration: none;
   font-family: v.$font-ig-sans;
   font-size: 1rem;
@@ -77,12 +78,12 @@
 }
 
 .auth-shell__request-demo {
-  --ig-button-top: #0d1116;
-  --ig-button-mid: #0a0e13;
-  --ig-button-bottom: #05080d;
-  --ig-button-text: #f6f7f9;
-  --ig-button-border-light: rgba(255, 255, 255, 0.2);
-  --ig-button-border-dark: rgba(3, 6, 10, 0.86);
+  --ig-button-top: #263b62;
+  --ig-button-mid: #1f3153;
+  --ig-button-bottom: #162541;
+  --ig-button-text: #f0f6ff;
+  --ig-button-border-light: rgba(219, 234, 254, 0.28);
+  --ig-button-border-dark: rgba(5, 10, 19, 0.88);
   min-width: 9.2rem;
 }
 
@@ -96,13 +97,17 @@
   width: min(28rem, 94vw);
   border-radius: 1rem;
   padding: 2rem 2rem 1.8rem;
-  background: rgba(250, 250, 250, 0.92);
-  box-shadow: 0 30px 58px rgba(20, 23, 30, 0.18);
+  background:
+    linear-gradient(180deg, rgba(31, 45, 75, 0.9) 0%, rgba(19, 27, 46, 0.9) 100%);
+  border: 1px solid rgba(189, 211, 255, 0.18);
+  box-shadow:
+    0 24px 52px rgba(2, 6, 15, 0.66),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
 
 .auth-shell__title {
   margin: 0;
-  color: #181b20;
+  color: #f3f7ff;
   font-family: v.$font-ig-sans;
   font-size: clamp(2rem, 4vw, 2.35rem);
   font-weight: 800;
@@ -113,7 +118,7 @@
 .auth-shell__subtitle {
   margin: 0.8rem auto 1.35rem;
   max-width: 24rem;
-  color: #32363e;
+  color: #c0cee6;
   font-family: v.$font-ig-sans;
   font-size: 1.08rem;
   font-weight: 500;
@@ -127,48 +132,48 @@
 }
 
 .auth-shell .ig-input {
-  --ig-input-label-color: #1f2228;
-  --ig-input-text: #111418;
-  --ig-input-placeholder: #7e8591;
-  --ig-input-bg-top: #ffffff;
-  --ig-input-bg-bottom: #f4f6f9;
-  --ig-input-border-light: rgba(255, 255, 255, 0.9);
-  --ig-input-border-dark: rgba(17, 20, 24, 0.55);
-  --ig-input-focus: rgba(29, 155, 240, 0.7);
+  --ig-input-label-color: #dbe6fa;
+  --ig-input-text: #f1f6ff;
+  --ig-input-placeholder: #98adcf;
+  --ig-input-bg-top: #25395d;
+  --ig-input-bg-bottom: #1a2a45;
+  --ig-input-border-light: rgba(240, 246, 255, 0.25);
+  --ig-input-border-dark: rgba(3, 8, 18, 0.78);
+  --ig-input-focus: rgba(111, 210, 255, 0.75);
 }
 
 .auth-shell .ig-input__field {
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.55) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.08) inset,
-    0 6px 12px rgba(18, 20, 26, 0.08);
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 -1px 0 rgba(2, 6, 14, 0.55) inset,
+    0 8px 16px rgba(1, 3, 11, 0.38);
 }
 
 .auth-shell__checkbox {
   margin-top: 0.3rem;
-  color: #222833;
+  color: #d6e0f4;
 }
 
 .auth-shell .ig-checkbox__box {
-  background: linear-gradient(180deg, #f8f9fb 0%, #e8ebf0 100%);
-  border-top-color: rgba(255, 255, 255, 0.92);
-  border-left-color: rgba(255, 255, 255, 0.92);
-  border-right-color: rgba(20, 24, 31, 0.5);
-  border-bottom-color: rgba(20, 24, 31, 0.5);
+  background: linear-gradient(180deg, #2b3f65 0%, #1d2d4b 100%);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  border-left-color: rgba(255, 255, 255, 0.22);
+  border-right-color: rgba(3, 8, 18, 0.82);
+  border-bottom-color: rgba(3, 8, 18, 0.82);
 }
 
 .auth-shell .ig-checkbox__input:checked + .ig-checkbox__box {
-  background: linear-gradient(180deg, #f3df61 0%, #e6cb32 100%);
+  background: linear-gradient(180deg, #56d4c9 0%, #2eb4a8 100%);
 }
 
 .auth-shell .ig-checkbox__input:checked + .ig-checkbox__box::after {
-  border-right-color: #101318;
-  border-bottom-color: #101318;
+  border-right-color: #0d1420;
+  border-bottom-color: #0d1420;
 }
 
 .auth-shell__legal {
   margin: 0.2rem 0 0.1rem;
-  color: #333944;
+  color: #a8bad8;
   font-family: v.$font-ig-sans;
   font-size: 0.95rem;
   line-height: 1.45;
@@ -183,22 +188,21 @@
 }
 
 .auth-shell__secondary-button {
-  --ig-button-top: #fbfcfd;
-  --ig-button-mid: #eef2f6;
-  --ig-button-bottom: #dee4eb;
-  --ig-button-text: #141922;
-  --ig-button-border-light: rgba(255, 255, 255, 0.92);
-  --ig-button-border-dark: rgba(16, 21, 28, 0.54);
-  text-shadow: none;
+  --ig-button-top: #344d7b;
+  --ig-button-mid: #273d64;
+  --ig-button-bottom: #1b2f4f;
+  --ig-button-text: #eaf2ff;
+  --ig-button-border-light: rgba(236, 244, 255, 0.3);
+  --ig-button-border-dark: rgba(4, 9, 18, 0.78);
 }
 
 .auth-shell__primary-button {
-  --ig-button-top: #ffe86c;
-  --ig-button-mid: #f3d63c;
-  --ig-button-bottom: #dfc32f;
-  --ig-button-text: #161a23;
-  --ig-button-border-light: rgba(255, 255, 255, 0.76);
-  --ig-button-border-dark: rgba(45, 37, 3, 0.52);
+  --ig-button-top: #67e5d6;
+  --ig-button-mid: #44cdc0;
+  --ig-button-bottom: #2cb8ab;
+  --ig-button-text: #08121f;
+  --ig-button-border-light: rgba(224, 253, 248, 0.75);
+  --ig-button-border-dark: rgba(3, 37, 33, 0.62);
   text-shadow: none;
 }
 
@@ -237,7 +241,7 @@
   display: grid;
   gap: 0.5rem;
   justify-items: center;
-  color: #20232a;
+  color: #c3d2ea;
   font-family: v.$font-ig-sans;
   font-size: 0.96rem;
   text-align: center;
@@ -252,7 +256,7 @@
 }
 
 .auth-shell__footer a {
-  color: #15181c;
+  color: #eff5ff;
   font-weight: 700;
   text-decoration: none;
 }
