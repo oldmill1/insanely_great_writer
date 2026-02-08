@@ -1,25 +1,37 @@
 <%= render "shared/auth_shell",
+  resource: resource,
   auth_title: "Create Account",
   auth_subtitle: "",
+  form_action: registration_path(resource_name),
+  form_method: "post",
   auth_fields: [
     {
       label: "Author Name*",
       type: "text",
-      name: "author_name",
+      name: "user[author_name]",
+      value: resource&.author_name,
       placeholder: "Your Pen Name"
     },
     {
       label: "Email*",
       type: "email",
-      name: "email",
+      name: "user[email]",
+      value: resource&.email,
       placeholder: "youremail@gmail.com",
       autocomplete: "email"
     },
     {
       label: "Password*",
       type: "password",
-      name: "password",
+      name: "user[password]",
       placeholder: "Create a secure password",
+      autocomplete: "new-password"
+    },
+    {
+      label: "Confirm Password*",
+      type: "password",
+      name: "user[password_confirmation]",
+      placeholder: "Repeat your password",
       autocomplete: "new-password"
     }
   ],
@@ -29,4 +41,4 @@
   secondary_cta_label: "Back",
   switch_copy: "Already have an account?",
   switch_cta_label: "Login",
-  switch_cta_path: login_path %>
+  switch_cta_path: new_user_session_path %>

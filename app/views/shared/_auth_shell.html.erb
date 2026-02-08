@@ -22,13 +22,39 @@
         <%= local_assigns[:auth_subtitle] %>
       </p>
 
-      <form class="auth-shell__form" action="#" method="post">
+      <% form_method = local_assigns[:form_method].presence || "post" %>
+      <% form_http_method = form_method.to_s.downcase %>
+      <% form_action = local_assigns[:form_action].presence || "#" %>
+
+      <% if flash[:alert].present? %>
+        <p class="auth-shell__flash auth-shell__flash--alert"><%= flash[:alert] %></p>
+      <% elsif flash[:notice].present? %>
+        <p class="auth-shell__flash auth-shell__flash--notice"><%= flash[:notice] %></p>
+      <% end %>
+
+      <% if local_assigns[:resource].present? && local_assigns[:resource].errors.any? %>
+        <div class="auth-shell__errors" role="alert" aria-live="polite">
+          <% local_assigns[:resource].errors.full_messages.each do |message| %>
+            <p><%= message %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <form class="auth-shell__form" action="<%= form_action %>" method="<%= form_http_method == "get" ? "get" : "post" %>">
+        <% unless form_http_method == "get" %>
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <% end %>
+        <% if !%w[get post].include?(form_http_method) %>
+          <input type="hidden" name="_method" value="<%= form_http_method %>">
+        <% end %>
+
         <% local_assigns.fetch(:auth_fields, []).each do |field| %>
           <%= render "shared/ig_input",
             label: field[:label],
             type: field[:type],
             name: field[:name],
             placeholder: field[:placeholder],
+            value: field[:value],
             autocomplete: field[:autocomplete],
             width: "100%" %>
         <% end %>
@@ -57,7 +83,7 @@
             class_name: "auth-shell__secondary-button" %>
           <%= render "shared/ig_button",
             label: local_assigns[:primary_cta_label],
-            type: "button",
+            type: "submit",
             width: "12rem",
             class_name: "auth-shell__primary-button" %>
         </div>

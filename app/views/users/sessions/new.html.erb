@@ -1,27 +1,31 @@
 <%= render "shared/auth_shell",
+  resource: resource,
   auth_title: "Login",
   auth_subtitle: "",
+  form_action: session_path(resource_name),
+  form_method: "post",
   auth_fields: [
     {
       label: "Email*",
       type: "email",
-      name: "email",
+      name: "user[email]",
+      value: resource&.email,
       placeholder: "hello@agency.com",
       autocomplete: "email"
     },
     {
       label: "Password*",
       type: "password",
-      name: "password",
+      name: "user[password]",
       placeholder: "Enter your password",
       autocomplete: "current-password"
     }
   ],
   show_marketing_opt_in: true,
   marketing_opt_in_label: "Remember me",
-  marketing_opt_in_name: "remember_me",
+  marketing_opt_in_name: "user[remember_me]",
   primary_cta_label: "Login",
   secondary_cta_label: "Help?",
   switch_copy: "Need an account?",
   switch_cta_label: "Register",
-  switch_cta_path: register_path %>
+  switch_cta_path: new_user_registration_path %>
