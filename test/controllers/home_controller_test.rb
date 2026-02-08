@@ -21,4 +21,29 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Chapter 1"
     assert_includes response.body, "Chapter 2"
   end
+
+  test "shows login/register menu when not authed" do
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "Login"
+    assert_includes response.body, "Register"
+    assert_not_includes response.body, "Logout"
+    assert_not_includes response.body, "User Settings"
+  end
+
+  test "shows logout/user settings menu when authed" do
+    original_authed = HomeController.instance_method(:authed?)
+    HomeController.define_method(:authed?) { true }
+
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "Logout"
+    assert_includes response.body, "User Settings"
+    assert_not_includes response.body, "Login"
+    assert_not_includes response.body, "Register"
+  ensure
+    HomeController.define_method(:authed?, original_authed)
+  end
 end

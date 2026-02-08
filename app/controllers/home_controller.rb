@@ -8,6 +8,7 @@ class HomeController < ApplicationController
     ensure_demo_records!
     @notes = load_notes
     @desktop_shortcuts = load_shortcuts
+    @context_menu_items = load_context_menu_items
   end
 
   def sandbox
@@ -90,6 +91,20 @@ class HomeController < ApplicationController
         thumbnail: shortcut.thumbnail,
         label: shortcut.label
       }
+    end
+  end
+
+  def load_context_menu_items
+    if authed?
+      [
+        { label: "Logout", intent: "logout", kind: "action" },
+        { label: "User Settings", intent: "user_settings", kind: "action" }
+      ]
+    else
+      [
+        { label: "Login", intent: "login", kind: "action" },
+        { label: "Register", intent: "register", kind: "action" }
+      ]
     end
   end
 end

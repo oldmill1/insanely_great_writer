@@ -53,11 +53,6 @@
   <% end %>
 
   <div class="home__context-menu" data-home-context-menu-target="menu" hidden>
-    <%= render "shared/ig_menu",
-      items: [
-        { label: "New Scene", intent: "new_scene", kind: "action" },
-        { label: "New Draft", intent: "new_draft", kind: "action" },
-        { label: "New Book", intent: "new_book", kind: "action" }
-      ] %>
+    <%= render "shared/ig_menu", items: @context_menu_items %>
   </div>
 </main>
