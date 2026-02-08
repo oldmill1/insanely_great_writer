@@ -48,8 +48,6 @@
   margin: 0;
   flex: 1;
   min-height: 0;
-  background: darkslateblue;
-  border-radius: 42px;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -58,6 +56,9 @@
   line-height: 1.35;
   overflow-x: hidden;
   overflow-y: auto;
+  border: 1px solid rgba(194, 199, 207, 0.11);
+  border-radius: 35px;
+  padding: 1rem;
 }
 
 .doc-terminal-content:focus {
@@ -73,7 +74,6 @@
   display: flex;
   justify-content: space-between;
   gap: 0.8rem;
-  border-top: 1px solid rgba(194, 199, 207, 0.22);
   color: rgba(194, 199, 207, 0.92);
   font-size: clamp(0.85rem, 1.25vw, 1rem);
   line-height: 1.2;
