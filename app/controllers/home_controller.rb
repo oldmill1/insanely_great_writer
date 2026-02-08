@@ -18,7 +18,8 @@ class HomeController < ApplicationController
 
   def ensure_demo_records!
     ensure_two_notes!
-    ensure_two_shortcuts!
+    ensure_default_shortcuts!
+    ensure_document_shortcuts!
   end
 
   def ensure_two_notes!
@@ -39,24 +40,24 @@ class HomeController < ApplicationController
     )
   end
 
-  def ensure_two_shortcuts!
-    if Shortcut.count.zero?
-      Shortcut.create!(
-        label: "New Draft",
-        thumbnail: "/icons/write.png",
-        top: 82,
-        left: 50
-      )
+  def ensure_default_shortcuts!
+    Shortcut.where(document_id: nil).find_or_create_by!(label: "New Draft") do |shortcut|
+      shortcut.thumbnail = "/icons/write.png"
+      shortcut.top = 82
+      shortcut.left = 50
     end
 
-    return if Shortcut.count >= 2
+    Shortcut.where(document_id: nil).find_or_create_by!(label: "New Scene") do |shortcut|
+      shortcut.thumbnail = "/icons/scene.png"
+      shortcut.top = 168
+      shortcut.right = 84
+    end
+  end
 
-    Shortcut.create!(
-      label: "New Scene",
-      thumbnail: "/icons/scene.png",
-      top: 168,
-      right: 84
-    )
+  def ensure_document_shortcuts!
+    Document.includes(:shortcut).find_each do |document|
+      document.create_desktop_shortcut! if document.shortcut.blank?
+    end
   end
 
   def load_notes
@@ -79,7 +80,7 @@ class HomeController < ApplicationController
   end
 
   def load_shortcuts
-    Shortcut.order(created_at: :asc).limit(2).map do |shortcut|
+    Shortcut.order(created_at: :asc).map do |shortcut|
       {
         id: shortcut.id,
         top: shortcut.top,

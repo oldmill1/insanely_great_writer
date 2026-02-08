@@ -27,3 +27,7 @@
 ## IGButton variants and states
 - Variants: `primary`, `subtle`, `danger`
 - States: default, hover, active, pressed (`aria-pressed="true"`), disabled, focus-visible
+
+## Dev environment workflow
+- For Ruby/Bundler/Rails commands in this repo, prefer `asdf exec` first.
+- Example: `asdf exec bundle exec rails db:migrate` and `asdf exec bundle exec rails test`.
