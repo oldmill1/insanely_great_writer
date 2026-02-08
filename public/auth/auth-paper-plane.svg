@@ -1,0 +1,15 @@
+<!-- auth-paper-plane.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <g fill="none" stroke="#1f2937" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    
+    <!-- Main plane body -->
+    <path d="M10 40 L70 12 L46 68 L36 46 Z" fill="#e6fff6" stroke="#1f2937"/>
+    
+    <!-- Inner fold line -->
+    <path d="M10 40 L36 46 L70 12" />
+
+    <!-- Mint accent (tail highlight) -->
+    <path d="M36 46 L46 68 L40 50 Z" fill="#34d399" stroke="#1f2937"/>
+
+  </g>
+</svg>

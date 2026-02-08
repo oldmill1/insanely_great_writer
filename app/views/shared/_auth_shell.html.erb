@@ -1,0 +1,74 @@
+<main class="auth-shell">
+  <div class="auth-shell__bg-pattern" aria-hidden="true"></div>
+  <%= image_tag "/auth/auth-character-left.png", class: "auth-shell__character auth-shell__character--left", alt: "", aria: { hidden: true } %>
+  <%= image_tag "/auth/auth-character-right.png", class: "auth-shell__character auth-shell__character--right", alt: "", aria: { hidden: true } %>
+  <%= image_tag "/auth/auth-character-bottom.png", class: "auth-shell__character auth-shell__character--bottom", alt: "", aria: { hidden: true } %>
+  <%= image_tag "/auth/auth-paper-plane.svg", class: "auth-shell__plane", alt: "", aria: { hidden: true } %>
+
+  <header class="auth-shell__header">
+    <a href="/" class="auth-shell__brand" aria-label="Home">
+      <%= image_tag "/auth/auth-logo-mark.png", class: "auth-shell__brand-mark", alt: "", aria: { hidden: true } %>
+      <span>/ sales@lancerjob.au</span>
+    </a>
+
+    <nav class="auth-shell__top-nav" aria-label="Authentication links">
+      <span class="auth-shell__language">En</span>
+      <%= link_to local_assigns[:switch_cta_label], local_assigns[:switch_cta_path], class: "auth-shell__top-link" %>
+      <%= render "shared/ig_button", label: "Request Demo", variant: "subtle", type: "button", class_name: "auth-shell__request-demo" %>
+    </nav>
+  </header>
+
+  <section class="auth-shell__center">
+    <div class="auth-shell__card">
+      <h1 class="auth-shell__title"><%= local_assigns[:auth_title] %></h1>
+      <p class="auth-shell__subtitle"><%= local_assigns[:auth_subtitle] %></p>
+
+      <form class="auth-shell__form" action="#" method="post">
+        <% local_assigns.fetch(:auth_fields, []).each do |field| %>
+          <%= render "shared/ig_input",
+            label: field[:label],
+            type: field[:type],
+            name: field[:name],
+            placeholder: field[:placeholder],
+            autocomplete: field[:autocomplete],
+            width: "100%" %>
+        <% end %>
+
+        <% if local_assigns[:show_marketing_opt_in] %>
+          <%= render "shared/ig_checkbox",
+            label: "Send me onboarding and product updates.",
+            name: "marketing_opt_in",
+            class_name: "auth-shell__checkbox" %>
+        <% end %>
+
+        <p class="auth-shell__legal"><%= local_assigns[:legal_copy] %></p>
+
+        <div class="auth-shell__actions">
+          <%= render "shared/ig_button",
+            label: local_assigns[:secondary_cta_label],
+            variant: "subtle",
+            type: "button",
+            width: "7.25rem",
+            class_name: "auth-shell__secondary-button" %>
+          <%= render "shared/ig_button",
+            label: local_assigns[:primary_cta_label],
+            type: "button",
+            width: "12rem",
+            class_name: "auth-shell__primary-button" %>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <footer class="auth-shell__footer">
+    <p>
+      Copyright @lancerwork
+      <span>|</span>
+      <a href="#">Privacy Policy</a>
+    </p>
+    <p>
+      <%= local_assigns[:switch_copy] %>
+      <%= link_to local_assigns[:switch_cta_label], local_assigns[:switch_cta_path] %>
+    </p>
+  </footer>
+</main>

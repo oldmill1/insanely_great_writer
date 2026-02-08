@@ -1,0 +1,295 @@
+@use "variables" as v;
+
+.auth-shell {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  padding: 2.4rem clamp(1rem, 3vw, 2.8rem) 1.8rem;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.1)),
+    #d8d8da;
+  color: #101214;
+  overflow: hidden;
+  cursor: default;
+}
+
+.auth-shell__bg-pattern {
+  position: absolute;
+  inset: 40% 0 16%;
+  background-image: url("/auth/auth-bg-pattern.svg");
+  background-repeat: repeat-x;
+  background-size: auto 10.5rem;
+  opacity: 0.78;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-shell__header,
+.auth-shell__center,
+.auth-shell__footer {
+  position: relative;
+  z-index: 2;
+}
+
+.auth-shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.auth-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #15181c;
+  text-decoration: none;
+  font-family: v.$font-ig-sans;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.auth-shell__brand-mark {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.auth-shell__top-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.auth-shell__language {
+  color: #252931;
+  font-family: v.$font-mono;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.auth-shell__top-link {
+  color: #13161a;
+  text-decoration: none;
+  font-family: v.$font-ig-sans;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.auth-shell__request-demo {
+  --ig-button-top: #0d1116;
+  --ig-button-mid: #0a0e13;
+  --ig-button-bottom: #05080d;
+  --ig-button-text: #f6f7f9;
+  --ig-button-border-light: rgba(255, 255, 255, 0.2);
+  --ig-button-border-dark: rgba(3, 6, 10, 0.86);
+  min-width: 9.2rem;
+}
+
+.auth-shell__center {
+  display: grid;
+  place-items: center;
+  padding: 2rem 0 1rem;
+}
+
+.auth-shell__card {
+  width: min(28rem, 94vw);
+  border-radius: 1rem;
+  padding: 2rem 2rem 1.8rem;
+  background: rgba(250, 250, 250, 0.92);
+  box-shadow: 0 30px 58px rgba(20, 23, 30, 0.18);
+}
+
+.auth-shell__title {
+  margin: 0;
+  color: #181b20;
+  font-family: v.$font-ig-sans;
+  font-size: clamp(2rem, 4vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.07;
+  text-align: center;
+}
+
+.auth-shell__subtitle {
+  margin: 0.8rem auto 1.35rem;
+  max-width: 24rem;
+  color: #32363e;
+  font-family: v.$font-ig-sans;
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.42;
+  text-align: center;
+}
+
+.auth-shell__form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.auth-shell .ig-input {
+  --ig-input-label-color: #1f2228;
+  --ig-input-text: #111418;
+  --ig-input-placeholder: #7e8591;
+  --ig-input-bg-top: #ffffff;
+  --ig-input-bg-bottom: #f4f6f9;
+  --ig-input-border-light: rgba(255, 255, 255, 0.9);
+  --ig-input-border-dark: rgba(17, 20, 24, 0.55);
+  --ig-input-focus: rgba(29, 155, 240, 0.7);
+}
+
+.auth-shell .ig-input__field {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.08) inset,
+    0 6px 12px rgba(18, 20, 26, 0.08);
+}
+
+.auth-shell__checkbox {
+  margin-top: 0.3rem;
+  color: #222833;
+}
+
+.auth-shell .ig-checkbox__box {
+  background: linear-gradient(180deg, #f8f9fb 0%, #e8ebf0 100%);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  border-left-color: rgba(255, 255, 255, 0.92);
+  border-right-color: rgba(20, 24, 31, 0.5);
+  border-bottom-color: rgba(20, 24, 31, 0.5);
+}
+
+.auth-shell .ig-checkbox__input:checked + .ig-checkbox__box {
+  background: linear-gradient(180deg, #f3df61 0%, #e6cb32 100%);
+}
+
+.auth-shell .ig-checkbox__input:checked + .ig-checkbox__box::after {
+  border-right-color: #101318;
+  border-bottom-color: #101318;
+}
+
+.auth-shell__legal {
+  margin: 0.2rem 0 0.1rem;
+  color: #333944;
+  font-family: v.$font-ig-sans;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.auth-shell__actions {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.35rem;
+}
+
+.auth-shell__secondary-button {
+  --ig-button-top: #fbfcfd;
+  --ig-button-mid: #eef2f6;
+  --ig-button-bottom: #dee4eb;
+  --ig-button-text: #141922;
+  --ig-button-border-light: rgba(255, 255, 255, 0.92);
+  --ig-button-border-dark: rgba(16, 21, 28, 0.54);
+  text-shadow: none;
+}
+
+.auth-shell__primary-button {
+  --ig-button-top: #ffe86c;
+  --ig-button-mid: #f3d63c;
+  --ig-button-bottom: #dfc32f;
+  --ig-button-text: #161a23;
+  --ig-button-border-light: rgba(255, 255, 255, 0.76);
+  --ig-button-border-dark: rgba(45, 37, 3, 0.52);
+  text-shadow: none;
+}
+
+.auth-shell__character,
+.auth-shell__plane {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.auth-shell__character--left {
+  width: clamp(5.2rem, 11vw, 8.5rem);
+  left: max(0.6rem, 2vw);
+  top: 58%;
+}
+
+.auth-shell__character--right {
+  width: clamp(6.8rem, 13vw, 10.2rem);
+  right: max(0.8rem, 3.5vw);
+  top: 37%;
+}
+
+.auth-shell__character--bottom {
+  width: clamp(5.5rem, 10vw, 8rem);
+  right: 22%;
+  top: 61%;
+}
+
+.auth-shell__plane {
+  width: clamp(3.8rem, 9vw, 6.8rem);
+  right: 24%;
+  top: 28%;
+}
+
+.auth-shell__footer {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  color: #20232a;
+  font-family: v.$font-ig-sans;
+  font-size: 0.96rem;
+  text-align: center;
+}
+
+.auth-shell__footer p {
+  margin: 0;
+}
+
+.auth-shell__footer span {
+  margin: 0 0.4rem;
+}
+
+.auth-shell__footer a {
+  color: #15181c;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .auth-shell {
+    padding: 1rem 0.8rem 1.25rem;
+  }
+
+  .auth-shell__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .auth-shell__top-nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.7rem;
+  }
+
+  .auth-shell__card {
+    padding: 1.4rem 1rem 1.2rem;
+    border-radius: 0.8rem;
+  }
+
+  .auth-shell__actions {
+    flex-direction: column-reverse;
+  }
+
+  .auth-shell__secondary-button,
+  .auth-shell__primary-button {
+    width: 100%;
+  }
+
+  .auth-shell__character--right,
+  .auth-shell__character--bottom,
+  .auth-shell__plane {
+    opacity: 0.5;
+  }
+}
