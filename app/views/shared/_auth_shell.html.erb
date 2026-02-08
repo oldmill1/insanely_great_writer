@@ -8,13 +8,11 @@
   <header class="auth-shell__header">
     <a href="/" class="auth-shell__brand" aria-label="Home">
       <%= image_tag "/auth/auth-logo-mark.png", class: "auth-shell__brand-mark", alt: "", aria: { hidden: true } %>
-      <span>/ sales@lancerjob.au</span>
     </a>
 
     <nav class="auth-shell__top-nav" aria-label="Authentication links">
-      <span class="auth-shell__language">En</span>
       <%= link_to local_assigns[:switch_cta_label], local_assigns[:switch_cta_path], class: "auth-shell__top-link" %>
-      <%= render "shared/ig_button", label: "Request Demo", variant: "subtle", type: "button", class_name: "auth-shell__request-demo" %>
+      <%= render "shared/ig_button", label: "Just Write", variant: "subtle", type: "button", class_name: "auth-shell__request-demo" %>
     </nav>
   </header>
 
