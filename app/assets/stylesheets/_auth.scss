@@ -72,9 +72,13 @@
 .auth-shell__top-link {
   color: #f1f6ff;
   text-decoration: none;
-  font-family: v.$font-ig-sans;
-  font-size: 1rem;
-  font-weight: 400;
+  font-family: "Inter", "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 .auth-shell__request-demo {
@@ -124,6 +128,10 @@
   font-weight: 500;
   line-height: 1.42;
   text-align: center;
+}
+
+.auth-shell__subtitle--empty {
+  min-height: 0;
 }
 
 .auth-shell__form {
@@ -248,7 +256,15 @@
 }
 
 .auth-shell__footer p {
-  margin: 0;
+  color: #f1f6ff;
+  text-decoration: none;
+  font-family: "Inter", "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: .01em;
+  line-height: 1.15;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 .auth-shell__footer span {

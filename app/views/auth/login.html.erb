@@ -1,24 +1,26 @@
 <%= render "shared/auth_shell",
-  auth_title: "Agent Login",
-  auth_subtitle: "Enter your details to sign in to your account",
+  auth_title: "Login",
+  auth_subtitle: "",
   auth_fields: [
     {
-      label: "Agency Name*",
-      type: "text",
-      name: "agency_name",
-      placeholder: "Dstudio Agency Pvt Ltd."
-    },
-    {
-      label: "Business Email*",
+      label: "Email*",
       type: "email",
       name: "email",
       placeholder: "hello@agency.com",
       autocomplete: "email"
+    },
+    {
+      label: "Password*",
+      type: "password",
+      name: "password",
+      placeholder: "Enter your password",
+      autocomplete: "current-password"
     }
   ],
-  show_marketing_opt_in: false,
-  legal_copy: "This information will be securely saved as per the Terms of Service & Privacy Policy.",
-  primary_cta_label: "Next Step",
+  show_marketing_opt_in: true,
+  marketing_opt_in_label: "Remember me",
+  marketing_opt_in_name: "remember_me",
+  primary_cta_label: "Login",
   secondary_cta_label: "Help?",
   switch_copy: "Need an account?",
   switch_cta_label: "Register",

@@ -5,8 +5,8 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     get login_path
 
     assert_response :success
-    assert_includes response.body, "Agent Login"
-    assert_includes response.body, "Next Step"
+    assert_includes response.body, "Login"
+    assert_includes response.body, "Remember me"
   end
 
   test "shows register page" do

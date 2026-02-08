@@ -11,15 +11,16 @@
     </a>
 
     <nav class="auth-shell__top-nav" aria-label="Authentication links">
-      <%= link_to local_assigns[:switch_cta_label], local_assigns[:switch_cta_path], class: "auth-shell__top-link" %>
-      <%= render "shared/ig_button", label: "Just Write", variant: "subtle", type: "button", class_name: "auth-shell__request-demo" %>
+      <%= render "shared/ig_button", label: "Sign Up", variant: "subtle", type: "button", class_name: "auth-shell__request-demo" %>
     </nav>
   </header>
 
   <section class="auth-shell__center">
     <div class="auth-shell__card">
       <h1 class="auth-shell__title"><%= local_assigns[:auth_title] %></h1>
-      <p class="auth-shell__subtitle"><%= local_assigns[:auth_subtitle] %></p>
+      <p class="auth-shell__subtitle <%= "auth-shell__subtitle--empty" if local_assigns[:auth_subtitle].blank? %>">
+        <%= local_assigns[:auth_subtitle] %>
+      </p>
 
       <form class="auth-shell__form" action="#" method="post">
         <% local_assigns.fetch(:auth_fields, []).each do |field| %>
@@ -33,13 +34,17 @@
         <% end %>
 
         <% if local_assigns[:show_marketing_opt_in] %>
+          <% checkbox_label = local_assigns[:marketing_opt_in_label].presence || "Send me onboarding and product updates." %>
+          <% checkbox_name = local_assigns[:marketing_opt_in_name].presence || "marketing_opt_in" %>
           <%= render "shared/ig_checkbox",
-            label: "Send me onboarding and product updates.",
-            name: "marketing_opt_in",
+            label: checkbox_label,
+            name: checkbox_name,
             class_name: "auth-shell__checkbox" %>
         <% end %>
 
-        <p class="auth-shell__legal"><%= local_assigns[:legal_copy] %></p>
+        <% if local_assigns[:legal_copy].present? %>
+          <p class="auth-shell__legal"><%= local_assigns[:legal_copy] %></p>
+        <% end %>
 
         <div class="auth-shell__actions">
           <%= render "shared/ig_button",
@@ -59,14 +64,6 @@
   </section>
 
   <footer class="auth-shell__footer">
-    <p>
-      Copyright @lancerwork
-      <span>|</span>
-      <a href="#">Privacy Policy</a>
-    </p>
-    <p>
-      <%= local_assigns[:switch_copy] %>
-      <%= link_to local_assigns[:switch_cta_label], local_assigns[:switch_cta_path] %>
-    </p>
+    <p>"Only fear can defeat life"&mdash; Life of Pi</p>
   </footer>
 </main>
