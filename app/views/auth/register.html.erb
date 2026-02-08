@@ -1,18 +1,18 @@
 <%= render "shared/auth_shell",
   auth_title: "Create Account",
-  auth_subtitle: "Set up your workspace details to get started",
+  auth_subtitle: "",
   auth_fields: [
     {
-      label: "Agency Name*",
+      label: "Author Name*",
       type: "text",
-      name: "agency_name",
-      placeholder: "Your Agency Name"
+      name: "author_name",
+      placeholder: "Your Pen Name"
     },
     {
-      label: "Business Email*",
+      label: "Email*",
       type: "email",
       name: "email",
-      placeholder: "name@agency.com",
+      placeholder: "youremail@gmail.com",
       autocomplete: "email"
     },
     {
@@ -23,8 +23,8 @@
       autocomplete: "new-password"
     }
   ],
-  show_marketing_opt_in: true,
-  legal_copy: "By continuing, you agree to the Terms of Service & Privacy Policy.",
+  show_marketing_opt_in: false,
+  legal_copy_html: "By continuing, you agree to the <a href=\"#\">Terms of Service</a> & <a href=\"#\">Privacy Policy</a>.",
   primary_cta_label: "Create Account",
   secondary_cta_label: "Back",
   switch_copy: "Already have an account?",

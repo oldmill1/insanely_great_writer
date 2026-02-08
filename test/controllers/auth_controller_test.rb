@@ -14,6 +14,6 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Create Account"
-    assert_includes response.body, "Already have an account?"
+    assert_includes response.body, "Create a secure password"
   end
 end
