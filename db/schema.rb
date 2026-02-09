@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_08_233800) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_000500) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
     t.string "title"
     t.datetime "updated_at", null: false
+    t.string "user_id", null: false
+    t.index ["user_id"], name: "index_documents_on_user_id"
   end
 
   create_table "notes", force: :cascade do |t|
@@ -65,5 +67,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_08_233800) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "documents", "users"
   add_foreign_key "shortcuts", "documents"
 end

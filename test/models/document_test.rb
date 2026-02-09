@@ -3,9 +3,10 @@ require "test_helper"
 class DocumentTest < ActiveSupport::TestCase
   test "creates a desktop shortcut when document is created" do
     document = nil
+    user = users(:one)
 
     assert_difference("Shortcut.count", 1) do
-      document = Document.create!(title: "Act I", content: "Opening")
+      document = Document.create!(user: user, title: "Act I", content: "Opening")
     end
 
     assert_equal "Act I", document.shortcut.label
@@ -13,7 +14,7 @@ class DocumentTest < ActiveSupport::TestCase
   end
 
   test "keeps shortcut label in sync with document title" do
-    document = Document.create!(title: "Working Title", content: "Draft")
+    document = Document.create!(user: users(:one), title: "Working Title", content: "Draft")
 
     document.update!(title: "Final Title")
 

@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :documents, dependent: :destroy
+
   # Devise handles authentication while app-specific fields remain local.
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,

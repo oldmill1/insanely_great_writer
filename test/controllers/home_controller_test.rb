@@ -2,7 +2,7 @@ require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
   test "backfills missing document shortcuts on home load" do
-    document = Document.create!(title: "Backfill Me", content: "Body")
+    document = Document.create!(user: users(:one), title: "Backfill Me", content: "Body")
     document.shortcut.destroy!
 
     get root_path
@@ -12,8 +12,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "renders all shortcuts including document shortcuts" do
-    Document.create!(title: "Chapter 1", content: "Start")
-    Document.create!(title: "Chapter 2", content: "Middle")
+    Document.create!(user: users(:one), title: "Chapter 1", content: "Start")
+    Document.create!(user: users(:one), title: "Chapter 2", content: "Middle")
 
     get root_path
 

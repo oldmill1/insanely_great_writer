@@ -2,6 +2,7 @@ class Document < ApplicationRecord
   DOC_SHORTCUT_THUMBNAIL = "/icons/write.png".freeze
   FALLBACK_TITLE = "Untitled Document".freeze
 
+  belongs_to :user
   has_one :shortcut, dependent: :destroy
 
   after_commit :ensure_desktop_shortcut!, on: :create
