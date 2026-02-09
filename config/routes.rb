@@ -28,5 +28,6 @@ Rails.application.routes.draw do
   post "docs" => "documents#create", as: :documents
   get "docs/:id" => "documents#show", as: :doc
   patch "notes/:id/position" => "notes#update_position"
+  patch "notes/:id/expanded" => "notes#update_expanded"
   patch "shortcuts/:id/position" => "shortcuts#update_position"
 end

@@ -58,7 +58,8 @@
         title: note[:title].presence || "Untitled Note",
         content: note[:content].presence || "No note found.",
         variant: note[:variant],
-        mode: "expanded",
+        mode: note[:expanded] ? "expanded" : "collapsed",
+        persist_path: "/notes/#{note[:id]}/expanded",
         width: note[:width],
         height: note[:height] %>
     </div>

@@ -3,6 +3,7 @@ class Note < ApplicationRecord
 
   validates :title, presence: true
   validates :content, presence: true
+  validates :expanded, inclusion: { in: [ true, false ] }
 
   private
 

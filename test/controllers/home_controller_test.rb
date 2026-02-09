@@ -65,4 +65,15 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   ensure
     HomeController.define_method(:authed?, original_authed)
   end
+
+  test "renders notes using persisted expanded state" do
+    note = Note.order(created_at: :asc).first
+    note.update!(expanded: false)
+
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "ig-note--collapsed"
+    assert_includes response.body, "--ig-note-height: 12rem"
+  end
 end

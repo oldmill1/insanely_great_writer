@@ -3,11 +3,13 @@
 one:
   title: MyString
   content: MyText
+  expanded: true
   top: 55
   left: 48
 
 two:
   title: MyString
   content: MyText
+  expanded: true
   top: 64
   left: 72

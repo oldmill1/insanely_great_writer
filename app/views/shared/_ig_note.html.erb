@@ -6,6 +6,7 @@
   note_title = local_assigns[:title].presence || "Note"
   note_body_id = local_assigns[:body_id].presence || "ig-note-body-#{SecureRandom.hex(6)}"
   note_expanded = note_mode == "expanded"
+  note_persist_path = local_assigns[:persist_path].presence
 
   note_classes = ["ig-note", "ig-note--#{note_variant}", "ig-note--#{note_mode}"]
   note_classes << class_name if local_assigns[:class_name].present?
@@ -15,7 +16,7 @@
   style_rules << "--ig-note-width: #{note_width}" if note_width.present?
 
   note_height = ig_css_size(local_assigns[:height])
-  if note_height.present? && note_mode == "expanded"
+  if note_height.present?
     style_rules << "--ig-note-height: #{note_height}"
   end
 %>
@@ -27,6 +28,7 @@
   data-controller="ig-note"
   data-note-variant="<%= note_variant %>"
   data-note-mode="<%= note_mode %>"
+  <% if note_persist_path.present? %>data-ig-note-persist-path-value="<%= note_persist_path %>"<% end %>
   <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
 >
   <header class="ig-note__titlebar" data-action="click->ig-note#toggle">

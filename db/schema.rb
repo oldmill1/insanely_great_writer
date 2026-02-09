@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_000500) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_013000) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
@@ -24,6 +24,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_000500) do
     t.integer "bottom"
     t.text "content"
     t.datetime "created_at", null: false
+    t.boolean "expanded", default: true, null: false
     t.integer "left"
     t.integer "right"
     t.string "title"

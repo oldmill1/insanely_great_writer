@@ -69,6 +69,7 @@ class HomeController < ApplicationController
         right: note.right,
         bottom: note.bottom,
         left: note.left,
+        expanded: note.expanded,
         variant: presentation[:variant],
         width: presentation[:width],
         height: presentation[:height]
