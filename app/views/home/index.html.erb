@@ -30,7 +30,7 @@
   <% @notes.each do |note| %>
     <div
       class="home__note"
-      data-controller="draggable"
+      data-controller="draggable note-layer"
       data-draggable-handle-selector-value=".ig-note__titlebar"
       data-draggable-persist-path-value="/notes/<%= note[:id] %>/position"
       <% if note[:top].present? %>
@@ -48,6 +48,8 @@
         data-draggable-left-value="48"
       <% end %>
       data-action="
+        pointerdown->note-layer#activate
+        focusin->note-layer#activate
         pointerdown->draggable#start
         pointermove->draggable#move
         pointerup->draggable#end

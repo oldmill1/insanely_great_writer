@@ -35,6 +35,11 @@
 
 .home__note {
   position: fixed;
+  z-index: 20;
+}
+
+.home__note.is-active {
+  z-index: 30;
 }
 
 .home__note .ig-note__titlebar {
