@@ -1,6 +1,9 @@
 <main
   class="home"
   data-controller="home-context-menu"
+  data-home-context-menu-login-path-value="<%= new_user_session_path %>"
+  data-home-context-menu-register-path-value="<%= new_user_registration_path %>"
+  data-home-context-menu-logout-path-value="<%= destroy_user_session_path %>"
   data-action="
     contextmenu->home-context-menu#open
     pointerdown->home-context-menu#close
@@ -52,7 +55,12 @@
     </div>
   <% end %>
 
-  <div class="home__context-menu" data-home-context-menu-target="menu" hidden>
+  <div
+    class="home__context-menu"
+    data-home-context-menu-target="menu"
+    data-action="click->home-context-menu#handleMenuClick"
+    hidden
+  >
     <%= render "shared/ig_menu", items: @context_menu_items %>
   </div>
 </main>

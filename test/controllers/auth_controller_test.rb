@@ -32,6 +32,10 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     created_user = User.order(created_at: :desc).first
     assert_not created_user.confirmed?
     assert_equal "UTC", created_user.timezone
-    assert_redirected_to root_path
+    assert_redirected_to new_user_session_path
+
+    follow_redirect!
+    assert_response :success
+    assert_includes response.body, "confirmation link"
   end
 end

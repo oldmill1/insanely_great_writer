@@ -2,6 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["menu"]
+  static values = {
+    loginPath: String,
+    registerPath: String,
+    logoutPath: String
+  }
 
   open(event) {
     event.preventDefault()
@@ -19,6 +24,30 @@ export default class extends Controller {
     if (event.key === "Escape") {
       this.hide()
     }
+  }
+
+  handleMenuClick(event) {
+    const button = event.target.closest("[data-intent]")
+    if (!button || !this.menuTarget.contains(button)) return
+
+    const intent = button.dataset.intent
+    if (!intent) return
+
+    switch (intent) {
+      case "login":
+        if (this.hasLoginPathValue) window.location.assign(this.loginPathValue)
+        break
+      case "register":
+        if (this.hasRegisterPathValue) window.location.assign(this.registerPathValue)
+        break
+      case "logout":
+        if (this.hasLogoutPathValue) this.submitLogoutForm()
+        break
+      default:
+        break
+    }
+
+    this.hide()
   }
 
   hide() {
@@ -48,5 +77,31 @@ export default class extends Controller {
     this.menuTarget.style.left = `${left}px`
     this.menuTarget.style.top = `${top}px`
     this.menuTarget.style.visibility = "visible"
+  }
+
+  submitLogoutForm() {
+    const form = document.createElement("form")
+    form.method = "post"
+    form.action = this.logoutPathValue
+    form.style.display = "none"
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    if (csrfToken) {
+      const tokenInput = document.createElement("input")
+      tokenInput.type = "hidden"
+      tokenInput.name = "authenticity_token"
+      tokenInput.value = csrfToken
+      form.append(tokenInput)
+    }
+
+    const methodInput = document.createElement("input")
+    methodInput.type = "hidden"
+    methodInput.name = "_method"
+    methodInput.value = "delete"
+    form.append(methodInput)
+
+    document.body.append(form)
+    form.submit()
   }
 }
