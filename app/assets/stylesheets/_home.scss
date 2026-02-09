@@ -52,6 +52,15 @@
   pointer-events: none;
 }
 
+.home__dock {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(0.65rem, 2.4vh, 1.4rem);
+  transform: translateX(-50%);
+  z-index: 35;
+  pointer-events: auto;
+}
+
 .home__desktop-item {
   position: absolute;
   pointer-events: auto;
