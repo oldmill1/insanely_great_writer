@@ -132,6 +132,14 @@
         checked: true,
         disabled: true %>
     </section>
+  <% elsif @sandbox_component == "ig_dock" %>
+    <section style="display: grid; gap: 0.9rem; justify-items: start;">
+      <%= render "shared/ig_dock",
+        items: [
+          { thumbnail: "/icons/write.png", label: "New Draft", intent: "new_draft", kind: "action" },
+          { thumbnail: "/icons/scene.png", label: "New Scene", intent: "new_scene", kind: "action" }
+        ] %>
+    </section>
   <% else %>
     <h1 class="home__title">Insanely Great</h1>
   <% end %>

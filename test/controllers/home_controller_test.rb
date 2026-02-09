@@ -1,6 +1,15 @@
 require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
+  test "does not backfill default static shortcuts on home load" do
+    Shortcut.where(label: [ "New Draft", "New Scene" ]).delete_all
+
+    get root_path
+    assert_response :success
+
+    assert_equal 0, Shortcut.where(label: [ "New Draft", "New Scene" ]).count
+  end
+
   test "backfills missing document shortcuts on home load" do
     document = Document.create!(user: users(:one), title: "Backfill Me", content: "Body")
     document.shortcut.destroy!

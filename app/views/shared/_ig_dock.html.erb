@@ -1,0 +1,27 @@
+<%
+  raise ArgumentError, "IGDock requires :items" unless local_assigns.key?(:items)
+
+  dock_items = Array(items)
+  dock_classes = ["ig-dock"]
+  dock_classes << class_name if local_assigns[:class_name].present?
+%>
+
+<nav
+  class="<%= dock_classes.join(" ") %>"
+  aria-label="Dock"
+  data-controller="ig-dock"
+  data-action="mousemove->ig-dock#hover mouseleave->ig-dock#leave"
+>
+  <div class="ig-dock__rail" aria-hidden="true"></div>
+  <div class="ig-dock__items">
+    <% dock_items.each do |raw_item| %>
+      <% raise ArgumentError, "IGDock items must be hash-like" unless raw_item.respond_to?(:to_h) %>
+      <% item = raw_item.to_h.with_indifferent_access %>
+      <%= render "shared/ig_dock_item",
+        thumbnail: item[:thumbnail],
+        label: item[:label],
+        intent: item[:intent],
+        kind: item[:kind] %>
+    <% end %>
+  </div>
+</nav>

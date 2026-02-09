@@ -1,0 +1,24 @@
+<%
+  raise ArgumentError, "IGDockItem requires :thumbnail" unless local_assigns.key?(:thumbnail)
+  raise ArgumentError, "IGDockItem requires :label" unless local_assigns.key?(:label)
+
+  item_intent = local_assigns[:intent].presence || label.to_s.parameterize(separator: "_")
+  item_kind = local_assigns[:kind].presence || "action"
+  item_classes = ["ig-dock__item"]
+  item_classes << class_name if local_assigns[:class_name].present?
+%>
+
+<button
+  type="button"
+  class="<%= item_classes.join(" ") %>"
+  data-ig-dock-target="item"
+  data-intent="<%= item_intent %>"
+  data-kind="<%= item_kind %>"
+  aria-label="<%= label %>"
+  title="<%= label %>"
+>
+  <span class="ig-dock__icon-wrap" aria-hidden="true">
+    <img class="ig-dock__icon" src="<%= thumbnail %>" alt="">
+  </span>
+  <span class="ig-dock__label"><%= label %></span>
+</button>

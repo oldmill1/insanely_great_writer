@@ -19,7 +19,6 @@ class HomeController < ApplicationController
 
   def ensure_demo_records!
     ensure_two_notes!
-    ensure_default_shortcuts!
     ensure_document_shortcuts!
   end
 
@@ -39,20 +38,6 @@ class HomeController < ApplicationController
       top: 112,
       right: 96
     )
-  end
-
-  def ensure_default_shortcuts!
-    Shortcut.where(document_id: nil).find_or_create_by!(label: "New Draft") do |shortcut|
-      shortcut.thumbnail = "/icons/write.png"
-      shortcut.top = 82
-      shortcut.left = 50
-    end
-
-    Shortcut.where(document_id: nil).find_or_create_by!(label: "New Scene") do |shortcut|
-      shortcut.thumbnail = "/icons/scene.png"
-      shortcut.top = 168
-      shortcut.right = 84
-    end
   end
 
   def ensure_document_shortcuts!
