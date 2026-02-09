@@ -10,7 +10,7 @@ export default class extends Controller {
   hover(event) {
     const pointerX = event.clientX
     const range = 130
-    const maxScale = 1.72
+    const maxScale = 1.46
     const minScale = 1
 
     this.itemTargets.forEach((item) => {
@@ -22,7 +22,7 @@ export default class extends Controller {
       const scale = minScale + ((maxScale - minScale) * eased)
 
       item.style.setProperty("--ig-dock-scale", scale.toFixed(3))
-      item.style.setProperty("--ig-dock-lift", `${Math.round((scale - 1) * 28)}px`)
+      item.style.setProperty("--ig-dock-lift", `${Math.round((scale - 1) * 18)}px`)
     })
   }
 
