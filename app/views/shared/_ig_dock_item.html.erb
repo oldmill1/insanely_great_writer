@@ -14,6 +14,9 @@
   data-ig-dock-target="item"
   data-intent="<%= item_intent %>"
   data-kind="<%= item_kind %>"
+  <% if local_assigns[:path].present? %>
+    data-path="<%= path %>"
+  <% end %>
   aria-label="<%= label %>"
   title="<%= label %>"
 >

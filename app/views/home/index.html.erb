@@ -22,7 +22,7 @@
   <div class="home__dock" aria-label="Application dock">
     <%= render "shared/ig_dock",
       items: [
-        { thumbnail: "/icons/write.png", label: "New Draft", intent: "new_draft", kind: "action" },
+        { thumbnail: "/icons/write.png", label: "New Draft", intent: "new_draft", kind: "action", path: documents_path },
         { thumbnail: "/icons/scene.png", label: "New Scene", intent: "new_scene", kind: "action" }
       ] %>
   </div>

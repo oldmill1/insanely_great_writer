@@ -10,7 +10,7 @@
   class="<%= dock_classes.join(" ") %>"
   aria-label="Dock"
   data-controller="ig-dock"
-  data-action="mousemove->ig-dock#hover mouseleave->ig-dock#leave"
+  data-action="mousemove->ig-dock#hover mouseleave->ig-dock#leave click->ig-dock#handleClick"
 >
   <div class="ig-dock__rail" aria-hidden="true"></div>
   <div class="ig-dock__items">
@@ -21,7 +21,8 @@
         thumbnail: item[:thumbnail],
         label: item[:label],
         intent: item[:intent],
-        kind: item[:kind] %>
+        kind: item[:kind],
+        path: item[:path] %>
     <% end %>
   </div>
 </nav>

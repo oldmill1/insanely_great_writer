@@ -30,10 +30,42 @@ export default class extends Controller {
     this.resetScale()
   }
 
+  handleClick(event) {
+    const button = event.target.closest("[data-intent]")
+    if (!button || !this.element.contains(button)) return
+
+    const intent = button.dataset.intent
+    if (intent === "new_draft") {
+      this.submitPost(button.dataset.path)
+    }
+  }
+
   resetScale() {
     this.itemTargets.forEach((item) => {
       item.style.setProperty("--ig-dock-scale", "1")
       item.style.setProperty("--ig-dock-lift", "0px")
     })
+  }
+
+  submitPost(path) {
+    if (!path) return
+
+    const form = document.createElement("form")
+    form.method = "post"
+    form.action = path
+    form.style.display = "none"
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    if (csrfToken) {
+      const tokenInput = document.createElement("input")
+      tokenInput.type = "hidden"
+      tokenInput.name = "authenticity_token"
+      tokenInput.value = csrfToken
+      form.append(tokenInput)
+    }
+
+    document.body.append(form)
+    form.submit()
   }
 }
