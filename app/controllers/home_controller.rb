@@ -3,6 +3,17 @@ class HomeController < ApplicationController
     { variant: "blue", width: "28rem", height: "12rem" },
     { variant: "yellow", width: "22rem", height: "10rem" }
   ].freeze
+  SYSTEM_SHORTCUTS = [
+    {
+      id: "system-trash",
+      system_key: "trash",
+      kind: "system",
+      top: 82,
+      right: 84,
+      thumbnail: "/icons/trash.png",
+      label: "Trash"
+    }
+  ].freeze
 
   def index
     ensure_demo_records!
@@ -66,9 +77,10 @@ class HomeController < ApplicationController
   end
 
   def load_shortcuts
-    Shortcut.order(created_at: :asc).map do |shortcut|
+    db_shortcuts = Shortcut.order(created_at: :asc).map do |shortcut|
       {
         id: shortcut.id,
+        kind: "record",
         top: shortcut.top,
         right: shortcut.right,
         bottom: shortcut.bottom,
@@ -77,6 +89,8 @@ class HomeController < ApplicationController
         label: shortcut.label
       }
     end
+
+    db_shortcuts + SYSTEM_SHORTCUTS
   end
 
   def load_context_menu_items

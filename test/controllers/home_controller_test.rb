@@ -31,6 +31,16 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Chapter 2"
   end
 
+  test "renders system shortcuts without creating shortcut records" do
+    Shortcut.where(label: "Trash").delete_all
+
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "Trash"
+    assert_equal 0, Shortcut.where(label: "Trash").count
+  end
+
   test "shows login/register menu when not authed" do
     get root_path
 

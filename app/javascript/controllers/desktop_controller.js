@@ -5,6 +5,8 @@ export default class extends Controller {
     shortcuts: Array
   }
 
+  static SYSTEM_SHORTCUT_COOKIE = "desktop_system_shortcut_positions"
+
   connect() {
     this.selectedShortcutId = null
     this.render()
@@ -73,22 +75,28 @@ export default class extends Controller {
     this.element.innerHTML = ""
 
     this.shortcutsValue.forEach((shortcut) => {
+      const resolvedShortcut = this.resolveShortcutPosition(shortcut)
       const item = document.createElement("div")
       item.className = "home__desktop-item"
-      this.applyEdgeOffsets(item, shortcut)
+      this.applyEdgeOffsets(item, resolvedShortcut)
       item.dataset.controller = "draggable"
       item.dataset.draggableHandleSelectorValue = ".ig-shortcut"
-      if (shortcut.id) {
-        item.dataset.draggablePersistPathValue = `/shortcuts/${shortcut.id}/position`
+      if (this.isRecordShortcut(resolvedShortcut) && resolvedShortcut.id) {
+        item.dataset.draggablePersistPathValue = `/shortcuts/${resolvedShortcut.id}/position`
+      }
+      if (this.isSystemShortcut(resolvedShortcut)) {
+        item.dataset.systemShortcutKey = resolvedShortcut.system_key
       }
       item.dataset.action = [
         "pointerdown->draggable#start",
         "pointermove->draggable#move",
         "pointerup->draggable#end",
-        "pointercancel->draggable#end"
+        "pointercancel->draggable#end",
+        "pointerup->desktop#persistSystemShortcut",
+        "pointercancel->desktop#persistSystemShortcut"
       ].join(" ")
 
-      item.appendChild(this.buildShortcut(shortcut))
+      item.appendChild(this.buildShortcut(resolvedShortcut))
       this.element.appendChild(item)
     })
   }
@@ -140,10 +148,30 @@ export default class extends Controller {
     return Number.isFinite(parsed) ? Math.round(parsed) : null
   }
 
+  isRecordShortcut(shortcut) {
+    return shortcut.kind === "record"
+  }
+
+  isSystemShortcut(shortcut) {
+    return shortcut.kind === "system" && shortcut.system_key
+  }
+
+  resolveShortcutPosition(shortcut) {
+    if (!this.isSystemShortcut(shortcut)) return shortcut
+
+    const persistedPosition = this.loadSystemShortcutPosition(shortcut.system_key)
+    if (!persistedPosition) return shortcut
+
+    return {
+      ...shortcut,
+      ...persistedPosition
+    }
+  }
+
   buildShortcut(shortcut) {
     const button = document.createElement("button")
     button.type = "button"
-    const shortcutId = shortcut.id != null ? String(shortcut.id) : null
+    const shortcutId = this.shortcutDomId(shortcut)
     button.className = "ig-shortcut ig-shortcut--64"
     button.setAttribute("aria-pressed", "false")
     button.dataset.action = "click->desktop#selectShortcut dblclick->desktop#animateShortcut"
@@ -166,6 +194,76 @@ export default class extends Controller {
     button.appendChild(label)
 
     return button
+  }
+
+  shortcutDomId(shortcut) {
+    if (shortcut.id != null) return String(shortcut.id)
+    if (this.isSystemShortcut(shortcut)) return `system:${shortcut.system_key}`
+
+    return null
+  }
+
+  persistSystemShortcut(event) {
+    const item = event.currentTarget
+    const systemKey = item.dataset.systemShortcutKey
+    if (!systemKey) return
+
+    const position = this.extractXYPosition(item)
+    if (!position) return
+
+    const allPositions = this.readSystemShortcutCookie()
+    allPositions[systemKey] = position
+    this.writeSystemShortcutCookie(allPositions)
+  }
+
+  extractXYPosition(item) {
+    const itemRect = item.getBoundingClientRect()
+    const desktopRect = this.element.getBoundingClientRect()
+
+    return {
+      x: Math.round(itemRect.left - desktopRect.left),
+      y: Math.round(itemRect.top - desktopRect.top)
+    }
+  }
+
+  loadSystemShortcutPosition(systemKey) {
+    const allPositions = this.readSystemShortcutCookie()
+    const position = allPositions[systemKey]
+    if (!position || typeof position !== "object") return null
+
+    const x = this.toInteger(position.x)
+    const y = this.toInteger(position.y)
+    if (x == null || y == null) return null
+
+    return {
+      top: y,
+      right: null,
+      bottom: null,
+      left: x
+    }
+  }
+
+  readSystemShortcutCookie() {
+    const rawValue = document.cookie
+      .split("; ")
+      .find((entry) => entry.startsWith(`${this.constructor.SYSTEM_SHORTCUT_COOKIE}=`))
+      ?.split("=")[1]
+
+    if (!rawValue) return {}
+
+    try {
+      const parsed = JSON.parse(decodeURIComponent(rawValue))
+      return parsed && typeof parsed === "object" ? parsed : {}
+    } catch (_) {
+      return {}
+    }
+  }
+
+  writeSystemShortcutCookie(value) {
+    const encoded = encodeURIComponent(JSON.stringify(value))
+    const oneYearInSeconds = 60 * 60 * 24 * 365
+    document.cookie =
+      `${this.constructor.SYSTEM_SHORTCUT_COOKIE}=${encoded}; path=/; max-age=${oneYearInSeconds}; samesite=lax`
   }
 
   applySelectionState() {
