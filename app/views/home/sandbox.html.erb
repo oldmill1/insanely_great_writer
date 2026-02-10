@@ -140,6 +140,16 @@
           { thumbnail: "/icons/scene.png", label: "New Scene", intent: "new_scene", kind: "action" }
         ] %>
     </section>
+  <% elsif @sandbox_component == "ig_window" %>
+    <section style="width: 100%; min-height: 74vh; position: relative;">
+      <%= render "shared/ig_window",
+        window_key: "sandbox_window",
+        title: "Welcome",
+        content: "hello world",
+        centered: true,
+        width: "42rem",
+        height: "25rem" %>
+    </section>
   <% else %>
     <h1 class="home__title">Insanely Great</h1>
   <% end %>

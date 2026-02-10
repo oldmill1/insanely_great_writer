@@ -5,6 +5,23 @@
   window_content = local_assigns[:content].presence || "hello world"
   window_classes = ["ig-window", "home__window"]
   window_classes << class_name if local_assigns[:class_name].present?
+
+  style_rules = []
+  window_width = ig_css_size(local_assigns[:width])
+  window_height = ig_css_size(local_assigns[:height])
+  style_rules << "width: #{window_width}" if window_width.present?
+  style_rules << "height: #{window_height}" if window_height.present?
+
+  if local_assigns[:centered] == true
+    style_rules << "left: 50%"
+    style_rules << "top: 50%"
+    style_rules << "transform: translate(-50%, -50%)"
+  else
+    window_x = local_assigns[:x]
+    window_y = local_assigns[:y]
+    style_rules << "left: #{window_x.is_a?(Numeric) ? "#{window_x}px" : window_x}" if window_x.present?
+    style_rules << "top: #{window_y.is_a?(Numeric) ? "#{window_y}px" : window_y}" if window_y.present?
+  end
 %>
 
 <section
@@ -16,6 +33,7 @@
   data-desktop-window-y="<%= local_assigns[:y] || 120 %>"
   data-desktop-window-width="<%= local_assigns[:width] || 380 %>"
   data-desktop-window-height="<%= local_assigns[:height] || 240 %>"
+  <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
 >
   <header class="ig-window__titlebar">
     <div class="ig-window__traffic" aria-hidden="true">
