@@ -52,7 +52,7 @@ class HomeController < ApplicationController
   end
 
   def ensure_document_shortcuts!
-    Document.includes(:shortcut).find_each do |document|
+    Document.active.includes(:shortcut).find_each do |document|
       document.create_desktop_shortcut! if document.shortcut.blank?
     end
   end
@@ -78,7 +78,11 @@ class HomeController < ApplicationController
   end
 
   def load_shortcuts
-    db_shortcuts = Shortcut.order(created_at: :asc).map do |shortcut|
+    db_shortcuts = Shortcut
+      .includes(:document)
+      .order(created_at: :asc)
+      .select { |shortcut| shortcut.document.blank? || !shortcut.document.is_deleted? }
+      .map do |shortcut|
       {
         id: shortcut.id,
         kind: "record",

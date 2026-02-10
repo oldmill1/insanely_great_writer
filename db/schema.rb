@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_013000) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_10_120000) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
+    t.boolean "is_deleted", default: false, null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.string "user_id", null: false

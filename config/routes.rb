@@ -30,4 +30,5 @@ Rails.application.routes.draw do
   patch "notes/:id/position" => "notes#update_position"
   patch "notes/:id/expanded" => "notes#update_expanded"
   patch "shortcuts/:id/position" => "shortcuts#update_position"
+  patch "shortcuts/:id/delete_document" => "shortcuts#delete_document"
 end

@@ -4,6 +4,7 @@ class Document < ApplicationRecord
 
   belongs_to :user
   has_one :shortcut, dependent: :destroy
+  scope :active, -> { where(is_deleted: false) }
 
   after_commit :ensure_desktop_shortcut!, on: :create
   after_commit :sync_desktop_shortcut_label!, on: :update, if: :saved_change_to_title?

@@ -31,6 +31,16 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Chapter 2"
   end
 
+  test "does not render shortcuts for soft-deleted documents" do
+    deleted_document = Document.create!(user: users(:one), title: "Archived", content: "", is_deleted: true)
+    deleted_document.create_desktop_shortcut! if deleted_document.shortcut.blank?
+
+    get root_path
+
+    assert_response :success
+    assert_not_includes response.body, "Archived"
+  end
+
   test "renders system shortcuts without creating shortcut records" do
     Shortcut.where(label: "Trash").delete_all
 

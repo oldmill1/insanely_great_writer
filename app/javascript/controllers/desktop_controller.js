@@ -175,6 +175,7 @@ export default class extends Controller {
     button.className = "ig-shortcut ig-shortcut--64"
     button.setAttribute("aria-pressed", "false")
     button.dataset.action = "click->desktop#selectShortcut dblclick->desktop#animateShortcut"
+    button.dataset.shortcutKind = shortcut.kind || "record"
 
     if (shortcutId) {
       button.dataset.shortcutId = shortcutId
@@ -264,6 +265,20 @@ export default class extends Controller {
     const oneYearInSeconds = 60 * 60 * 24 * 365
     document.cookie =
       `${this.constructor.SYSTEM_SHORTCUT_COOKIE}=${encoded}; path=/; max-age=${oneYearInSeconds}; samesite=lax`
+  }
+
+  removeShortcutById(shortcutId) {
+    const normalizedId = String(shortcutId)
+    this.shortcutsValue = this.shortcutsValue.filter((shortcut) => {
+      if (shortcut.kind !== "record") return true
+      return String(shortcut.id) !== normalizedId
+    })
+
+    if (this.selectedShortcutId === normalizedId) {
+      this.selectedShortcutId = null
+    }
+
+    this.render()
   }
 
   applySelectionState() {
