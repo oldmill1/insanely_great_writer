@@ -1,11 +1,13 @@
 <main class="doc-terminal-page">
-  <section class="doc-terminal-screen" aria-label="Document terminal">
-    <h1 class="doc-terminal-title"><%= @document.title %></h1>
-    <div class="doc-terminal-content" contenteditable="true"><%= @document.content %></div>
-    <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
-      <%= render "shared/ig_button", label: "Save Draft", kind: "primary" %>
-      <span>manuscript://docs/<%= @document.id %></span>
-      <span>Ln 1, Col 1</span>
-    </footer>
-  </section>
+  <%= turbo_frame_tag @terminal_frame_id do %>
+    <section class="doc-terminal-screen" aria-label="Document terminal">
+      <h1 class="doc-terminal-title"><%= @document.title %></h1>
+      <div class="doc-terminal-content" contenteditable="true"><%= @document.content %></div>
+      <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
+        <%= render "shared/ig_button", label: "Save Draft", kind: "primary" %>
+        <span>manuscript://docs/<%= @document.id %></span>
+        <span>Ln 1, Col 1</span>
+      </footer>
+    </section>
+  <% end %>
 </main>

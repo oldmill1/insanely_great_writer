@@ -12,6 +12,7 @@ class DocumentsController < ApplicationController
 
   def show
     @document = Document.find(params[:id])
+    @terminal_frame_id = params[:terminal_frame_id].presence || "doc_terminal_screen"
   end
 
   private

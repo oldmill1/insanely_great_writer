@@ -86,4 +86,13 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "ig-note--collapsed"
     assert_includes response.body, "--ig-note-height: 12rem"
   end
+
+  test "renders welcome window as lazy turbo frame sourced from docs/1" do
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, 'id="welcome_window_content"'
+    assert_includes response.body, 'src="/docs/1?terminal_frame_id=welcome_window_content"'
+    assert_includes response.body, 'loading="lazy"'
+  end
 end

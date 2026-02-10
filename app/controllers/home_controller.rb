@@ -18,7 +18,9 @@ class HomeController < ApplicationController
     {
       window_key: "welcome_window",
       title: "Welcome",
-      content: "hello world",
+      content_src: "/docs/1?terminal_frame_id=welcome_window_content",
+      content_frame_id: "welcome_window_content",
+      content: "Loading document...",
       x: 340,
       y: 120,
       width: 380,

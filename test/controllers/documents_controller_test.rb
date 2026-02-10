@@ -19,7 +19,7 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    document = Document.order(created_at: :desc).first
+    document = Document.order(id: :desc).first
 
     assert_redirected_to doc_path(document)
     assert_equal "Feb 8 - Draft", document.title
@@ -35,5 +35,15 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, document.title
     assert_includes response.body, document.content
+  end
+
+  test "shows a document inside the requested turbo frame id" do
+    document = documents(:one)
+
+    get doc_path(document), params: { terminal_frame_id: "welcome_window_content" }
+
+    assert_response :success
+    assert_includes response.body, 'turbo-frame id="welcome_window_content"'
+    assert_includes response.body, 'class="doc-terminal-screen"'
   end
 end

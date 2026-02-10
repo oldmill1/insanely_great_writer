@@ -3,6 +3,8 @@
 
   window_title = local_assigns[:title].presence || "Window"
   window_content = local_assigns[:content].presence || "hello world"
+  window_content_src = local_assigns[:content_src].presence
+  window_content_frame_id = local_assigns[:content_frame_id].presence || "#{window_key}_content"
   window_classes = ["ig-window", "home__window"]
   window_classes << class_name if local_assigns[:class_name].present?
 
@@ -45,5 +47,13 @@
     <span class="ig-window__grip" aria-hidden="true"></span>
   </header>
 
-  <div class="ig-window__body"><%= window_content %></div>
+  <div class="ig-window__body">
+    <% if window_content_src.present? %>
+      <%= turbo_frame_tag window_content_frame_id, src: window_content_src, loading: "lazy" do %>
+        <%= window_content %>
+      <% end %>
+    <% else %>
+      <%= window_content %>
+    <% end %>
+  </div>
 </section>
