@@ -4,7 +4,8 @@ class DocumentsController < ApplicationController
   def create
     document = current_user.documents.create!(
       title: draft_title_for(current_user),
-      content: ""
+      content: "",
+      content_ast: Document::EMPTY_CONTENT_AST
     )
 
     redirect_to doc_path(document)
@@ -28,7 +29,8 @@ class DocumentsController < ApplicationController
   private
 
   def document_params
-    params.require(:document).permit(:content)
+    permitted = params.require(:document).permit(:content, content_ast: {})
+    permitted.to_h
   end
 
   def draft_title_for(user)

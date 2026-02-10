@@ -12,7 +12,7 @@
         contenteditable="true"
         data-doc-editor-target="content"
         data-action="input->doc-editor#queueSave"
-      ><%= @document.content %></div>
+      ><%= raw(@document.editor_html) %></div>
       <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
         <%= render "shared/ig_button", label: "Save Draft", kind: "primary" %>
         <div class="doc-terminal-bottom-meta">

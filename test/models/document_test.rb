@@ -20,4 +20,37 @@ class DocumentTest < ActiveSupport::TestCase
 
     assert_equal "Final Title", document.shortcut.reload.label
   end
+
+  test "normalizes plain text content into canonical ast" do
+    document = Document.create!(user: users(:one), title: "Draft", content: "hello\nworld")
+
+    assert_equal "doc", document.content_ast["type"]
+    assert_equal "paragraph", document.content_ast["children"].first["type"]
+    assert_equal "hello", document.content_ast["children"].first["children"].first["text"]
+    assert_equal "world", document.content_ast["children"].second["children"].first["text"]
+  end
+
+  test "renders canonical ast as paragraph html" do
+    document = Document.create!(
+      user: users(:one),
+      title: "Draft",
+      content_ast: {
+        "type" => "doc",
+        "version" => 1,
+        "children" => [
+          {
+            "type" => "paragraph",
+            "children" => [
+              { "type" => "text", "text" => "hello" },
+              { "type" => "hard_break" },
+              { "type" => "text", "text" => "world" }
+            ]
+          }
+        ]
+      }
+    )
+
+    assert_equal "<p>hello<br>world</p>", document.editor_html
+    assert_equal "hello\nworld", document.content
+  end
 end

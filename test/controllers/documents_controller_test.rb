@@ -59,4 +59,33 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "Saved from autosave", document.reload.content
   end
+
+  test "updates canonical content ast and preserves line breaks" do
+    user = users(:one)
+    document = documents(:one)
+    sign_in user
+
+    patch doc_path(document), params: {
+      document: {
+        content_ast: {
+          type: "doc",
+          version: 1,
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                { type: "text", text: "hello" },
+                { type: "hard_break" },
+                { type: "text", text: "world" }
+              ]
+            }
+          ]
+        }
+      }
+    }, as: :json
+
+    assert_response :success
+    assert_equal "hello\nworld", document.reload.content
+    assert_equal "doc", document.content_ast["type"]
+  end
 end
