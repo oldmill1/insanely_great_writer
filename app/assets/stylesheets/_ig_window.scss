@@ -2,6 +2,8 @@
 
 .ig-window {
   position: fixed;
+  display: flex;
+  flex-direction: column;
   left: 0;
   top: 0;
   z-index: 24;
@@ -50,12 +52,12 @@
 
 .ig-window__traffic {
   display: inline-flex;
-  gap: 0.24rem;
+  gap: 0.43rem;
 }
 
 .ig-window__dot {
-  width: 0.73rem;
-  height: 0.73rem;
+  width: 0.93rem;
+  height: 0.93rem;
   border: 1px solid rgba(22, 28, 40, 0.7);
   border-radius: 999px;
   background:
@@ -120,12 +122,24 @@
 }
 
 .ig-window__body {
-  min-height: calc(100% - 2rem);
-  padding: 0.86rem 0.94rem 1rem;
+  flex: 1;
+  min-height: 0;
+  padding: 1px;
+  overflow: hidden;
   color: #ecf4ff;
   font-family: v.$font-mono;
   font-size: 0.95rem;
   line-height: 1.32;
+}
+
+#welcome_window_content {
+  display: block;
+  height: 100%;
+}
+
+#welcome_window_content > .doc-terminal-page,
+#welcome_window_content .doc-terminal-screen {
+  height: 100%;
 }
 
 .home__window {

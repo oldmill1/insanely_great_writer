@@ -1,12 +1,32 @@
 <main class="doc-terminal-page">
   <%= turbo_frame_tag @terminal_frame_id do %>
-    <section class="doc-terminal-screen" aria-label="Document terminal">
+    <section
+      class="doc-terminal-screen"
+      aria-label="Document terminal"
+      data-controller="doc-editor"
+      data-doc-editor-save-path-value="<%= doc_path(@document) %>"
+    >
       <h1 class="doc-terminal-title"><%= @document.title %></h1>
-      <div class="doc-terminal-content" contenteditable="true"><%= @document.content %></div>
+      <div
+        class="doc-terminal-content"
+        contenteditable="true"
+        data-doc-editor-target="content"
+        data-action="input->doc-editor#queueSave"
+      ><%= @document.content %></div>
       <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
         <%= render "shared/ig_button", label: "Save Draft", kind: "primary" %>
-        <span>manuscript://docs/<%= @document.id %></span>
-        <span>Ln 1, Col 1</span>
+        <div class="doc-terminal-bottom-meta">
+          <span class="doc-terminal-save-status" aria-label="Save status">
+            <span
+              class="doc-terminal-save-light"
+              data-doc-editor-target="statusLight"
+              data-state="idle"
+              aria-hidden="true"
+            ></span>
+          </span>
+          <span>manuscript://docs/<%= @document.id %></span>
+          <span>Ln 1, Col 1</span>
+        </div>
       </footer>
     </section>
   <% end %>

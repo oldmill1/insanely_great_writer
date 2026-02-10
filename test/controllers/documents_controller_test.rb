@@ -45,5 +45,18 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, 'turbo-frame id="welcome_window_content"'
     assert_includes response.body, 'class="doc-terminal-screen"'
+    assert_includes response.body, 'data-controller="doc-editor"'
+    assert_includes response.body, %(data-doc-editor-save-path-value="#{doc_path(document)}")
+  end
+
+  test "updates document content for the authenticated owner" do
+    user = users(:one)
+    document = documents(:one)
+    sign_in user
+
+    patch doc_path(document), params: { document: { content: "Saved from autosave" } }, as: :json
+
+    assert_response :success
+    assert_equal "Saved from autosave", document.reload.content
   end
 end
