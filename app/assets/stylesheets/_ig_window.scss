@@ -56,9 +56,37 @@
 .ig-window__dot {
   width: 0.56rem;
   height: 0.56rem;
-  border: 1px solid rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(22, 28, 40, 0.7);
   border-radius: 999px;
-  background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0) 45%), #8aa0c5;
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%),
+    #9aa9c3;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.32) inset,
+    0 -1px 0 rgba(15, 23, 42, 0.34) inset,
+    0 1px 1px rgba(2, 6, 23, 0.34);
+}
+
+.ig-window__dot:nth-child(1) {
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%),
+    #ff5f57;
+}
+
+.ig-window__dot:nth-child(2) {
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%),
+    #ffbd2e;
+}
+
+.ig-window__dot:nth-child(3) {
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%),
+    #28c840;
 }
 
 .ig-window__title {
