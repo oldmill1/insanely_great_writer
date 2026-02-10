@@ -1,0 +1,31 @@
+<%
+  raise ArgumentError, "IGWindow requires :window_key" unless local_assigns.key?(:window_key)
+
+  window_title = local_assigns[:title].presence || "Window"
+  window_content = local_assigns[:content].presence || "hello world"
+  window_classes = ["ig-window", "home__window"]
+  window_classes << class_name if local_assigns[:class_name].present?
+%>
+
+<section
+  class="<%= window_classes.join(" ") %>"
+  role="dialog"
+  aria-label="<%= window_title %>"
+  data-desktop-window-key="<%= window_key %>"
+  data-desktop-window-x="<%= local_assigns[:x] || 280 %>"
+  data-desktop-window-y="<%= local_assigns[:y] || 120 %>"
+  data-desktop-window-width="<%= local_assigns[:width] || 380 %>"
+  data-desktop-window-height="<%= local_assigns[:height] || 240 %>"
+>
+  <header class="ig-window__titlebar">
+    <div class="ig-window__traffic" aria-hidden="true">
+      <span class="ig-window__dot"></span>
+      <span class="ig-window__dot"></span>
+      <span class="ig-window__dot"></span>
+    </div>
+    <h2 class="ig-window__title"><%= window_title %></h2>
+    <span class="ig-window__grip" aria-hidden="true"></span>
+  </header>
+
+  <div class="ig-window__body"><%= window_content %></div>
+</section>

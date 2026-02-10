@@ -19,6 +19,17 @@
     data-desktop-shortcuts-value="<%= json_escape(@desktop_shortcuts.to_json) %>"
   ></section>
 
+  <% @desktop_windows.each do |window| %>
+    <%= render "shared/ig_window",
+      window_key: window[:window_key],
+      title: window[:title],
+      content: window[:content],
+      x: window[:x],
+      y: window[:y],
+      width: window[:width],
+      height: window[:height] %>
+  <% end %>
+
   <div class="home__dock" aria-label="Application dock">
     <%= render "shared/ig_dock",
       items: [

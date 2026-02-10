@@ -14,11 +14,23 @@ class HomeController < ApplicationController
       label: "Trash"
     }
   ].freeze
+  DESKTOP_WINDOWS = [
+    {
+      window_key: "welcome_window",
+      title: "Welcome",
+      content: "hello world",
+      x: 340,
+      y: 120,
+      width: 380,
+      height: 240
+    }
+  ].freeze
 
   def index
     ensure_demo_records!
     @notes = load_notes
     @desktop_shortcuts = load_shortcuts
+    @desktop_windows = load_windows
     @context_menu_items = load_context_menu_items
   end
 
@@ -110,5 +122,9 @@ class HomeController < ApplicationController
         { label: "Register", intent: "register", kind: "action" }
       ]
     end
+  end
+
+  def load_windows
+    DESKTOP_WINDOWS.map(&:dup)
   end
 end
