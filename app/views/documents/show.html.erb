@@ -14,7 +14,23 @@
         data-action="input->doc-editor#queueSave"
       ><%= raw(@document.editor_html) %></div>
       <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
-        <%= render "shared/ig_button", label: "Save Draft", kind: "primary" %>
+        <%= render "shared/ig_select",
+          name: "insert_block_type",
+          selected: "scene_heading",
+          options: [
+            { label: "Scene Heading", value: "scene_heading" },
+            { label: "Action", value: "action" },
+            { label: "Character", value: "character" },
+            { label: "Dialogue", value: "dialogue" },
+            { label: "Parenthetical", value: "parenthetical" },
+            { label: "Transition", value: "transition" }
+          ],
+          action_button: {
+            label: "Insert",
+            position: "right",
+            variant: "primary"
+          },
+          width: "14rem" %>
         <div class="doc-terminal-bottom-meta">
           <span class="doc-terminal-save-status" aria-label="Save status">
             <span
