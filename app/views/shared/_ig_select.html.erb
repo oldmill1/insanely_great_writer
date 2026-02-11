@@ -1,0 +1,97 @@
+<%
+  select_id = local_assigns[:id].presence || "ig-select-#{SecureRandom.hex(5)}"
+  select_name = local_assigns[:name].presence || "ig_select"
+  select_label = local_assigns[:label].presence
+  select_label_position = local_assigns[:label_position].to_s.strip.downcase
+  select_label_position = "left" unless %w[left right].include?(select_label_position)
+  select_disabled = local_assigns[:disabled] == true
+  select_required = local_assigns[:required] == true
+  selected_value = local_assigns[:selected]
+
+  raw_options = local_assigns[:options]
+  normalized_options = Array(raw_options.presence || [])
+  normalized_options = [
+    { label: "Option 1", value: "option_1" },
+    { label: "Option 2", value: "option_2" },
+    { label: "Option 3", value: "option_3" }
+  ] if normalized_options.empty?
+
+  include_blank = local_assigns[:include_blank]
+  include_blank_label = include_blank.is_a?(String) ? include_blank : "Select..."
+
+  action_button = nil
+  if local_assigns[:action_button].respond_to?(:to_h)
+    action_button = local_assigns[:action_button].to_h.with_indifferent_access
+  end
+
+  action_position = action_button&.dig(:position).to_s.strip.downcase
+  action_position = "right" unless %w[left right].include?(action_position)
+
+  select_classes = ["ig-select", "ig-select--label-#{select_label_position}"]
+  select_classes << "ig-select--with-action" if action_button.present?
+  select_classes << class_name if local_assigns[:class_name].present?
+
+  style_rules = []
+  select_width = ig_css_size(local_assigns[:width])
+  style_rules << "--ig-select-width: #{select_width}" if select_width.present?
+%>
+
+<section class="<%= select_classes.join(" ") %>" <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>>
+  <% if select_label.present? && select_label_position == "left" %>
+    <label class="ig-select__label" for="<%= select_id %>"><%= select_label %></label>
+  <% end %>
+
+  <% if action_button.present? && action_position == "left" %>
+    <div class="ig-select__action">
+      <%= render "shared/ig_button",
+        label: action_button[:label].presence || "Go",
+        variant: action_button[:variant],
+        type: action_button[:type],
+        disabled: action_button[:disabled] == true,
+        data: action_button[:data],
+        class_name: "ig-select__action-button" %>
+    </div>
+  <% end %>
+
+  <div class="ig-select__field-wrap">
+    <select
+      id="<%= select_id %>"
+      class="ig-select__field"
+      name="<%= select_name %>"
+      <%= "disabled" if select_disabled %>
+      <%= "required" if select_required %>
+    >
+      <% if include_blank.present? %>
+        <option value=""><%= include_blank_label %></option>
+      <% end %>
+
+      <% normalized_options.each do |raw_option| %>
+        <% option = raw_option.respond_to?(:to_h) ? raw_option.to_h.with_indifferent_access : { label: raw_option.to_s, value: raw_option.to_s } %>
+        <% option_label = option[:label].presence || option[:value].presence || "Option" %>
+        <% option_value = option[:value].presence || option_label %>
+        <option
+          value="<%= option_value %>"
+          <%= "selected" if selected_value.present? && selected_value.to_s == option_value.to_s %>
+          <%= "disabled" if option[:disabled] == true %>
+        ><%= option_label %></option>
+      <% end %>
+    </select>
+    <span class="ig-select__chevron" aria-hidden="true"></span>
+  </div>
+
+  <% if action_button.present? && action_position == "right" %>
+    <div class="ig-select__action">
+      <%= render "shared/ig_button",
+        label: action_button[:label].presence || "Go",
+        variant: action_button[:variant],
+        type: action_button[:type],
+        disabled: action_button[:disabled] == true,
+        data: action_button[:data],
+        class_name: "ig-select__action-button" %>
+    </div>
+  <% end %>
+
+  <% if select_label.present? && select_label_position == "right" %>
+    <label class="ig-select__label" for="<%= select_id %>"><%= select_label %></label>
+  <% end %>
+</section>

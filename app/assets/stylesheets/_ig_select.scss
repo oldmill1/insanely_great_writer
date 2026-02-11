@@ -1,0 +1,97 @@
+@use "variables" as v;
+
+.ig-select {
+  --ig-select-width: min(24rem, 92vw);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ig-select__label {
+  margin: 0;
+  color: #dbe4f3;
+  font-family: v.$font-mono;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.ig-select__field-wrap {
+  position: relative;
+  width: var(--ig-select-width);
+}
+
+.ig-select__field {
+  appearance: none;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.44rem 2rem 0.44rem 0.62rem;
+  border-style: solid;
+  border-width: 1px;
+  border-top-color: rgba(255, 255, 255, 0.24);
+  border-left-color: rgba(255, 255, 255, 0.24);
+  border-right-color: rgba(2, 6, 23, 0.8);
+  border-bottom-color: rgba(2, 6, 23, 0.8);
+  border-radius: 0.35rem;
+  background:
+    linear-gradient(180deg, #31445f 0%, #24334b 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.48) inset,
+    0 8px 18px rgba(2, 6, 23, 0.26);
+  color: #f5f7fb;
+  font-family: v.$font-mono;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+}
+
+.ig-select__field:hover:not(:disabled) {
+  background: linear-gradient(180deg, #3a4f6c 0%, #2b3b55 100%);
+}
+
+.ig-select__field:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px rgba(125, 211, 252, 0.84),
+    0 0 0 3px rgba(2, 6, 23, 0.68),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 -1px 0 rgba(2, 6, 23, 0.48) inset,
+    0 8px 18px rgba(2, 6, 23, 0.26);
+}
+
+.ig-select__field:disabled {
+  cursor: not-allowed;
+  color: #9aa7b8;
+  opacity: 0.66;
+}
+
+.ig-select__chevron {
+  position: absolute;
+  right: 0.62rem;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 0.34rem solid transparent;
+  border-right: 0.34rem solid transparent;
+  border-top: 0.42rem solid #dbeafe;
+  transform: translateY(-35%);
+  pointer-events: none;
+  filter: drop-shadow(0 1px 0 rgba(2, 6, 23, 0.8));
+}
+
+.ig-select__action {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ig-select__action .ig-button {
+  min-width: 5.6rem;
+  padding-top: 0.42rem;
+  padding-bottom: 0.42rem;
+}

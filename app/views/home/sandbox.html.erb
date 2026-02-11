@@ -110,6 +110,68 @@
         autocomplete: "current-password",
         width: "22rem" %>
     </section>
+  <% elsif @sandbox_component == "ig_select" %>
+    <section style="display: grid; gap: 0.9rem; justify-items: start;">
+      <%= render "shared/ig_select",
+        label: "Document",
+        name: "document",
+        selected: "draft_2",
+        options: [
+          { label: "First Draft", value: "draft_1" },
+          { label: "Second Draft", value: "draft_2" },
+          { label: "Final Draft", value: "draft_3" }
+        ],
+        include_blank: "Choose draft",
+        width: "22rem" %>
+
+      <%= render "shared/ig_select",
+        label: "Scene",
+        label_position: "right",
+        name: "scene",
+        selected: "scene_2",
+        options: [
+          { label: "Scene 1", value: "scene_1" },
+          { label: "Scene 2", value: "scene_2" },
+          { label: "Scene 3", value: "scene_3" }
+        ],
+        width: "18rem" %>
+
+      <%= render "shared/ig_select",
+        label: "Draft",
+        label_position: "left",
+        name: "draft_with_action_right",
+        selected: "v1",
+        options: [
+          { label: "v1", value: "v1" },
+          { label: "v2", value: "v2" },
+          { label: "v3", value: "v3" }
+        ],
+        action_button: {
+          label: "Open",
+          position: "right",
+          variant: "subtle",
+          data: { intent: "open_draft", kind: "action" }
+        },
+        width: "16rem" %>
+
+      <%= render "shared/ig_select",
+        label: "Mode",
+        label_position: "right",
+        name: "mode_with_action_left",
+        selected: "writer",
+        options: [
+          { label: "Writer", value: "writer" },
+          { label: "Outline", value: "outline" },
+          { label: "Review", value: "review" }
+        ],
+        action_button: {
+          label: "Set",
+          position: "left",
+          variant: "primary",
+          data: { intent: "set_mode", kind: "action" }
+        },
+        width: "16rem" %>
+    </section>
   <% elsif @sandbox_component == "ig_checkbox" %>
     <section style="display: grid; gap: 0.8rem; justify-items: start;">
       <%= render "shared/ig_checkbox",
