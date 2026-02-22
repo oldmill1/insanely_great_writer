@@ -29,6 +29,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Chapter 1"
     assert_includes response.body, "Chapter 2"
+    assert_includes response.body, "&quot;document_id&quot;"
   end
 
   test "does not render shortcuts for soft-deleted documents" do
@@ -87,12 +88,11 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "--ig-note-height: 12rem"
   end
 
-  test "renders welcome window as lazy turbo frame sourced from docs/1" do
+  test "does not render a default desktop window" do
     get root_path
 
     assert_response :success
-    assert_includes response.body, 'id="welcome_window_content"'
-    assert_includes response.body, 'src="/docs/1?terminal_frame_id=welcome_window_content"'
-    assert_includes response.body, 'loading="lazy"'
+    assert_not_includes response.body, 'data-desktop-window-key="welcome_window"'
+    assert_not_includes response.body, "ig-window__title\">Welcome"
   end
 end

@@ -14,19 +14,7 @@ class HomeController < ApplicationController
       label: "Trash"
     }
   ].freeze
-  DESKTOP_WINDOWS = [
-    {
-      window_key: "welcome_window",
-      title: "Welcome",
-      content_src: "/docs/1?terminal_frame_id=welcome_window_content",
-      content_frame_id: "welcome_window_content",
-      content: "Loading document...",
-      x: 340,
-      y: 120,
-      width: 380,
-      height: 240
-    }
-  ].freeze
+  DESKTOP_WINDOWS = [].freeze
 
   def index
     ensure_demo_records!
@@ -99,6 +87,7 @@ class HomeController < ApplicationController
       .map do |shortcut|
       {
         id: shortcut.id,
+        document_id: shortcut.document_id,
         kind: "record",
         top: shortcut.top,
         right: shortcut.right,

@@ -69,6 +69,8 @@ export default class extends Controller {
 
     burst.addEventListener("animationend", cleanup, { once: true })
     window.setTimeout(cleanup, 600)
+
+    this.openShortcutWindow(shortcutButton)
   }
 
   createBurst(thumbnail) {
@@ -139,28 +141,122 @@ export default class extends Controller {
       })
     }
 
-    this.windowElements.forEach((windowEl) => {
-      this.applyWindowLayout(windowEl)
-      this.bringWindowToFront(windowEl)
+    this.windowElements.forEach((windowEl) => this.bindWindow(windowEl))
+  }
 
-      const titlebar = windowEl.querySelector(".ig-window__titlebar")
-      if (titlebar) {
-        const onTitlebarPointerDown = (event) => this.startWindowDrag(event)
-        titlebar.addEventListener("pointerdown", onTitlebarPointerDown)
-        this.windowCleanupCallbacks.push(() => titlebar.removeEventListener("pointerdown", onTitlebarPointerDown))
-      }
+  bindWindow(windowEl) {
+    if (!windowEl) return
+    if (windowEl.dataset.desktopWindowBound === "true") return
 
-      const onWindowPointerDown = () => this.bringWindowToFront(windowEl)
-      const onWindowPointerUp = () => this.scheduleWindowPersist(windowEl, 80)
-      windowEl.addEventListener("pointerdown", onWindowPointerDown)
-      windowEl.addEventListener("pointerup", onWindowPointerUp)
-      this.windowCleanupCallbacks.push(() => windowEl.removeEventListener("pointerdown", onWindowPointerDown))
-      this.windowCleanupCallbacks.push(() => windowEl.removeEventListener("pointerup", onWindowPointerUp))
+    this.applyWindowLayout(windowEl)
+    this.bringWindowToFront(windowEl)
 
-      if (this.windowResizeObserver) {
-        this.windowResizeObserver.observe(windowEl)
-      }
-    })
+    const titlebar = windowEl.querySelector(".ig-window__titlebar")
+    if (titlebar) {
+      const onTitlebarPointerDown = (event) => this.startWindowDrag(event)
+      titlebar.addEventListener("pointerdown", onTitlebarPointerDown)
+      this.windowCleanupCallbacks.push(() => titlebar.removeEventListener("pointerdown", onTitlebarPointerDown))
+    }
+
+    const onWindowPointerDown = () => this.bringWindowToFront(windowEl)
+    const onWindowPointerUp = () => this.scheduleWindowPersist(windowEl, 80)
+    windowEl.addEventListener("pointerdown", onWindowPointerDown)
+    windowEl.addEventListener("pointerup", onWindowPointerUp)
+    this.windowCleanupCallbacks.push(() => windowEl.removeEventListener("pointerdown", onWindowPointerDown))
+    this.windowCleanupCallbacks.push(() => windowEl.removeEventListener("pointerup", onWindowPointerUp))
+
+    if (this.windowResizeObserver) {
+      this.windowResizeObserver.observe(windowEl)
+    }
+
+    windowEl.dataset.desktopWindowBound = "true"
+  }
+
+  openShortcutWindow(shortcutButton) {
+    if (!shortcutButton) return
+
+    const shortcutKind = shortcutButton.dataset.shortcutKind
+    if (shortcutKind === "system") return
+    if (shortcutKind !== "record") return
+
+    const documentId = shortcutButton.dataset.shortcutDocumentId || shortcutButton.dataset.shortcutId
+    if (!documentId) return
+
+    const windowKey = `document_window_${documentId}`
+    const existingWindow = document.querySelector(`.home__window[data-desktop-window-key="${windowKey}"]`)
+    if (existingWindow) {
+      this.bringWindowToFront(existingWindow)
+      return
+    }
+
+    const titleText = shortcutButton.querySelector(".ig-shortcut__label")?.textContent?.trim() || "Document"
+    const windowEl = this.buildDocumentWindow(windowKey, documentId, titleText)
+    document.body.appendChild(windowEl)
+
+    this.windowElements = this.windowElements || []
+    this.windowElements.push(windowEl)
+    this.bindWindow(windowEl)
+  }
+
+  buildDocumentWindow(windowKey, documentId, titleText) {
+    const openWindowCount = document.querySelectorAll(".home__window").length
+    const offsetStep = 26
+    const x = 220 + (openWindowCount % 8) * offsetStep
+    const y = 88 + (openWindowCount % 7) * offsetStep
+    const width = 760
+    const height = 520
+    const frameId = `document_window_${documentId}_content`
+    const frameSrc = `/docs/${documentId}?terminal_frame_id=${encodeURIComponent(frameId)}`
+
+    const windowEl = document.createElement("section")
+    windowEl.className = "ig-window home__window"
+    windowEl.setAttribute("role", "dialog")
+    windowEl.setAttribute("aria-label", titleText)
+    windowEl.dataset.desktopWindowKey = windowKey
+    windowEl.dataset.desktopWindowX = String(x)
+    windowEl.dataset.desktopWindowY = String(y)
+    windowEl.dataset.desktopWindowWidth = String(width)
+    windowEl.dataset.desktopWindowHeight = String(height)
+
+    const titlebar = document.createElement("header")
+    titlebar.className = "ig-window__titlebar"
+
+    const traffic = document.createElement("div")
+    traffic.className = "ig-window__traffic"
+    traffic.setAttribute("aria-hidden", "true")
+
+    for (let index = 0; index < 3; index += 1) {
+      const dot = document.createElement("span")
+      dot.className = "ig-window__dot"
+      traffic.appendChild(dot)
+    }
+
+    const title = document.createElement("h2")
+    title.className = "ig-window__title"
+    title.textContent = titleText
+
+    const grip = document.createElement("span")
+    grip.className = "ig-window__grip"
+    grip.setAttribute("aria-hidden", "true")
+
+    titlebar.appendChild(traffic)
+    titlebar.appendChild(title)
+    titlebar.appendChild(grip)
+
+    const body = document.createElement("div")
+    body.className = "ig-window__body"
+
+    const frame = document.createElement("turbo-frame")
+    frame.id = frameId
+    frame.setAttribute("src", frameSrc)
+    frame.setAttribute("loading", "lazy")
+    frame.textContent = "Loading document..."
+    body.appendChild(frame)
+
+    windowEl.appendChild(titlebar)
+    windowEl.appendChild(body)
+
+    return windowEl
   }
 
   startWindowDrag(event) {
@@ -400,6 +496,10 @@ export default class extends Controller {
 
     if (shortcutId) {
       button.dataset.shortcutId = shortcutId
+    }
+
+    if (this.isRecordShortcut(shortcut) && shortcut.document_id != null) {
+      button.dataset.shortcutDocumentId = String(shortcut.document_id)
     }
 
     const thumbnail = document.createElement("img")
