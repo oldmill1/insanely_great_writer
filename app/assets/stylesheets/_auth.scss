@@ -1,11 +1,13 @@
 @use "variables" as v;
 
 .auth-shell {
+  --auth-scale: 1.22;
+
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;
-  padding: 2.4rem clamp(1rem, 3vw, 2.8rem) 1.8rem;
+  padding: calc(2.4rem * var(--auth-scale)) clamp(1rem, 3vw, 2.8rem) calc(1.8rem * var(--auth-scale));
   background:
     radial-gradient(120% 120% at 18% 0%, rgba(63, 91, 173, 0.28), rgba(8, 12, 20, 0)),
     radial-gradient(90% 90% at 82% 25%, rgba(31, 172, 165, 0.16), rgba(8, 12, 20, 0)),
@@ -43,29 +45,29 @@
 .auth-shell__brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: calc(0.7rem * var(--auth-scale));
   color: #f3f7ff;
   text-decoration: none;
   font-family: v.$font-ig-sans;
-  font-size: 1.15rem;
+  font-size: calc(1.15rem * var(--auth-scale));
   font-weight: 700;
 }
 
 .auth-shell__brand-mark {
-  width: 4rem;
-  height: 4rem;
+  width: calc(4rem * var(--auth-scale));
+  height: calc(4rem * var(--auth-scale));
 }
 
 .auth-shell__top-nav {
   display: inline-flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: calc(1.2rem * var(--auth-scale));
 }
 
 .auth-shell__language {
   color: #c7d6ef;
   font-family: v.$font-mono;
-  font-size: 0.95rem;
+  font-size: calc(0.95rem * var(--auth-scale));
   font-weight: 700;
 }
 
@@ -73,7 +75,7 @@
   color: #f1f6ff;
   text-decoration: none;
   font-family: "Inter", "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-size: 1.02rem;
+  font-size: calc(1.02rem * var(--auth-scale));
   font-weight: 650;
   letter-spacing: 0.01em;
   line-height: 1.15;
@@ -88,19 +90,19 @@
   --ig-button-text: #f0f6ff;
   --ig-button-border-light: rgba(219, 234, 254, 0.28);
   --ig-button-border-dark: rgba(5, 10, 19, 0.88);
-  min-width: 9.2rem;
+  min-width: calc(9.2rem * var(--auth-scale));
 }
 
 .auth-shell__center {
   display: grid;
   place-items: center;
-  padding: 2rem 0 1rem;
+  padding: calc(2rem * var(--auth-scale)) 0 calc(1rem * var(--auth-scale));
 }
 
 .auth-shell__card {
-  width: min(28rem, 94vw);
-  border-radius: 1rem;
-  padding: 2rem 2rem 1.8rem;
+  width: min(calc(28rem * var(--auth-scale)), 94vw);
+  border-radius: calc(1rem * var(--auth-scale));
+  padding: calc(2rem * var(--auth-scale)) calc(2rem * var(--auth-scale)) calc(1.8rem * var(--auth-scale));
   background:
     linear-gradient(180deg, rgba(31, 45, 75, 0.9) 0%, rgba(19, 27, 46, 0.9) 100%);
   border: 1px solid rgba(189, 211, 255, 0.18);
@@ -113,18 +115,18 @@
   margin: 0;
   color: #f3f7ff;
   font-family: v.$font-ig-sans;
-  font-size: clamp(2rem, 4vw, 2.35rem);
+  font-size: clamp(calc(2rem * var(--auth-scale)), 4vw, calc(2.35rem * var(--auth-scale)));
   font-weight: 800;
   line-height: 1.07;
   text-align: center;
 }
 
 .auth-shell__subtitle {
-  margin: 0.8rem auto 1.35rem;
-  max-width: 24rem;
+  margin: calc(0.8rem * var(--auth-scale)) auto calc(1.35rem * var(--auth-scale));
+  max-width: calc(24rem * var(--auth-scale));
   color: #c0cee6;
   font-family: v.$font-ig-sans;
-  font-size: 1.08rem;
+  font-size: calc(1.08rem * var(--auth-scale));
   font-weight: 500;
   line-height: 1.42;
   text-align: center;
@@ -136,16 +138,16 @@
 
 .auth-shell__form {
   display: grid;
-  gap: 0.8rem;
+  gap: calc(0.8rem * var(--auth-scale));
 }
 
 .auth-shell__flash,
 .auth-shell__errors {
   margin: 0 0 0.2rem;
-  border-radius: 0.5rem;
-  padding: 0.55rem 0.7rem;
+  border-radius: calc(0.5rem * var(--auth-scale));
+  padding: calc(0.55rem * var(--auth-scale)) calc(0.7rem * var(--auth-scale));
   font-family: "Inter", "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.89rem;
+  font-size: calc(0.89rem * var(--auth-scale));
   line-height: 1.35;
 }
 
@@ -179,6 +181,18 @@
   --ig-input-border-light: rgba(240, 246, 255, 0.25);
   --ig-input-border-dark: rgba(3, 8, 18, 0.78);
   --ig-input-focus: rgba(111, 210, 255, 0.75);
+  --ig-input-width: min(calc(24rem * var(--auth-scale)), 94vw);
+  gap: calc(0.38rem * var(--auth-scale));
+}
+
+.auth-shell .ig-input__label {
+  font-size: calc(0.9rem * var(--auth-scale));
+}
+
+.auth-shell .ig-input__field {
+  min-height: calc(2.25rem * var(--auth-scale));
+  padding: calc(0.46rem * var(--auth-scale)) calc(0.62rem * var(--auth-scale));
+  font-size: calc(0.93rem * var(--auth-scale));
 }
 
 .auth-shell .ig-input__field {
@@ -189,11 +203,13 @@
 }
 
 .auth-shell__checkbox {
-  margin-top: 0.3rem;
+  margin-top: calc(0.3rem * var(--auth-scale));
   color: #d6e0f4;
 }
 
 .auth-shell .ig-checkbox__box {
+  width: calc(1.1rem * var(--auth-scale));
+  height: calc(1.1rem * var(--auth-scale));
   background: linear-gradient(180deg, #2b3f65 0%, #1d2d4b 100%);
   border-top-color: rgba(255, 255, 255, 0.22);
   border-left-color: rgba(255, 255, 255, 0.22);
@@ -210,20 +226,31 @@
   border-bottom-color: #0d1420;
 }
 
+.auth-shell .ig-checkbox__label {
+  font-size: calc(0.9rem * var(--auth-scale));
+}
+
 .auth-shell__legal {
   margin: 0.2rem 0 0.1rem;
   color: #a8bad8;
   font-family: v.$font-mono;
-  font-size: 0.95rem;
+  font-size: calc(0.95rem * var(--auth-scale));
   line-height: 1.45;
 }
 
 .auth-shell__actions {
   display: flex;
-  gap: 0.55rem;
+  gap: calc(0.55rem * var(--auth-scale));
   align-items: center;
   justify-content: space-between;
-  margin-top: 0.35rem;
+  margin-top: calc(0.35rem * var(--auth-scale));
+}
+
+.auth-shell .ig-button {
+  min-width: calc(7.6rem * var(--auth-scale));
+  padding: calc(0.5rem * var(--auth-scale)) calc(0.9rem * var(--auth-scale)) calc(0.48rem * var(--auth-scale));
+  border-radius: calc(0.38rem * var(--auth-scale));
+  font-size: calc(0.92rem * var(--auth-scale));
 }
 
 .auth-shell__secondary-button {
@@ -278,11 +305,11 @@
 
 .auth-shell__footer {
   display: grid;
-  gap: 0.5rem;
+  gap: calc(0.5rem * var(--auth-scale));
   justify-items: center;
   color: #c3d2ea;
   font-family: v.$font-ig-sans;
-  font-size: 0.96rem;
+  font-size: calc(0.96rem * var(--auth-scale));
   text-align: center;
 }
 
@@ -290,7 +317,7 @@
   color: #f1f6ff;
   text-decoration: none;
   font-family: "Inter", "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-size: 1.02rem;
+  font-size: calc(1.02rem * var(--auth-scale));
   font-weight: 650;
   letter-spacing: .01em;
   line-height: 1.15;
@@ -310,6 +337,7 @@
 
 @media (max-width: 760px) {
   .auth-shell {
+    --auth-scale: 1.08;
     padding: 1rem 0.8rem 1.25rem;
   }
 

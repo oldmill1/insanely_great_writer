@@ -10,25 +10,32 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, Shortcut.where(label: [ "New Draft", "New Scene" ]).count
   end
 
-  test "backfills missing document shortcuts on home load" do
-    document = Document.create!(user: users(:one), title: "Backfill Me", content: "Body")
-    document.shortcut.destroy!
+  test "backfills missing document shortcuts only for the logged-in user" do
+    owner_document = Document.create!(user: users(:one), title: "Backfill Me", content: "Body")
+    owner_document.shortcut.destroy!
 
+    other_user_document = Document.create!(user: users(:two), title: "Do Not Backfill", content: "Body")
+    other_user_document.shortcut.destroy!
+
+    sign_in_as(users(:one))
     get root_path
     assert_response :success
 
-    assert_equal "Backfill Me", document.reload.shortcut.label
+    assert_equal "Backfill Me", owner_document.reload.shortcut.label
+    assert_nil other_user_document.reload.shortcut
   end
 
-  test "renders all shortcuts including document shortcuts" do
+  test "renders only shortcuts for the logged-in user" do
     Document.create!(user: users(:one), title: "Chapter 1", content: "Start")
-    Document.create!(user: users(:one), title: "Chapter 2", content: "Middle")
+    Document.create!(user: users(:two), title: "Hidden Chapter", content: "Middle")
 
+    sign_in_as(users(:one))
     get root_path
 
     assert_response :success
     assert_includes response.body, "Chapter 1"
-    assert_includes response.body, "Chapter 2"
+    assert_not_includes response.body, "Hidden Chapter"
+    assert_includes response.body, "Trash"
     assert_includes response.body, "&quot;document_id&quot;"
   end
 
@@ -36,13 +43,27 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     deleted_document = Document.create!(user: users(:one), title: "Archived", content: "", is_deleted: true)
     deleted_document.create_desktop_shortcut! if deleted_document.shortcut.blank?
 
+    sign_in_as(users(:one))
     get root_path
 
     assert_response :success
     assert_not_includes response.body, "Archived"
   end
 
-  test "renders system shortcuts without creating shortcut records" do
+  test "does not load user notes or user shortcuts when not authed" do
+    Note.create!(title: "Private Note", content: "Body", expanded: true, top: 55, left: 48)
+    Document.create!(user: users(:one), title: "Private Draft", content: "Hidden")
+
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "Trash"
+    assert_not_includes response.body, "Private Note"
+    assert_not_includes response.body, "Private Draft"
+    assert_not_includes response.body, "&quot;document_id&quot;"
+  end
+
+  test "renders system trash shortcut without creating a record" do
     Shortcut.where(label: "Trash").delete_all
 
     get root_path
@@ -63,9 +84,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "shows logout/user settings menu when authed" do
-    original_authed = HomeController.instance_method(:authed?)
-    HomeController.define_method(:authed?) { true }
-
+    sign_in_as(users(:one))
     get root_path
 
     assert_response :success
@@ -73,19 +92,16 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "User Settings"
     assert_not_includes response.body, "Login"
     assert_not_includes response.body, "Register"
-  ensure
-    HomeController.define_method(:authed?, original_authed)
   end
 
-  test "renders notes using persisted expanded state" do
-    note = Note.order(created_at: :asc).first
-    note.update!(expanded: false)
+  test "does not backfill demo notes on home load" do
+    Note.delete_all
 
     get root_path
 
     assert_response :success
-    assert_includes response.body, "ig-note--collapsed"
-    assert_includes response.body, "--ig-note-height: 12rem"
+    assert_equal 0, Note.count
+    assert_not_includes response.body, "ig-note__titlebar"
   end
 
   test "does not render a default desktop window" do
@@ -94,5 +110,18 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, 'data-desktop-window-key="welcome_window"'
     assert_not_includes response.body, "ig-window__title\">Welcome"
+  end
+
+  private
+
+  def sign_in_as(user)
+    post user_session_path, params: {
+      user: {
+        email: user.email,
+        password: "StrongPass123"
+      }
+    }
+
+    follow_redirect! if response.redirect?
   end
 end

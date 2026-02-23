@@ -31,36 +31,22 @@ class HomeController < ApplicationController
   private
 
   def ensure_demo_records!
-    ensure_two_notes!
+    return unless authed?
+
     ensure_document_shortcuts!
   end
 
-  def ensure_two_notes!
-    if Note.count.zero?
-      Note.create!(
-        title: "First Draft",
-        content: "Open threads:\n- Character arc for Chapter 3\n- Final paragraph tone"
-      )
-    end
-
-    return if Note.count >= 2
-
-    Note.create!(
-      title: "Scene Grid",
-      content: "Scene 12: Dock at sunrise.\nObjective: reveal the hidden tape before breakfast rush.",
-      top: 112,
-      right: 96
-    )
-  end
-
   def ensure_document_shortcuts!
-    Document.active.includes(:shortcut).find_each do |document|
+    current_user.documents.active.includes(:shortcut).find_each do |document|
       document.create_desktop_shortcut! if document.shortcut.blank?
     end
   end
 
   def load_notes
-    Note.order(created_at: :asc).limit(2).map.with_index do |note, index|
+    return [] unless authed?
+    return [] unless Note.column_names.include?("user_id")
+
+    Note.where(user_id: current_user.id).order(created_at: :asc).limit(2).map.with_index do |note, index|
       presentation = NOTE_PRESENTATIONS[index] || NOTE_PRESENTATIONS.last
 
       {
@@ -80,25 +66,30 @@ class HomeController < ApplicationController
   end
 
   def load_shortcuts
-    db_shortcuts = Shortcut
-      .includes(:document)
-      .order(created_at: :asc)
-      .select { |shortcut| shortcut.document.blank? || !shortcut.document.is_deleted? }
-      .map do |shortcut|
-      {
-        id: shortcut.id,
-        document_id: shortcut.document_id,
-        kind: "record",
-        top: shortcut.top,
-        right: shortcut.right,
-        bottom: shortcut.bottom,
-        left: shortcut.left,
-        thumbnail: shortcut.thumbnail,
-        label: shortcut.label
-      }
-    end
+    return SYSTEM_SHORTCUTS.map(&:dup) unless authed?
 
-    db_shortcuts + SYSTEM_SHORTCUTS
+    db_shortcuts = current_user.documents
+      .active
+      .includes(:shortcut)
+      .order(created_at: :asc)
+      .filter_map do |document|
+        shortcut = document.shortcut
+        next if shortcut.blank?
+
+        {
+          id: shortcut.id,
+          document_id: document.id,
+          kind: "record",
+          top: shortcut.top,
+          right: shortcut.right,
+          bottom: shortcut.bottom,
+          left: shortcut.left,
+          thumbnail: shortcut.thumbnail,
+          label: shortcut.label
+        }
+      end
+
+    db_shortcuts + SYSTEM_SHORTCUTS.map(&:dup)
   end
 
   def load_context_menu_items
