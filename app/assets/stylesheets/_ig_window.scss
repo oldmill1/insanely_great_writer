@@ -42,22 +42,24 @@
       rgba(255, 255, 255, 0.02) 1px 5px
     ),
     linear-gradient(180deg, rgba(188, 211, 244, 0.5) 0%, rgba(119, 148, 190, 0.44) 100%);
-  cursor: grab;
+  cursor: inherit;
   user-select: none;
 }
 
 .ig-window.is-dragging .ig-window__titlebar {
-  cursor: grabbing;
+  cursor: inherit;
 }
 
 .ig-window__traffic {
   display: inline-flex;
   gap: 0.43rem;
+  cursor: inherit !important;
 }
 
 .ig-window__dot {
   width: 0.93rem;
   height: 0.93rem;
+  cursor: inherit !important;
   border: 1px solid rgba(22, 28, 40, 0.7);
   border-radius: 999px;
   transform-origin: center;
@@ -79,12 +81,14 @@
 .ig-window__dot:hover {
   transform: scale(1.23);
   filter: brightness(0.84) saturate(0.95);
+  cursor: inherit !important;
 }
 
 .ig-window__dot:active,
 .ig-window__dot.is-pressed {
   transform: scale(0.82);
   filter: brightness(0.74) saturate(0.92);
+  cursor: inherit !important;
 }
 
 .ig-window__dot.is-release-pop {
@@ -127,6 +131,14 @@
     radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0) 42%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%),
     #28c840;
+}
+
+.ig-window.is-dragging .ig-window__traffic,
+.ig-window.is-dragging .ig-window__dot,
+.ig-window.is-dragging .ig-window__dot:hover,
+.ig-window.is-dragging .ig-window__dot:active,
+.ig-window.is-dragging .ig-window__dot.is-pressed {
+  cursor: grabbing !important;
 }
 
 .ig-window__title {
