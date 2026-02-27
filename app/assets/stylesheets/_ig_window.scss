@@ -60,6 +60,12 @@
   height: 0.93rem;
   border: 1px solid rgba(22, 28, 40, 0.7);
   border-radius: 999px;
+  transform-origin: center;
+  transition:
+    transform 190ms cubic-bezier(0.22, 1.28, 0.36, 1),
+    filter 160ms ease,
+    box-shadow 160ms ease,
+    opacity 120ms ease;
   background:
     radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0) 42%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%),
@@ -68,6 +74,38 @@
     0 1px 0 rgba(255, 255, 255, 0.32) inset,
     0 -1px 0 rgba(15, 23, 42, 0.34) inset,
     0 1px 1px rgba(2, 6, 23, 0.34);
+}
+
+.ig-window__dot:hover {
+  transform: scale(1.23);
+  filter: brightness(0.84) saturate(0.95);
+}
+
+.ig-window__dot:active,
+.ig-window__dot.is-pressed {
+  transform: scale(0.82);
+  filter: brightness(0.74) saturate(0.92);
+}
+
+.ig-window__dot.is-release-pop {
+  animation: ig-window-dot-release 190ms cubic-bezier(0.26, 0.74, 0.38, 1) forwards;
+}
+
+@keyframes ig-window-dot-release {
+  0% {
+    transform: scale(0.84);
+    opacity: 1;
+  }
+
+  40% {
+    transform: scale(1.08);
+    opacity: 0.92;
+  }
+
+  100% {
+    transform: scale(0.06);
+    opacity: 0;
+  }
 }
 
 .ig-window__dot:nth-child(1) {

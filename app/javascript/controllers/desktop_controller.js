@@ -175,6 +175,34 @@ export default class extends Controller {
       this.windowCleanupCallbacks.push(() => closeControl.removeEventListener("click", onCloseClick))
     }
 
+    const trafficDots = windowEl.querySelectorAll(".ig-window__dot")
+    trafficDots.forEach((dot) => {
+      const onDotPointerDown = (event) => {
+        if (event.button !== 0) return
+        dot.classList.add("is-pressed")
+      }
+      const onDotPointerCancel = () => {
+        dot.classList.remove("is-pressed")
+      }
+      const onDotClick = () => {
+        dot.classList.remove("is-pressed")
+        if (dot.dataset.windowControl === "close") return
+        this.playWindowDotReleaseAnimation(dot)
+      }
+
+      dot.addEventListener("pointerdown", onDotPointerDown)
+      dot.addEventListener("pointerup", onDotPointerCancel)
+      dot.addEventListener("pointerleave", onDotPointerCancel)
+      dot.addEventListener("pointercancel", onDotPointerCancel)
+      dot.addEventListener("click", onDotClick)
+
+      this.windowCleanupCallbacks.push(() => dot.removeEventListener("pointerdown", onDotPointerDown))
+      this.windowCleanupCallbacks.push(() => dot.removeEventListener("pointerup", onDotPointerCancel))
+      this.windowCleanupCallbacks.push(() => dot.removeEventListener("pointerleave", onDotPointerCancel))
+      this.windowCleanupCallbacks.push(() => dot.removeEventListener("pointercancel", onDotPointerCancel))
+      this.windowCleanupCallbacks.push(() => dot.removeEventListener("click", onDotClick))
+    })
+
     const onWindowPointerDown = () => this.bringWindowToFront(windowEl)
     const onWindowPointerUp = () => this.scheduleWindowPersist(windowEl, 80)
     windowEl.addEventListener("pointerdown", onWindowPointerDown)
@@ -332,6 +360,18 @@ export default class extends Controller {
 
     this.windowElements = (this.windowElements || []).filter((element) => element !== windowEl)
     windowEl.remove()
+  }
+
+  playWindowDotReleaseAnimation(dot) {
+    if (!dot) return
+
+    dot.classList.remove("is-release-pop")
+    // Force reflow so quick repeated clicks replay the animation.
+    void dot.offsetWidth
+    dot.classList.add("is-release-pop")
+
+    const onAnimationEnd = () => dot.classList.remove("is-release-pop")
+    dot.addEventListener("animationend", onAnimationEnd, { once: true })
   }
 
   onWindowPointerMove(event) {
