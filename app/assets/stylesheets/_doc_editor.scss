@@ -69,6 +69,46 @@
   margin: 0;
 }
 
+.doc-terminal-content p[data-element="scene_heading"] {
+  text-transform: uppercase;
+  font-weight: 700;
+  text-align: left;
+}
+
+.doc-terminal-content p[data-element="action"] {
+  text-align: left;
+  width: 100%;
+}
+
+.doc-terminal-content p[data-element="character"] {
+  text-transform: uppercase;
+  text-align: center;
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.doc-terminal-content p[data-element="dialogue"] {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.doc-terminal-content p[data-element="parenthetical"] {
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  font-style: italic;
+}
+
+.doc-terminal-content p[data-element="transition"] {
+  text-transform: uppercase;
+  text-align: right;
+  font-weight: 700;
+}
+
 .doc-terminal-bottom-bar {
   position: relative;
   z-index: 1;
