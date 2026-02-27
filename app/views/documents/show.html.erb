@@ -16,6 +16,7 @@
       <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
         <%= render "shared/ig_select",
           name: "insert_block_type",
+          id: "insert-block-type",
           selected: "scene_heading",
           options: [
             { label: "Scene Heading", value: "scene_heading" },
@@ -28,7 +29,8 @@
           action_button: {
             label: "Insert",
             position: "right",
-            variant: "primary"
+            variant: "primary",
+            data: { action: "doc-editor#insertElement" }
           },
           width: "14rem" %>
         <div class="doc-terminal-bottom-meta">

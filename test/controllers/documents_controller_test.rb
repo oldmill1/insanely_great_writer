@@ -88,4 +88,51 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "hello\nworld", document.reload.content
     assert_equal "doc", document.content_ast["type"]
   end
+
+  test "updates content ast with screenplay element attrs" do
+    user = users(:one)
+    document = documents(:one)
+    sign_in user
+
+    patch doc_path(document), params: {
+      document: {
+        content_ast: {
+          type: "doc",
+          version: 1,
+          children: [
+            {
+              type: "paragraph",
+              attrs: { element: "scene_heading" },
+              children: [
+                { type: "text", text: "INT. OFFICE - DAY" }
+              ]
+            },
+            {
+              type: "paragraph",
+              attrs: { element: "character" },
+              children: [
+                { type: "text", text: "JOHN" }
+              ]
+            },
+            {
+              type: "paragraph",
+              attrs: { element: "dialogue" },
+              children: [
+                { type: "text", text: "Hello there." }
+              ]
+            }
+          ]
+        }
+      }
+    }, as: :json
+
+    assert_response :success
+    document.reload
+    ast = document.content_ast
+
+    assert_equal "scene_heading", ast["children"][0]["attrs"]["element"]
+    assert_equal "character", ast["children"][1]["attrs"]["element"]
+    assert_equal "dialogue", ast["children"][2]["attrs"]["element"]
+    assert_equal "INT. OFFICE - DAY\nJOHN\nHello there.", document.content
+  end
 end

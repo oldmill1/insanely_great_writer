@@ -53,4 +53,119 @@ class DocumentTest < ActiveSupport::TestCase
     assert_equal "<p>hello<br>world</p>", document.editor_html
     assert_equal "hello\nworld", document.content
   end
+
+  test "normalization preserves valid screenplay element attrs" do
+    document = Document.create!(
+      user: users(:one),
+      title: "Screenplay",
+      content_ast: {
+        "type" => "doc",
+        "version" => 1,
+        "children" => [
+          {
+            "type" => "paragraph",
+            "attrs" => { "element" => "scene_heading" },
+            "children" => [
+              { "type" => "text", "text" => "INT. OFFICE - DAY" }
+            ]
+          },
+          {
+            "type" => "paragraph",
+            "attrs" => { "element" => "dialogue" },
+            "children" => [
+              { "type" => "text", "text" => "Hello there." }
+            ]
+          }
+        ]
+      }
+    )
+
+    ast = document.content_ast
+    assert_equal "scene_heading", ast["children"][0]["attrs"]["element"]
+    assert_equal "dialogue", ast["children"][1]["attrs"]["element"]
+  end
+
+  test "normalization strips invalid screenplay element attrs" do
+    document = Document.create!(
+      user: users(:one),
+      title: "Bad Element",
+      content_ast: {
+        "type" => "doc",
+        "version" => 1,
+        "children" => [
+          {
+            "type" => "paragraph",
+            "attrs" => { "element" => "evil_script" },
+            "children" => [
+              { "type" => "text", "text" => "nope" }
+            ]
+          }
+        ]
+      }
+    )
+
+    ast = document.content_ast
+    assert_nil ast["children"][0]["attrs"]
+  end
+
+  test "editor_html emits data-element attribute for screenplay paragraphs" do
+    document = Document.create!(
+      user: users(:one),
+      title: "Formatted",
+      content_ast: {
+        "type" => "doc",
+        "version" => 1,
+        "children" => [
+          {
+            "type" => "paragraph",
+            "attrs" => { "element" => "scene_heading" },
+            "children" => [
+              { "type" => "text", "text" => "INT. OFFICE - DAY" }
+            ]
+          },
+          {
+            "type" => "paragraph",
+            "children" => [
+              { "type" => "text", "text" => "plain text" }
+            ]
+          },
+          {
+            "type" => "paragraph",
+            "attrs" => { "element" => "transition" },
+            "children" => [
+              { "type" => "text", "text" => "CUT TO:" }
+            ]
+          }
+        ]
+      }
+    )
+
+    html = document.editor_html
+    assert_includes html, '<p data-element="scene_heading">INT. OFFICE - DAY</p>'
+    assert_includes html, "<p>plain text</p>"
+    assert_includes html, '<p data-element="transition">CUT TO:</p>'
+  end
+
+  test "legacy AST without attrs still renders correctly" do
+    document = Document.create!(
+      user: users(:one),
+      title: "Legacy",
+      content_ast: {
+        "type" => "doc",
+        "version" => 1,
+        "children" => [
+          {
+            "type" => "paragraph",
+            "children" => [
+              { "type" => "text", "text" => "old doc" }
+            ]
+          }
+        ]
+      }
+    )
+
+    assert_equal "<p>old doc</p>", document.editor_html
+    assert_equal "old doc", document.content
+    assert_nil document.content_ast["children"][0]["attrs"]
+  end
 end
