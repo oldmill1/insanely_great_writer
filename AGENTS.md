@@ -24,6 +24,10 @@
 | Run linter | `bin/rubocop` |
 | Run security scan | `bin/brakeman` |
 
+### Testing preferences
+
+- Do NOT record screen videos unless the user explicitly asks for one. Screenshots and terminal output are sufficient for demonstrating changes.
+
 ### Gotchas
 
 - Devise is configured with `:confirmable`. To create a test user in the Rails console, call `user.skip_confirmation!` before saving.

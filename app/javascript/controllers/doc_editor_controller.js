@@ -2,6 +2,15 @@ import { Controller } from "@hotwired/stimulus"
 
 const SAVE_IDLE_MS = 2000
 
+const ELEMENT_STARTER_TEXT = {
+  scene_heading: "INT. LOCATION - DAY",
+  action: "Describe what we see.",
+  character: "CHARACTER NAME",
+  dialogue: "Dialogue line.",
+  parenthetical: "(beat)",
+  transition: "CUT TO:"
+}
+
 export default class extends Controller {
   static values = {
     savePath: String
@@ -20,6 +29,50 @@ export default class extends Controller {
       clearTimeout(this.pendingSaveTimeout)
       this.pendingSaveTimeout = null
     }
+  }
+
+  insertElement() {
+    const select = this.element.querySelector("#insert-block-type")
+    if (!select) return
+
+    const elementType = select.value
+    const starterText = ELEMENT_STARTER_TEXT[elementType] || ""
+
+    const p = document.createElement("p")
+    p.dataset.element = elementType
+    p.textContent = starterText
+
+    const sel = window.getSelection()
+    let inserted = false
+
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0)
+      if (this.contentTarget.contains(range.commonAncestorContainer)) {
+        let anchor = range.commonAncestorContainer
+        while (anchor && anchor !== this.contentTarget && anchor.parentNode !== this.contentTarget) {
+          anchor = anchor.parentNode
+        }
+        if (anchor && anchor !== this.contentTarget) {
+          anchor.after(p)
+          inserted = true
+        }
+      }
+    }
+
+    if (!inserted) {
+      this.contentTarget.appendChild(p)
+    }
+
+    const textNode = p.firstChild
+    if (textNode) {
+      const newRange = document.createRange()
+      newRange.selectNodeContents(p)
+      sel.removeAllRanges()
+      sel.addRange(newRange)
+    }
+
+    this.contentTarget.focus()
+    this.queueSave()
   }
 
   queueSave() {
@@ -117,6 +170,9 @@ export default class extends Controller {
 
   serializeParagraph(sourceNode) {
     const paragraph = this.emptyParagraph()
+    if (sourceNode.dataset && sourceNode.dataset.element) {
+      paragraph.attrs = { element: sourceNode.dataset.element }
+    }
     Array.from(sourceNode.childNodes).forEach((node) => this.appendInlineNode(paragraph, node))
     return paragraph
   }

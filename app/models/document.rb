@@ -1,6 +1,9 @@
 class Document < ApplicationRecord
   DOC_SHORTCUT_THUMBNAIL = "/icons/write.png".freeze
   FALLBACK_TITLE = "Untitled Document".freeze
+  VALID_SCREENPLAY_ELEMENTS = %w[
+    scene_heading action character dialogue parenthetical transition
+  ].freeze
   EMPTY_CONTENT_AST = {
     "type" => "doc",
     "version" => 1,
@@ -58,7 +61,9 @@ class Document < ApplicationRecord
         end
       end.join
 
-      "<p>#{inner_html.presence || '<br>'}</p>"
+      element = paragraph_element_attr(block)
+      attrs = element ? " data-element=\"#{ERB::Util.html_escape(element)}\"" : ""
+      "<p#{attrs}>#{inner_html.presence || '<br>'}</p>"
     end.join.presence || "<p><br></p>"
   end
 
@@ -91,7 +96,10 @@ class Document < ApplicationRecord
         end
       end
 
-      { "type" => "paragraph", "children" => nodes }
+      paragraph = { "type" => "paragraph", "children" => nodes }
+      element = paragraph_element_attr(block)
+      paragraph["attrs"] = { "element" => element } if element
+      paragraph
     end
 
     {
@@ -144,5 +152,13 @@ class Document < ApplicationRecord
     return if shortcut.blank?
 
     shortcut.update!(label: desktop_shortcut_label)
+  end
+
+  def paragraph_element_attr(block)
+    attrs = block["attrs"]
+    return unless attrs.is_a?(Hash)
+
+    element = attrs["element"].to_s.strip
+    element.presence if VALID_SCREENPLAY_ELEMENTS.include?(element)
   end
 end
