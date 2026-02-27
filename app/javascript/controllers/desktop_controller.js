@@ -158,6 +158,23 @@ export default class extends Controller {
       this.windowCleanupCallbacks.push(() => titlebar.removeEventListener("pointerdown", onTitlebarPointerDown))
     }
 
+    const closeControl = windowEl.querySelector('[data-window-control="close"]')
+    if (closeControl) {
+      const onClosePointerDown = (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      const onCloseClick = (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        this.closeWindow(windowEl)
+      }
+      closeControl.addEventListener("pointerdown", onClosePointerDown)
+      closeControl.addEventListener("click", onCloseClick)
+      this.windowCleanupCallbacks.push(() => closeControl.removeEventListener("pointerdown", onClosePointerDown))
+      this.windowCleanupCallbacks.push(() => closeControl.removeEventListener("click", onCloseClick))
+    }
+
     const onWindowPointerDown = () => this.bringWindowToFront(windowEl)
     const onWindowPointerUp = () => this.scheduleWindowPersist(windowEl, 80)
     windowEl.addEventListener("pointerdown", onWindowPointerDown)
@@ -228,6 +245,9 @@ export default class extends Controller {
     for (let index = 0; index < 3; index += 1) {
       const dot = document.createElement("span")
       dot.className = "ig-window__dot"
+      if (index === 0) {
+        dot.dataset.windowControl = "close"
+      }
       traffic.appendChild(dot)
     }
 
@@ -261,6 +281,7 @@ export default class extends Controller {
 
   startWindowDrag(event) {
     if (event.button !== 0) return
+    if (event.target.closest(".ig-window__traffic")) return
 
     const windowEl = event.currentTarget.closest(".home__window")
     if (!windowEl) return
@@ -284,6 +305,33 @@ export default class extends Controller {
     window.addEventListener("pointercancel", this.windowPointerEndHandler)
 
     event.preventDefault()
+  }
+
+  closeWindow(windowEl) {
+    if (!windowEl) return
+
+    if (this.draggingWindow?.element === windowEl) {
+      this.draggingWindow = null
+      window.removeEventListener("pointermove", this.windowPointerMoveHandler)
+      window.removeEventListener("pointerup", this.windowPointerEndHandler)
+      window.removeEventListener("pointercancel", this.windowPointerEndHandler)
+    }
+
+    const key = windowEl.dataset.desktopWindowKey
+    if (key) {
+      const pendingPersist = this.resizePersistTimers.get(key)
+      if (pendingPersist) {
+        window.clearTimeout(pendingPersist)
+        this.resizePersistTimers.delete(key)
+      }
+    }
+
+    if (this.windowResizeObserver) {
+      this.windowResizeObserver.unobserve(windowEl)
+    }
+
+    this.windowElements = (this.windowElements || []).filter((element) => element !== windowEl)
+    windowEl.remove()
   }
 
   onWindowPointerMove(event) {
