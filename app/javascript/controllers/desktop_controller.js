@@ -187,6 +187,12 @@ export default class extends Controller {
       const onDotClick = () => {
         dot.classList.remove("is-pressed")
         if (dot.dataset.windowControl === "close") return
+
+        if (dot.dataset.windowControl === "open-document") {
+          this.openDocumentPage(windowEl)
+          return
+        }
+
         this.playWindowDotReleaseAnimation(dot)
       }
 
@@ -262,6 +268,7 @@ export default class extends Controller {
     windowEl.dataset.desktopWindowY = String(y)
     windowEl.dataset.desktopWindowWidth = String(width)
     windowEl.dataset.desktopWindowHeight = String(height)
+    windowEl.dataset.documentPath = `/docs/${documentId}`
 
     const titlebar = document.createElement("header")
     titlebar.className = "ig-window__titlebar"
@@ -275,6 +282,8 @@ export default class extends Controller {
       dot.className = "ig-window__dot"
       if (index === 0) {
         dot.dataset.windowControl = "close"
+      } else if (index === 2) {
+        dot.dataset.windowControl = "open-document"
       }
       traffic.appendChild(dot)
     }
@@ -360,6 +369,13 @@ export default class extends Controller {
 
     this.windowElements = (this.windowElements || []).filter((element) => element !== windowEl)
     windowEl.remove()
+  }
+
+  openDocumentPage(windowEl) {
+    const documentPath = windowEl?.dataset.documentPath
+    if (!documentPath) return
+
+    window.location.assign(documentPath)
   }
 
   playWindowDotReleaseAnimation(dot) {
