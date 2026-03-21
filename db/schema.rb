@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_10_153000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_120000) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.json "content_ast", default: {}, null: false
@@ -32,6 +32,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_153000) do
     t.string "title"
     t.integer "top"
     t.datetime "updated_at", null: false
+    t.string "user_id"
+    t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
   create_table "shortcuts", force: :cascade do |t|
@@ -71,5 +73,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_153000) do
   end
 
   add_foreign_key "documents", "users"
+  add_foreign_key "notes", "users"
   add_foreign_key "shortcuts", "documents"
 end

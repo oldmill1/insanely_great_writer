@@ -46,8 +46,8 @@ class HomeController < ApplicationController
     return [] unless authed?
     return [] unless Note.column_names.include?("user_id")
 
-    Note.where(user_id: current_user.id).order(created_at: :asc).limit(2).map.with_index do |note, index|
-      presentation = NOTE_PRESENTATIONS[index] || NOTE_PRESENTATIONS.last
+    Note.where(user_id: current_user.id).order(created_at: :asc).map.with_index do |note, index|
+      presentation = NOTE_PRESENTATIONS[index % NOTE_PRESENTATIONS.length]
 
       {
         id: note.id,
@@ -95,6 +95,8 @@ class HomeController < ApplicationController
   def load_context_menu_items
     if authed?
       [
+        { label: "New Note", intent: "new_note", kind: "action" },
+        "break",
         { label: "Logout", intent: "logout", kind: "action" },
         { label: "User Settings", intent: "user_settings", kind: "action" }
       ]

@@ -1,38 +1,79 @@
 class NotesController < ApplicationController
   POSITION_FIELDS = %i[top right bottom left].freeze
+  NOTE_PRESENTATIONS = [
+    { variant: "blue", width: "28rem", height: "12rem" },
+    { variant: "yellow", width: "22rem", height: "10rem" }
+  ].freeze
+
+  before_action :authenticate_user!
+  before_action :set_note, only: [ :update, :update_position, :update_expanded ]
+
+  def create
+    note = current_user.notes.create!(create_note_attributes)
+
+    render json: {
+      id: note.id,
+      html: render_to_string(
+        partial: "home/desktop_note",
+        formats: [ :html ],
+        locals: { note: desktop_note_payload(note) }
+      )
+    }, status: :created
+  end
+
+  def update
+    if @note.update(note_params)
+      render json: @note.slice(:id, :title, :content), status: :ok
+    else
+      render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
   def update_position
-    note = Note.find(params[:id])
-
-    if note.update(position_attributes)
-      render json: note.slice(:id, :top, :right, :bottom, :left)
+    if @note.update(position_attributes)
+      render json: @note.slice(:id, :top, :right, :bottom, :left)
     else
-      render json: { errors: note.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def update_expanded
-    note = Note.find(params[:id])
     expanded = parse_expanded_param(params[:expanded])
 
     if expanded.nil?
       return render json: { errors: [ "Expanded must be true or false" ] }, status: :unprocessable_entity
     end
 
-    if note.update(expanded: expanded)
-      render json: note.slice(:id, :expanded)
+    if @note.update(expanded: expanded)
+      render json: @note.slice(:id, :expanded)
     else
-      render json: { errors: note.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   private
+
+  def set_note
+    @note = current_user.notes.find(params[:id])
+  end
+
+  def note_params
+    params.require(:note).permit(:title, :content)
+  end
 
   def position_attributes
     POSITION_FIELDS.index_with do |field|
       raw = params[field]
       raw.present? ? raw.to_i : nil
     end
+  end
+
+  def create_note_attributes
+    {
+      title: "",
+      content: "",
+      expanded: true
+    }.merge(position_attributes.compact)
   end
 
   def parse_expanded_param(raw_value)
@@ -42,5 +83,24 @@ class NotesController < ApplicationController
     else
       nil
     end
+  end
+
+  def desktop_note_payload(note)
+    presentation_index = [ current_user.notes.count - 1, 0 ].max
+    presentation = NOTE_PRESENTATIONS[presentation_index % NOTE_PRESENTATIONS.length]
+
+    {
+      id: note.id,
+      title: note.title,
+      content: note.content,
+      top: note.top,
+      right: note.right,
+      bottom: note.bottom,
+      left: note.left,
+      expanded: note.expanded,
+      variant: presentation[:variant],
+      width: presentation[:width],
+      height: presentation[:height]
+    }
   end
 end

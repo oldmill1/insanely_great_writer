@@ -51,7 +51,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "does not load user notes or user shortcuts when not authed" do
-    Note.create!(title: "Private Note", content: "Body", expanded: true, top: 55, left: 48)
+    Note.create!(user: users(:one), title: "Private Note", content: "Body", expanded: true, top: 55, left: 48)
     Document.create!(user: users(:one), title: "Private Draft", content: "Hidden")
 
     get root_path
@@ -88,10 +88,20 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
+    assert_includes response.body, "New Note"
     assert_includes response.body, "Logout"
     assert_includes response.body, "User Settings"
     assert_not_includes response.body, "Login"
     assert_not_includes response.body, "Register"
+  end
+
+  test "renders notes only for the logged-in user" do
+    sign_in_as(users(:one))
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, notes(:one).content
+    assert_not_includes response.body, notes(:two).content
   end
 
   test "does not backfill demo notes on home load" do

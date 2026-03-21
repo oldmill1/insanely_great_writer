@@ -41,43 +41,7 @@
   </div>
 
   <% @notes.each do |note| %>
-    <div
-      class="home__note"
-      data-controller="draggable note-layer"
-      data-draggable-handle-selector-value=".ig-note__titlebar"
-      data-draggable-persist-path-value="/notes/<%= note[:id] %>/position"
-      <% if note[:top].present? %>
-        data-draggable-top-value="<%= note[:top] %>"
-      <% elsif note[:bottom].present? %>
-        data-draggable-bottom-value="<%= note[:bottom] %>"
-      <% else %>
-        data-draggable-top-value="55"
-      <% end %>
-      <% if note[:left].present? %>
-        data-draggable-left-value="<%= note[:left] %>"
-      <% elsif note[:right].present? %>
-        data-draggable-right-value="<%= note[:right] %>"
-      <% else %>
-        data-draggable-left-value="48"
-      <% end %>
-      data-action="
-        pointerdown->note-layer#activate
-        focusin->note-layer#activate
-        pointerdown->draggable#start
-        pointermove->draggable#move
-        pointerup->draggable#end
-        pointercancel->draggable#end
-      "
-    >
-      <%= render "shared/ig_note",
-        title: note[:title].presence || "Untitled Note",
-        content: note[:content].presence || "No note found.",
-        variant: note[:variant],
-        mode: note[:expanded] ? "expanded" : "collapsed",
-        persist_path: "/notes/#{note[:id]}/expanded",
-        width: note[:width],
-        height: note[:height] %>
-    </div>
+    <%= render "desktop_note", note: note %>
   <% end %>
 
   <div

@@ -1,8 +1,7 @@
 class Note < ApplicationRecord
   include EdgePositionable
+  belongs_to :user
 
-  validates :title, presence: true
-  validates :content, presence: true
   validates :expanded, inclusion: { in: [ true, false ] }
 
   private

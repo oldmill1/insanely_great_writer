@@ -11,6 +11,7 @@ export default class extends Controller {
   connect() {
     this.defaultMenuMarkup = this.hasMenuTarget ? this.menuTarget.innerHTML : ""
     this.selectedRecordShortcutId = null
+    this.menuPosition = { x: 48, y: 55 }
   }
 
   open(event) {
@@ -57,6 +58,9 @@ export default class extends Controller {
         if (this.hasLogoutPathValue) this.submitLogoutForm()
         this.hide()
         return
+      case "new_note":
+        this.createNote()
+        return
       case "delete":
         this.deleteSelectedRecordShortcut()
         return
@@ -91,6 +95,7 @@ export default class extends Controller {
     const left = Math.max(margin, Math.min(x, maxLeft))
     const top = Math.max(margin, Math.min(y, maxTop))
 
+    this.menuPosition = { x: left, y: top }
     this.menuTarget.style.left = `${left}px`
     this.menuTarget.style.top = `${top}px`
     this.menuTarget.style.visibility = "visible"
@@ -211,5 +216,54 @@ export default class extends Controller {
 
     document.body.append(form)
     form.submit()
+  }
+
+  async createNote() {
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    try {
+      const response = await fetch("/notes", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          top: Math.max(20, Math.round(this.menuPosition.y - 18)),
+          left: Math.max(20, Math.round(this.menuPosition.x - 12))
+        })
+      })
+
+      if (!response.ok) return
+
+      const payload = await response.json()
+      if (!payload?.html) return
+
+      this.insertNote(payload.html)
+    } finally {
+      this.hide()
+    }
+  }
+
+  insertNote(noteHtml) {
+    const template = document.createElement("template")
+    template.innerHTML = noteHtml.trim()
+
+    const noteElement = template.content.firstElementChild
+    if (!noteElement) return
+
+    document.body.appendChild(noteElement)
+    this.focusNote(noteElement)
+  }
+
+  focusNote(noteElement) {
+    document.querySelectorAll(".home__note.is-active").forEach((note) => {
+      if (note !== noteElement) note.classList.remove("is-active")
+    })
+
+    noteElement.classList.add("is-active")
+    noteElement.querySelector(".ig-note__body")?.focus()
   }
 }

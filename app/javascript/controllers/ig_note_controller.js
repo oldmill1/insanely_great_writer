@@ -2,13 +2,22 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static values = {
-    persistPath: String
+    persistPath: String,
+    contentPersistPath: String
   }
 
   static targets = ["body", "toggleControl"]
 
   connect() {
+    this.saveTimer = null
     this.syncState()
+  }
+
+  disconnect() {
+    if (this.saveTimer) {
+      window.clearTimeout(this.saveTimer)
+      this.saveTimer = null
+    }
   }
 
   toggle() {
@@ -29,6 +38,28 @@ export default class extends Controller {
     if (this.hasBodyTarget) {
       this.bodyTarget.hidden = !expanded
     }
+  }
+
+  scheduleSave() {
+    if (!this.hasContentPersistPathValue || !this.hasBodyTarget) return
+
+    if (this.saveTimer) {
+      window.clearTimeout(this.saveTimer)
+    }
+
+    this.saveTimer = window.setTimeout(() => {
+      this.saveTimer = null
+      this.persistContent()
+    }, 350)
+  }
+
+  saveNow() {
+    if (this.saveTimer) {
+      window.clearTimeout(this.saveTimer)
+      this.saveTimer = null
+    }
+
+    this.persistContent()
   }
 
   async persistExpanded() {
@@ -54,6 +85,35 @@ export default class extends Controller {
       }
     } catch (error) {
       console.error("[ig-note] failed to persist expanded state", error)
+    }
+  }
+
+  async persistContent() {
+    if (!this.hasContentPersistPathValue || !this.hasBodyTarget) return
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    try {
+      const response = await fetch(this.contentPersistPathValue, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          note: {
+            content: this.bodyTarget.innerHTML
+          }
+        })
+      })
+
+      if (!response.ok) {
+        const payload = await response.text()
+        throw new Error(`HTTP ${response.status}: ${payload}`)
+      }
+    } catch (error) {
+      console.error("[ig-note] failed to persist note content", error)
     }
   }
 }

@@ -7,6 +7,7 @@
   note_body_id = local_assigns[:body_id].presence || "ig-note-body-#{SecureRandom.hex(6)}"
   note_expanded = note_mode == "expanded"
   note_persist_path = local_assigns[:persist_path].presence
+  note_content_persist_path = local_assigns[:content_persist_path].presence
 
   note_classes = ["ig-note", "ig-note--#{note_variant}", "ig-note--#{note_mode}"]
   note_classes << class_name if local_assigns[:class_name].present?
@@ -29,6 +30,7 @@
   data-note-variant="<%= note_variant %>"
   data-note-mode="<%= note_mode %>"
   <% if note_persist_path.present? %>data-ig-note-persist-path-value="<%= note_persist_path %>"<% end %>
+  <% if note_content_persist_path.present? %>data-ig-note-content-persist-path-value="<%= note_content_persist_path %>"<% end %>
   <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
 >
   <header class="ig-note__titlebar" data-action="click->ig-note#toggle">
@@ -53,6 +55,7 @@
     aria-multiline="true"
     spellcheck="true"
     data-ig-note-target="body"
+    data-action="input->ig-note#scheduleSave blur->ig-note#saveNow"
     <%= "hidden" unless note_expanded %>
   ><%= sanitize(content.to_s) %></div>
 </section>
