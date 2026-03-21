@@ -29,6 +29,17 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "<p>Saved body</p>", note.reload.content
   end
 
+  test "deletes a note for the signed-in owner" do
+    sign_in_as(users(:one))
+    note = notes(:one)
+
+    assert_difference("Note.count", -1) do
+      delete "/notes/#{note.id}", as: :json
+    end
+
+    assert_response :no_content
+  end
+
   test "updates note geometry for the signed-in owner" do
     sign_in_as(users(:one))
     note = notes(:one)
@@ -98,6 +109,16 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:one))
 
     patch "/notes/#{notes(:two).id}/expanded", params: { expanded: false }, as: :json
+
+    assert_response :not_found
+  end
+
+  test "does not allow deleting another user's note" do
+    sign_in_as(users(:one))
+
+    assert_no_difference("Note.count") do
+      delete "/notes/#{notes(:two).id}", as: :json
+    end
 
     assert_response :not_found
   end

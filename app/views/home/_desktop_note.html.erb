@@ -38,6 +38,7 @@
     content: note[:content].presence || "",
     variant: note[:variant],
     mode: note[:expanded] ? "expanded" : "collapsed",
+    delete_path: "/notes/#{note[:id]}",
     persist_path: "/notes/#{note[:id]}/expanded",
     content_persist_path: "/notes/#{note[:id]}",
     width: note[:width],

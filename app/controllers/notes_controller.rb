@@ -6,7 +6,7 @@ class NotesController < ApplicationController
   ].freeze
 
   before_action :authenticate_user!
-  before_action :set_note, only: [ :update, :update_geometry, :update_position, :update_expanded ]
+  before_action :set_note, only: [ :update, :destroy, :update_geometry, :update_position, :update_expanded ]
 
   def create
     note = current_user.notes.create!(create_note_attributes)
@@ -27,6 +27,11 @@ class NotesController < ApplicationController
     else
       render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    @note.destroy!
+    head :no_content
   end
 
   def update_geometry

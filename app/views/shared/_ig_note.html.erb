@@ -6,6 +6,7 @@
   note_title = local_assigns[:title].presence || "Note"
   note_body_id = local_assigns[:body_id].presence || "ig-note-body-#{SecureRandom.hex(6)}"
   note_expanded = note_mode == "expanded"
+  note_delete_path = local_assigns[:delete_path].presence
   note_persist_path = local_assigns[:persist_path].presence
   note_content_persist_path = local_assigns[:content_persist_path].presence
 
@@ -29,6 +30,7 @@
   data-controller="ig-note"
   data-note-variant="<%= note_variant %>"
   data-note-mode="<%= note_mode %>"
+  <% if note_delete_path.present? %>data-ig-note-delete-path-value="<%= note_delete_path %>"<% end %>
   <% if note_persist_path.present? %>data-ig-note-persist-path-value="<%= note_persist_path %>"<% end %>
   <% if note_content_persist_path.present? %>data-ig-note-content-persist-path-value="<%= note_content_persist_path %>"<% end %>
   <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
@@ -36,15 +38,28 @@
   <header class="ig-note__titlebar" data-action="click->ig-note#toggle">
     <button
       type="button"
-      class="ig-note__toggle ig-note__chrome ig-note__chrome--left"
+      class="ig-note__delete-trigger ig-note__chrome ig-note__chrome--left"
+      aria-label="Delete note"
+      data-ig-note-target="deleteTrigger"
+      data-action="click->ig-note#requestDelete:stop"
+    ></button>
+    <button
+      type="button"
+      class="ig-note__delete-confirm"
+      hidden
+      data-ig-note-target="deleteConfirm"
+      data-action="click->ig-note#deleteNote:stop"
+    >Confirm</button>
+    <h2 class="ig-note__title"><%= note_title %></h2>
+    <button
+      type="button"
+      class="ig-note__toggle ig-note__chrome ig-note__chrome--right"
       aria-label="Toggle note"
       aria-expanded="<%= note_expanded %>"
       aria-controls="<%= note_body_id %>"
       data-ig-note-target="toggleControl"
       data-action="click->ig-note#toggle:stop"
     ></button>
-    <h2 class="ig-note__title"><%= note_title %></h2>
-    <span class="ig-note__chrome ig-note__chrome--right" aria-hidden="true"></span>
   </header>
 
   <div

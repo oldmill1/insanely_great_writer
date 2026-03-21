@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   patch "docs/:id" => "documents#update"
   post "notes" => "notes#create"
   patch "notes/:id" => "notes#update"
+  delete "notes/:id" => "notes#destroy"
   patch "notes/:id/geometry" => "notes#update_geometry"
   patch "notes/:id/position" => "notes#update_position"
   patch "notes/:id/expanded" => "notes#update_expanded"

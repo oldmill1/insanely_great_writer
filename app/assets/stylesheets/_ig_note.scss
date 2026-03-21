@@ -57,15 +57,40 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
-.ig-note__toggle {
+.ig-note__toggle,
+.ig-note__delete-trigger {
   appearance: none;
   padding: 0;
   cursor: pointer;
 }
 
-.ig-note__toggle:focus-visible {
+.ig-note__toggle:focus-visible,
+.ig-note__delete-trigger:focus-visible,
+.ig-note__delete-confirm:focus-visible {
   outline: 2px solid rgba(15, 23, 42, 0.65);
   outline-offset: 1px;
+}
+
+.ig-note__delete-confirm {
+  appearance: none;
+  justify-self: start;
+  min-width: 4.5rem;
+  min-height: 1.35rem;
+  padding: 0 0.6rem;
+  border: 1px solid rgba(8, 47, 73, 0.35);
+  border-radius: 999px;
+  background: #d9f2ff;
+  color: #0c3952;
+  font-family: v.$font-mono;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.ig-note--confirming-delete .ig-note__titlebar {
+  grid-template-columns: auto 1fr auto;
 }
 
 .ig-note__body {
