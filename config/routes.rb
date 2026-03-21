@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "home#index"
+  get "desktop_items" => "home#desktop_items"
   get "sandbox" => "home#sandbox"
   post "docs" => "documents#create", as: :documents
   get "docs/:id" => "documents#show", as: :doc

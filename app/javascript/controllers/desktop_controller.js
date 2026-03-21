@@ -789,6 +789,14 @@ export default class extends Controller {
     this.render()
   }
 
+  replaceShortcuts(shortcuts) {
+    if (!Array.isArray(shortcuts)) return
+
+    this.shortcutsValue = shortcuts
+    this.selectedShortcutId = null
+    this.render()
+  }
+
   syncRenderedShortcutPositions() {
     if (!Array.isArray(this.shortcutsValue) || this.shortcutsValue.length === 0) return
 

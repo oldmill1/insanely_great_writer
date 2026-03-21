@@ -239,10 +239,7 @@ export default class extends Controller {
 
       if (!response.ok) return
 
-      const payload = await response.json()
-      if (!payload?.desktop_item) return
-
-      this.addShortcutToDesktop(payload.desktop_item)
+      await this.refreshDesktopShortcuts()
     } finally {
       this.hide()
     }
@@ -272,6 +269,32 @@ export default class extends Controller {
     if (!desktopController?.addShortcut) return
 
     desktopController.addShortcut(shortcut)
+  }
+
+  async refreshDesktopShortcuts() {
+    const response = await fetch("/desktop_items", {
+      method: "GET",
+      headers: {
+        "Accept": "application/json"
+      },
+      credentials: "same-origin"
+    })
+
+    if (!response.ok) return
+
+    const payload = await response.json()
+    if (!Array.isArray(payload?.shortcuts)) return
+
+    const desktopElement = this.element.querySelector("[data-controller~='desktop']")
+    if (!desktopElement) return
+
+    const desktopController = this.application.getControllerForElementAndIdentifier(
+      desktopElement,
+      "desktop"
+    )
+    if (!desktopController?.replaceShortcuts) return
+
+    desktopController.replaceShortcuts(payload.shortcuts)
   }
 
   openSelectedItem() {

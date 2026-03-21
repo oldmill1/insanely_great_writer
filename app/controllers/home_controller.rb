@@ -26,6 +26,12 @@ class HomeController < ApplicationController
     @context_menu_items = load_context_menu_items
   end
 
+  def desktop_items
+    ensure_demo_records!
+
+    render json: { shortcuts: load_shortcuts }
+  end
+
   def sandbox
     @sandbox_component = params[:id].to_s
   end

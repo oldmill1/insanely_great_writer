@@ -122,6 +122,21 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "ig-window__title\">Welcome"
   end
 
+  test "desktop items endpoint returns current root filesystem items" do
+    sign_in_as(users(:one))
+    Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
+    Document.create!(user: users(:one), title: "Opening", content: "", path: "root/Opening")
+
+    get "/desktop_items", as: :json
+
+    assert_response :success
+    payload = JSON.parse(response.body)
+    labels = payload.fetch("shortcuts").map { |item| item.fetch("label") }
+    assert_includes labels, "Chapter 1"
+    assert_includes labels, "Opening"
+    assert_includes labels, "Trash"
+  end
+
   test "renders root folders and excludes nested documents from desktop" do
     Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
     Document.create!(user: users(:one), title: "Inside Folder", content: "", path: "root/Chapter 1/Inside Folder")
