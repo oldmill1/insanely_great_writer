@@ -11,6 +11,24 @@ const ELEMENT_STARTER_TEXT = {
   transition: "CUT TO:"
 }
 
+const NEXT_ELEMENT = {
+  scene_heading: "action",
+  action: "action",
+  character: "dialogue",
+  dialogue: "character",
+  parenthetical: "dialogue",
+  transition: "scene_heading"
+}
+
+const ELEMENT_ORDER = [
+  "scene_heading",
+  "action",
+  "character",
+  "dialogue",
+  "parenthetical",
+  "transition"
+]
+
 export default class extends Controller {
   static values = {
     savePath: String
@@ -22,6 +40,8 @@ export default class extends Controller {
     this.pendingSaveTimeout = null
     this.lastSavedSignature = this.currentAstSignature()
     this.setStatus("idle")
+    this.boundSelectionChange = this.syncInsertTypeToSelection.bind(this)
+    document.addEventListener("selectionchange", this.boundSelectionChange)
   }
 
   disconnect() {
@@ -29,17 +49,69 @@ export default class extends Controller {
       clearTimeout(this.pendingSaveTimeout)
       this.pendingSaveTimeout = null
     }
+
+    if (this.boundSelectionChange) {
+      document.removeEventListener("selectionchange", this.boundSelectionChange)
+      this.boundSelectionChange = null
+    }
   }
 
   insertElement() {
     const select = this.element.querySelector("#insert-block-type")
     if (!select) return
 
-    const elementType = select.value
+    this.insertBlockAfterSelection(select.value)
+  }
+
+  handleKeydown(event) {
+    const selection = window.getSelection()
+    const currentBlock = selection && selection.rangeCount > 0
+      ? this.findCurrentBlock(selection.getRangeAt(0))
+      : null
+
+    if (currentBlock && this.shouldReplacePlaceholder(currentBlock, event)) {
+      event.preventDefault()
+      this.replacePlaceholderText(currentBlock, event.key)
+      return
+    }
+
+    if (event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey) {
+      if (!currentBlock) return
+
+      event.preventDefault()
+      const currentType = currentBlock.dataset.element || this.currentInsertType() || "action"
+      const nextType = this.cycleElementType(currentType, event.shiftKey ? -1 : 1)
+      this.applyElementType(currentBlock, nextType)
+      this.queueSave()
+      return
+    }
+
+    if (event.key !== "Enter" || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
+      return
+    }
+
+    if (!currentBlock) return
+
+    event.preventDefault()
+
+    const detectedType = this.detectElementType(currentBlock)
+    if (detectedType) {
+      this.applyElementType(currentBlock, detectedType)
+    }
+
+    const currentType = currentBlock.dataset.element || this.currentInsertType() || "action"
+    const nextType = NEXT_ELEMENT[currentType] || "action"
+
+    this.insertBlockAfterSelection(nextType)
+    this.updateInsertType(nextType)
+  }
+
+  insertBlockAfterSelection(elementType) {
     const starterText = ELEMENT_STARTER_TEXT[elementType] || ""
 
     const p = document.createElement("p")
     p.dataset.element = elementType
+    p.dataset.placeholder = starterText ? "true" : "false"
     p.textContent = starterText
 
     const sel = window.getSelection()
@@ -47,15 +119,10 @@ export default class extends Controller {
 
     if (sel && sel.rangeCount > 0) {
       const range = sel.getRangeAt(0)
-      if (this.contentTarget.contains(range.commonAncestorContainer)) {
-        let anchor = range.commonAncestorContainer
-        while (anchor && anchor !== this.contentTarget && anchor.parentNode !== this.contentTarget) {
-          anchor = anchor.parentNode
-        }
-        if (anchor && anchor !== this.contentTarget) {
-          anchor.after(p)
-          inserted = true
-        }
+      const anchor = this.findCurrentBlock(range)
+      if (anchor) {
+        anchor.after(p)
+        inserted = true
       }
     }
 
@@ -63,15 +130,121 @@ export default class extends Controller {
       this.contentTarget.appendChild(p)
     }
 
-    const textNode = p.firstChild
-    if (textNode) {
-      const newRange = document.createRange()
-      newRange.selectNodeContents(p)
-      sel.removeAllRanges()
-      sel.addRange(newRange)
+    this.focusBlockContents(p, { selectAll: true })
+    this.contentTarget.focus()
+    this.queueSave()
+  }
+
+  focusBlockContents(block, { selectAll = false, collapseToEnd = false } = {}) {
+    const sel = window.getSelection()
+    if (!sel) return
+
+    const newRange = document.createRange()
+    newRange.selectNodeContents(block)
+    if (!selectAll) newRange.collapse(!collapseToEnd)
+    sel.removeAllRanges()
+    sel.addRange(newRange)
+  }
+
+  currentInsertType() {
+    const select = this.element.querySelector("#insert-block-type")
+    return select?.value
+  }
+
+  updateInsertType(elementType) {
+    const select = this.element.querySelector("#insert-block-type")
+    if (select) select.value = elementType
+  }
+
+  applyElementType(block, elementType) {
+    block.dataset.element = elementType
+    this.updateInsertType(elementType)
+  }
+
+  cycleElementType(currentType, direction = 1) {
+    const currentIndex = ELEMENT_ORDER.indexOf(currentType)
+    const baseIndex = currentIndex >= 0 ? currentIndex : ELEMENT_ORDER.indexOf("action")
+    const length = ELEMENT_ORDER.length
+    const nextIndex = (baseIndex + direction + length) % length
+    return ELEMENT_ORDER[nextIndex]
+  }
+
+  detectElementType(block) {
+    const text = (block.innerText || block.textContent || "").trim()
+    if (!text) return null
+
+    if (/^(INT\.|EXT\.|INT\/EXT\.|EST\.)/i.test(text)) {
+      return "scene_heading"
     }
 
-    this.contentTarget.focus()
+    if (text.startsWith("(")) {
+      return "parenthetical"
+    }
+
+    if (/^(>|FADE OUT:|FADE IN:|CUT TO:|SMASH CUT TO:|MATCH CUT TO:)/i.test(text)) {
+      return "transition"
+    }
+
+    if (text.length <= 30 && text === text.toUpperCase() && /[A-Z]/.test(text) && !/[.!?]/.test(text)) {
+      return "character"
+    }
+
+    return null
+  }
+
+  shouldReplacePlaceholder(block, event) {
+    if (!block || block.dataset.placeholder !== "true") return false
+    if (event.ctrlKey || event.metaKey || event.altKey) return false
+    if (event.key.length !== 1 && event.key !== "Backspace") return false
+
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) return false
+    const range = selection.getRangeAt(0)
+    if (!range.collapsed && selection.toString().trim() === (block.textContent || "").trim()) return true
+
+    const blockText = (block.textContent || "")
+    return selection.toString() === blockText
+  }
+
+  replacePlaceholderText(block, key) {
+    block.dataset.placeholder = "false"
+    block.textContent = key === "Backspace" ? "" : key
+    this.focusBlockContents(block, { collapseToEnd: true })
+    this.syncInsertTypeToSelection()
+    this.queueSave()
+  }
+
+  syncInsertTypeToSelection() {
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) return
+
+    const block = this.findCurrentBlock(selection.getRangeAt(0))
+    if (!block) return
+
+    const elementType = block.dataset.element || "action"
+    this.updateInsertType(elementType)
+  }
+
+  findCurrentBlock(range) {
+    if (!range || !this.contentTarget.contains(range.commonAncestorContainer)) return null
+
+    let anchor = range.commonAncestorContainer
+    while (anchor && anchor !== this.contentTarget && anchor.parentNode !== this.contentTarget) {
+      anchor = anchor.parentNode
+    }
+
+    return anchor && anchor !== this.contentTarget ? anchor : null
+  }
+
+  handleInput() {
+    const selection = window.getSelection()
+    if (selection && selection.rangeCount > 0) {
+      const block = this.findCurrentBlock(selection.getRangeAt(0))
+      if (block && (block.textContent || "").trim().length > 0) {
+        block.dataset.placeholder = "false"
+      }
+    }
+
     this.queueSave()
   }
 

@@ -32,8 +32,8 @@ module EdgePositionable
   end
 
   def validate_edge_offsets
-    vertical_count = [top, bottom].count(&:present?)
-    horizontal_count = [left, right].count(&:present?)
+    vertical_count = [ top, bottom ].count(&:present?)
+    horizontal_count = [ left, right ].count(&:present?)
 
     errors.add(:base, "Position must include exactly one of top/bottom") if vertical_count != 1
     errors.add(:base, "Position must include exactly one of left/right") if horizontal_count != 1
