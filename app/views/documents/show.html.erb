@@ -11,7 +11,7 @@
         class="doc-terminal-content"
         contenteditable="true"
         data-doc-editor-target="content"
-        data-action="input->doc-editor#queueSave"
+        data-action="input->doc-editor#queueSave keydown->doc-editor#handleKeydown"
       ><%= raw(@document.editor_html) %></div>
       <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
         <%= render "shared/ig_select",
