@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_21_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_131500) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.json "content_ast", default: {}, null: false
@@ -27,12 +27,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_120000) do
     t.text "content"
     t.datetime "created_at", null: false
     t.boolean "expanded", default: true, null: false
+    t.integer "height"
     t.integer "left"
     t.integer "right"
     t.string "title"
     t.integer "top"
     t.datetime "updated_at", null: false
     t.string "user_id"
+    t.integer "width"
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 

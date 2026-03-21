@@ -6,7 +6,7 @@ class NotesController < ApplicationController
   ].freeze
 
   before_action :authenticate_user!
-  before_action :set_note, only: [ :update, :update_position, :update_expanded ]
+  before_action :set_note, only: [ :update, :update_geometry, :update_position, :update_expanded ]
 
   def create
     note = current_user.notes.create!(create_note_attributes)
@@ -24,6 +24,14 @@ class NotesController < ApplicationController
   def update
     if @note.update(note_params)
       render json: @note.slice(:id, :title, :content), status: :ok
+    else
+      render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def update_geometry
+    if @note.update(geometry_params)
+      render json: @note.slice(:id, :top, :right, :bottom, :left, :width, :height), status: :ok
     else
       render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
     end
@@ -61,6 +69,12 @@ class NotesController < ApplicationController
     params.require(:note).permit(:title, :content)
   end
 
+  def geometry_params
+    params.require(:note).permit(:top, :right, :bottom, :left, :width, :height).to_h.transform_values do |value|
+      value.present? ? value.to_i : nil
+    end
+  end
+
   def position_attributes
     POSITION_FIELDS.index_with do |field|
       raw = params[field]
@@ -72,7 +86,9 @@ class NotesController < ApplicationController
     {
       title: "",
       content: "",
-      expanded: true
+      expanded: true,
+      width: 448,
+      height: 192
     }.merge(position_attributes.compact)
   end
 
@@ -98,9 +114,17 @@ class NotesController < ApplicationController
       bottom: note.bottom,
       left: note.left,
       expanded: note.expanded,
+      width: note.width || css_pixel_value(presentation[:width]) || presentation[:width],
       variant: presentation[:variant],
-      width: presentation[:width],
-      height: presentation[:height]
+      height: note.height || css_pixel_value(presentation[:height]) || presentation[:height]
     }
+  end
+
+  def css_pixel_value(value)
+    size = value.to_s
+    return size.to_i if size.ends_with?("px")
+    return (size.to_f * 16).round if size.ends_with?("rem")
+
+    nil
   end
 end

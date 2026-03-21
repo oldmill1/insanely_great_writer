@@ -29,6 +29,29 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "<p>Saved body</p>", note.reload.content
   end
 
+  test "updates note geometry for the signed-in owner" do
+    sign_in_as(users(:one))
+    note = notes(:one)
+
+    patch "/notes/#{note.id}/geometry", params: {
+      note: {
+        top: 96,
+        left: 180,
+        right: nil,
+        bottom: nil,
+        width: 520,
+        height: 280
+      }
+    }, as: :json
+
+    assert_response :success
+    note.reload
+    assert_equal 96, note.top
+    assert_equal 180, note.left
+    assert_equal 520, note.width
+    assert_equal 280, note.height
+  end
+
   test "updates note position with edge offsets" do
     sign_in_as(users(:one))
     note = notes(:one)

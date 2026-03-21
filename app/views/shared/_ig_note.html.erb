@@ -58,4 +58,20 @@
     data-action="input->ig-note#scheduleSave blur->ig-note#saveNow"
     <%= "hidden" unless note_expanded %>
   ><%= sanitize(content.to_s) %></div>
+
+  <button
+    type="button"
+    class="ig-note__resize-handle ig-note__resize-handle--left"
+    aria-label="Resize note from bottom left corner"
+    data-resize-handle="bottom-left"
+    data-action="pointerdown->note-resize#start"
+  ></button>
+
+  <button
+    type="button"
+    class="ig-note__resize-handle ig-note__resize-handle--right"
+    aria-label="Resize note from bottom right corner"
+    data-resize-handle="bottom-right"
+    data-action="pointerdown->note-resize#start"
+  ></button>
 </section>

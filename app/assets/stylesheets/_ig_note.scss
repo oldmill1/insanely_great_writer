@@ -20,6 +20,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
 .ig-note__titlebar {
@@ -80,6 +81,62 @@
 
 .ig-note__body:focus-visible {
   outline: none;
+}
+
+.ig-note__resize-handle {
+  position: absolute;
+  bottom: 0.2rem;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: nwse-resize;
+}
+
+.ig-note__resize-handle::before,
+.ig-note__resize-handle::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0.7rem;
+  border-top: 1px solid color-mix(in srgb, var(--ig-note-border) 75%, #fff 25%);
+}
+
+.ig-note__resize-handle::before {
+  bottom: 0.3rem;
+}
+
+.ig-note__resize-handle::after {
+  bottom: 0.55rem;
+}
+
+.ig-note__resize-handle--left {
+  left: 0.25rem;
+  cursor: nesw-resize;
+}
+
+.ig-note__resize-handle--left::before,
+.ig-note__resize-handle--left::after {
+  left: 0.05rem;
+  transform-origin: left center;
+  transform: rotate(-45deg);
+}
+
+.ig-note__resize-handle--right {
+  right: 0.25rem;
+}
+
+.ig-note__resize-handle--right::before,
+.ig-note__resize-handle--right::after {
+  right: 0.05rem;
+  transform-origin: right center;
+  transform: rotate(45deg);
+}
+
+.ig-note__resize-handle:focus-visible {
+  outline: 2px solid rgba(15, 23, 42, 0.65);
+  outline-offset: 0;
 }
 
 .ig-note--collapsed {

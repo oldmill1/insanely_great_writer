@@ -3,6 +3,8 @@ class Note < ApplicationRecord
   belongs_to :user
 
   validates :expanded, inclusion: { in: [ true, false ] }
+  validates :width, numericality: { only_integer: true, greater_than_or_equal_to: 220, less_than_or_equal_to: 960 }, allow_nil: true
+  validates :height, numericality: { only_integer: true, greater_than_or_equal_to: 120, less_than_or_equal_to: 720 }, allow_nil: true
 
   private
 

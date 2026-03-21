@@ -1,8 +1,9 @@
 <div
   class="home__note"
-  data-controller="draggable note-layer"
+  data-controller="draggable note-layer note-resize"
   data-draggable-handle-selector-value=".ig-note__titlebar"
   data-draggable-persist-path-value="/notes/<%= note[:id] %>/position"
+  data-note-resize-persist-path-value="/notes/<%= note[:id] %>/geometry"
   <% if note[:top].present? %>
     data-draggable-top-value="<%= note[:top] %>"
   <% elsif note[:bottom].present? %>
@@ -16,6 +17,12 @@
     data-draggable-right-value="<%= note[:right] %>"
   <% else %>
     data-draggable-left-value="48"
+  <% end %>
+  <% if note[:width].present? %>
+    data-note-resize-width-value="<%= note[:width] %>"
+  <% end %>
+  <% if note[:height].present? %>
+    data-note-resize-height-value="<%= note[:height] %>"
   <% end %>
   data-action="
     pointerdown->note-layer#activate
