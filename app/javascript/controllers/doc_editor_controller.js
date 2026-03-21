@@ -135,13 +135,13 @@ export default class extends Controller {
     this.queueSave()
   }
 
-  focusBlockContents(block, { selectAll = false } = {}) {
+  focusBlockContents(block, { selectAll = false, collapseToEnd = false } = {}) {
     const sel = window.getSelection()
     if (!sel) return
 
     const newRange = document.createRange()
     newRange.selectNodeContents(block)
-    if (!selectAll) newRange.collapse(true)
+    if (!selectAll) newRange.collapse(!collapseToEnd)
     sel.removeAllRanges()
     sel.addRange(newRange)
   }
@@ -209,7 +209,7 @@ export default class extends Controller {
   replacePlaceholderText(block, key) {
     block.dataset.placeholder = "false"
     block.textContent = key === "Backspace" ? "" : key
-    this.focusBlockContents(block)
+    this.focusBlockContents(block, { collapseToEnd: true })
     this.syncInsertTypeToSelection()
     this.queueSave()
   }
