@@ -40,12 +40,19 @@ export default class extends Controller {
     this.pendingSaveTimeout = null
     this.lastSavedSignature = this.currentAstSignature()
     this.setStatus("idle")
+    this.boundSelectionChange = this.syncInsertTypeToSelection.bind(this)
+    document.addEventListener("selectionchange", this.boundSelectionChange)
   }
 
   disconnect() {
     if (this.pendingSaveTimeout) {
       clearTimeout(this.pendingSaveTimeout)
       this.pendingSaveTimeout = null
+    }
+
+    if (this.boundSelectionChange) {
+      document.removeEventListener("selectionchange", this.boundSelectionChange)
+      this.boundSelectionChange = null
     }
   }
 
@@ -61,6 +68,12 @@ export default class extends Controller {
     const currentBlock = selection && selection.rangeCount > 0
       ? this.findCurrentBlock(selection.getRangeAt(0))
       : null
+
+    if (currentBlock && this.shouldReplacePlaceholder(currentBlock, event)) {
+      event.preventDefault()
+      this.replacePlaceholderText(currentBlock, event.key)
+      return
+    }
 
     if (event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey) {
       if (!currentBlock) return
@@ -98,6 +111,7 @@ export default class extends Controller {
 
     const p = document.createElement("p")
     p.dataset.element = elementType
+    p.dataset.placeholder = starterText ? "true" : "false"
     p.textContent = starterText
 
     const sel = window.getSelection()
@@ -116,18 +130,18 @@ export default class extends Controller {
       this.contentTarget.appendChild(p)
     }
 
-    this.focusBlockContents(p)
+    this.focusBlockContents(p, { selectAll: true })
     this.contentTarget.focus()
     this.queueSave()
   }
 
-  focusBlockContents(block) {
+  focusBlockContents(block, { selectAll = false } = {}) {
     const sel = window.getSelection()
     if (!sel) return
 
     const newRange = document.createRange()
     newRange.selectNodeContents(block)
-    newRange.collapse(true)
+    if (!selectAll) newRange.collapse(true)
     sel.removeAllRanges()
     sel.addRange(newRange)
   }
@@ -178,6 +192,39 @@ export default class extends Controller {
     return null
   }
 
+  shouldReplacePlaceholder(block, event) {
+    if (!block || block.dataset.placeholder !== "true") return false
+    if (event.ctrlKey || event.metaKey || event.altKey) return false
+    if (event.key.length !== 1 && event.key !== "Backspace") return false
+
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) return false
+    const range = selection.getRangeAt(0)
+    if (!range.collapsed && selection.toString().trim() === (block.textContent || "").trim()) return true
+
+    const blockText = (block.textContent || "")
+    return selection.toString() === blockText
+  }
+
+  replacePlaceholderText(block, key) {
+    block.dataset.placeholder = "false"
+    block.textContent = key === "Backspace" ? "" : key
+    this.focusBlockContents(block)
+    this.syncInsertTypeToSelection()
+    this.queueSave()
+  }
+
+  syncInsertTypeToSelection() {
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) return
+
+    const block = this.findCurrentBlock(selection.getRangeAt(0))
+    if (!block) return
+
+    const elementType = block.dataset.element || "action"
+    this.updateInsertType(elementType)
+  }
+
   findCurrentBlock(range) {
     if (!range || !this.contentTarget.contains(range.commonAncestorContainer)) return null
 
@@ -187,6 +234,18 @@ export default class extends Controller {
     }
 
     return anchor && anchor !== this.contentTarget ? anchor : null
+  }
+
+  handleInput() {
+    const selection = window.getSelection()
+    if (selection && selection.rangeCount > 0) {
+      const block = this.findCurrentBlock(selection.getRangeAt(0))
+      if (block && (block.textContent || "").trim().length > 0) {
+        block.dataset.placeholder = "false"
+      }
+    }
+
+    this.queueSave()
   }
 
   queueSave() {
