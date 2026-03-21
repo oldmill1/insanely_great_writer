@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   post "docs" => "documents#create", as: :documents
   get "docs/:id" => "documents#show", as: :doc
   patch "docs/:id" => "documents#update"
+  resources :folders, only: [ :show, :create ]
   post "notes" => "notes#create"
   patch "notes/:id" => "notes#update"
   delete "notes/:id" => "notes#destroy"

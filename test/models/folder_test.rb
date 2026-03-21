@@ -1,0 +1,27 @@
+require "test_helper"
+
+class FolderTest < ActiveSupport::TestCase
+  test "creates a desktop shortcut for root folders" do
+    folder = nil
+
+    assert_difference("Shortcut.count", 1) do
+      folder = Folder.create!(user: users(:one), name: "Acts", path: "root/Acts")
+    end
+
+    assert_equal "/icons/folders/default.png", folder.shortcut.thumbnail
+  end
+
+  test "does not create a desktop shortcut for nested folders" do
+    folder = Folder.create!(user: users(:one), name: "Part A", path: "root/Acts/Part A")
+
+    assert_nil folder.shortcut
+  end
+
+  test "requires name and path" do
+    folder = Folder.new(user: users(:one))
+
+    assert_not folder.valid?
+    assert_includes folder.errors[:name], "can't be blank"
+    assert_includes folder.errors[:path], "can't be blank"
+  end
+end

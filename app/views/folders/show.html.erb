@@ -1,0 +1,77 @@
+<main class="folder-window-page">
+  <%= turbo_frame_tag @frame_id do %>
+    <section
+      class="folder-window"
+      aria-label="Folder window"
+      data-controller="folder-browser"
+      data-folder-browser-folder-id-value="<%= @folder.id %>"
+      data-folder-browser-folder-name-value="<%= @folder.name %>"
+      data-folder-browser-folder-path-value="<%= @folder.path %>"
+      data-folder-browser-create-folder-path-value="<%= folders_path %>"
+      data-folder-browser-create-document-path-value="<%= documents_path %>"
+      data-folder-browser-show-path-value="<%= folder_path(@folder) %>"
+    >
+      <header class="folder-window__toolbar">
+        <h1 class="folder-window__title"><%= @folder.name %></h1>
+        <div class="folder-window__actions">
+          <%= button_tag "New Folder",
+            type: "button",
+            class: "ig-button",
+            data: { action: "folder-browser#createFolder" } %>
+          <%= button_tag "New Document",
+            type: "button",
+            class: "ig-button ig-button--subtle",
+            data: { action: "folder-browser#createDocument" } %>
+        </div>
+      </header>
+
+      <div class="folder-window__groups">
+        <section class="folder-window__group" aria-labelledby="folder-group-folders">
+          <h2 id="folder-group-folders" class="folder-window__group-title">Folders</h2>
+          <% if @children[:folders].any? %>
+            <div class="folder-window__list">
+              <% @children[:folders].each do |child| %>
+                <button
+                  type="button"
+                  class="folder-window__row"
+                  data-action="dblclick->folder-browser#openItem"
+                  data-item-kind="folder"
+                  data-item-id="<%= child.id %>"
+                  data-item-name="<%= child.name %>"
+                >
+                  <span class="folder-window__cell folder-window__cell--name"><%= child.name %></span>
+                  <span class="folder-window__cell folder-window__cell--type">Folder</span>
+                </button>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="folder-window__empty">No folders yet.</p>
+          <% end %>
+        </section>
+
+        <section class="folder-window__group" aria-labelledby="folder-group-documents">
+          <h2 id="folder-group-documents" class="folder-window__group-title">Documents</h2>
+          <% if @children[:documents].any? %>
+            <div class="folder-window__list">
+              <% @children[:documents].each do |child| %>
+                <button
+                  type="button"
+                  class="folder-window__row"
+                  data-action="dblclick->folder-browser#openItem"
+                  data-item-kind="document"
+                  data-item-id="<%= child.id %>"
+                  data-item-name="<%= child.title %>"
+                >
+                  <span class="folder-window__cell folder-window__cell--name"><%= child.title %></span>
+                  <span class="folder-window__cell folder-window__cell--type">Document</span>
+                </button>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="folder-window__empty">No documents yet.</p>
+          <% end %>
+        </section>
+      </div>
+    </section>
+  <% end %>
+</main>

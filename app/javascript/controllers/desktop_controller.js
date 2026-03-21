@@ -230,18 +230,21 @@ export default class extends Controller {
     if (shortcutKind === "system") return
     if (shortcutKind !== "record") return
 
-    const documentId = shortcutButton.dataset.shortcutDocumentId || shortcutButton.dataset.shortcutId
-    if (!documentId) return
+    const itemKind = shortcutButton.dataset.itemKind
+    const itemId = shortcutButton.dataset.itemId
+    const titleText = shortcutButton.querySelector(".ig-shortcut__label")?.textContent?.trim() || "Item"
+    if (!itemKind || !itemId) return
 
-    const windowKey = `document_window_${documentId}`
+    const windowKey = `${itemKind}_window_${itemId}`
     const existingWindow = document.querySelector(`.home__window[data-desktop-window-key="${windowKey}"]`)
     if (existingWindow) {
       this.bringWindowToFront(existingWindow)
       return
     }
 
-    const titleText = shortcutButton.querySelector(".ig-shortcut__label")?.textContent?.trim() || "Document"
-    const windowEl = this.buildDocumentWindow(windowKey, documentId, titleText)
+    const windowEl = itemKind === "folder"
+      ? this.buildFolderWindow(windowKey, itemId, titleText)
+      : this.buildDocumentWindow(windowKey, itemId, titleText)
     document.body.appendChild(windowEl)
 
     this.windowElements = this.windowElements || []
@@ -308,6 +311,70 @@ export default class extends Controller {
     frame.setAttribute("src", frameSrc)
     frame.setAttribute("loading", "lazy")
     frame.textContent = "Loading document..."
+    body.appendChild(frame)
+
+    windowEl.appendChild(titlebar)
+    windowEl.appendChild(body)
+
+    return windowEl
+  }
+
+  buildFolderWindow(windowKey, folderId, titleText) {
+    const openWindowCount = document.querySelectorAll(".home__window").length
+    const offsetStep = 26
+    const x = 220 + (openWindowCount % 8) * offsetStep
+    const y = 88 + (openWindowCount % 7) * offsetStep
+    const width = 680
+    const height = 440
+    const frameId = `folder_window_${folderId}_content`
+    const frameSrc = `/folders/${folderId}?frame_id=${encodeURIComponent(frameId)}`
+
+    const windowEl = document.createElement("section")
+    windowEl.className = "ig-window home__window"
+    windowEl.setAttribute("role", "dialog")
+    windowEl.setAttribute("aria-label", titleText)
+    windowEl.dataset.desktopWindowKey = windowKey
+    windowEl.dataset.desktopWindowX = String(x)
+    windowEl.dataset.desktopWindowY = String(y)
+    windowEl.dataset.desktopWindowWidth = String(width)
+    windowEl.dataset.desktopWindowHeight = String(height)
+
+    const titlebar = document.createElement("header")
+    titlebar.className = "ig-window__titlebar"
+
+    const traffic = document.createElement("div")
+    traffic.className = "ig-window__traffic"
+    traffic.setAttribute("aria-hidden", "true")
+
+    for (let index = 0; index < 3; index += 1) {
+      const dot = document.createElement("span")
+      dot.className = "ig-window__dot"
+      if (index === 0) {
+        dot.dataset.windowControl = "close"
+      }
+      traffic.appendChild(dot)
+    }
+
+    const title = document.createElement("h2")
+    title.className = "ig-window__title"
+    title.textContent = titleText
+
+    const grip = document.createElement("span")
+    grip.className = "ig-window__grip"
+    grip.setAttribute("aria-hidden", "true")
+
+    titlebar.appendChild(traffic)
+    titlebar.appendChild(title)
+    titlebar.appendChild(grip)
+
+    const body = document.createElement("div")
+    body.className = "ig-window__body"
+
+    const frame = document.createElement("turbo-frame")
+    frame.id = frameId
+    frame.setAttribute("src", frameSrc)
+    frame.setAttribute("loading", "lazy")
+    frame.textContent = "Loading folder..."
     body.appendChild(frame)
 
     windowEl.appendChild(titlebar)
@@ -602,8 +669,14 @@ export default class extends Controller {
       button.dataset.shortcutId = shortcutId
     }
 
-    if (this.isRecordShortcut(shortcut) && shortcut.document_id != null) {
-      button.dataset.shortcutDocumentId = String(shortcut.document_id)
+    if (this.isRecordShortcut(shortcut)) {
+      if (shortcut.item_id != null) {
+        button.dataset.itemId = String(shortcut.item_id)
+      }
+
+      if (shortcut.item_kind) {
+        button.dataset.itemKind = shortcut.item_kind
+      }
     }
 
     const thumbnail = document.createElement("img")
@@ -704,6 +777,42 @@ export default class extends Controller {
     }
 
     this.render()
+  }
+
+  addShortcut(shortcut) {
+    if (!shortcut || shortcut.kind !== "record") return
+
+    this.shortcutsValue = this.shortcutsValue.filter((item) => String(item.id) !== String(shortcut.id))
+    this.shortcutsValue.push(shortcut)
+    this.render()
+  }
+
+  openDocumentWindow(documentId, titleText = "Document") {
+    this.openItemWindow("document", documentId, titleText)
+  }
+
+  openFolderWindow(folderId, titleText = "Folder") {
+    this.openItemWindow("folder", folderId, titleText)
+  }
+
+  openItemWindow(itemKind, itemId, titleText) {
+    if (!itemKind || !itemId) return
+
+    const windowKey = `${itemKind}_window_${itemId}`
+    const existingWindow = document.querySelector(`.home__window[data-desktop-window-key="${windowKey}"]`)
+    if (existingWindow) {
+      this.bringWindowToFront(existingWindow)
+      return
+    }
+
+    const windowEl = itemKind === "folder"
+      ? this.buildFolderWindow(windowKey, itemId, titleText)
+      : this.buildDocumentWindow(windowKey, itemId, titleText)
+
+    document.body.appendChild(windowEl)
+    this.windowElements = this.windowElements || []
+    this.windowElements.push(windowEl)
+    this.bindWindow(windowEl)
   }
 
   applySelectionState() {

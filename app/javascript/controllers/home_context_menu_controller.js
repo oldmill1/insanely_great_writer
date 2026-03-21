@@ -10,7 +10,9 @@ export default class extends Controller {
 
   connect() {
     this.defaultMenuMarkup = this.hasMenuTarget ? this.menuTarget.innerHTML : ""
+    this.newMenuMarkupValue = this.newMenuMarkup()
     this.selectedRecordShortcutId = null
+    this.selectedItemKind = null
     this.menuPosition = { x: 48, y: 55 }
   }
 
@@ -61,8 +63,26 @@ export default class extends Controller {
       case "new_note":
         this.createNote()
         return
+      case "new":
+        this.menuTarget.innerHTML = this.newMenuMarkupValue
+        this.showAt(this.menuPosition.x, this.menuPosition.y)
+        return
+      case "back":
+        this.menuTarget.innerHTML = this.defaultMenuMarkup
+        this.showAt(this.menuPosition.x, this.menuPosition.y)
+        return
+      case "new_folder":
+        this.createFolder()
+        return
+      case "new_document":
+        this.createDocument()
+        return
       case "delete":
         this.deleteSelectedRecordShortcut()
+        return
+      case "view":
+        this.openSelectedItem()
+        this.hide()
         return
       default:
         break
@@ -112,12 +132,14 @@ export default class extends Controller {
       }
 
       this.selectShortcut(shortcutButton)
-      this.menuTarget.innerHTML = this.shortcutMenuMarkup()
+      this.selectedItemKind = shortcutButton.dataset.itemKind || null
+      this.menuTarget.innerHTML = this.shortcutMenuMarkup(this.selectedItemKind)
       this.selectedRecordShortcutId = shortcutButton.dataset.shortcutId || null
       return true
     }
 
     this.selectedRecordShortcutId = null
+    this.selectedItemKind = null
     this.menuTarget.innerHTML = this.defaultMenuMarkup
     return true
   }
@@ -135,13 +157,26 @@ export default class extends Controller {
     desktopController.selectByButton(shortcutButton)
   }
 
-  shortcutMenuMarkup() {
+  shortcutMenuMarkup(itemKind) {
+    const deleteButton = itemKind === "document"
+      ? '<div class="ig-menu__separator" role="separator" aria-hidden="true"></div><button type="button" role="menuitem" class="ig-menu__item" data-intent="delete" data-kind="action" data-payload="">Delete</button>'
+      : ""
+
     return `
       <div class="ig-menu" role="menu" aria-orientation="vertical">
-        <button type="button" role="menuitem" class="ig-menu__item" data-intent="edit_name" data-kind="action" data-payload="">Edit Name</button>
-        <button type="button" role="menuitem" class="ig-menu__item" data-intent="view" data-kind="action" data-payload="">View</button>
+        <button type="button" role="menuitem" class="ig-menu__item" data-intent="view" data-kind="action" data-payload="">Open</button>
+        ${deleteButton}
+      </div>
+    `
+  }
+
+  newMenuMarkup() {
+    return `
+      <div class="ig-menu" role="menu" aria-orientation="vertical">
+        <button type="button" role="menuitem" class="ig-menu__item" data-intent="new_folder" data-kind="action" data-payload="">Folder</button>
+        <button type="button" role="menuitem" class="ig-menu__item" data-intent="new_document" data-kind="action" data-payload="">Document</button>
         <div class="ig-menu__separator" role="separator" aria-hidden="true"></div>
-        <button type="button" role="menuitem" class="ig-menu__item" data-intent="delete" data-kind="action" data-payload="">Delete</button>
+        <button type="button" role="menuitem" class="ig-menu__item" data-intent="back" data-kind="action" data-payload="">Back</button>
       </div>
     `
   }
@@ -179,6 +214,40 @@ export default class extends Controller {
     }
   }
 
+  async createFolder() {
+    await this.createDesktopItem("/folders")
+  }
+
+  async createDocument() {
+    await this.createDesktopItem("/docs")
+  }
+
+  async createDesktopItem(path) {
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    try {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ parent_path: "root" })
+      })
+
+      if (!response.ok) return
+
+      const payload = await response.json()
+      if (!payload?.desktop_item) return
+
+      this.addShortcutToDesktop(payload.desktop_item)
+    } finally {
+      this.hide()
+    }
+  }
+
   removeShortcutFromDesktop(shortcutId) {
     const desktopElement = this.element.querySelector("[data-controller~='desktop']")
     if (!desktopElement) return
@@ -190,6 +259,37 @@ export default class extends Controller {
     if (!desktopController?.removeShortcutById) return
 
     desktopController.removeShortcutById(shortcutId)
+  }
+
+  addShortcutToDesktop(shortcut) {
+    const desktopElement = this.element.querySelector("[data-controller~='desktop']")
+    if (!desktopElement) return
+
+    const desktopController = this.application.getControllerForElementAndIdentifier(
+      desktopElement,
+      "desktop"
+    )
+    if (!desktopController?.addShortcut) return
+
+    desktopController.addShortcut(shortcut)
+  }
+
+  openSelectedItem() {
+    if (!this.selectedRecordShortcutId) return
+
+    const button = this.element.querySelector(`.ig-shortcut[data-shortcut-id="${this.selectedRecordShortcutId}"]`)
+    if (!button) return
+
+    const desktopElement = this.element.querySelector("[data-controller~='desktop']")
+    if (!desktopElement) return
+
+    const desktopController = this.application.getControllerForElementAndIdentifier(
+      desktopElement,
+      "desktop"
+    )
+    if (!desktopController?.openShortcutWindow) return
+
+    desktopController.openShortcutWindow(button)
   }
 
   submitLogoutForm() {

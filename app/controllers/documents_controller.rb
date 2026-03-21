@@ -1,14 +1,33 @@
 class DocumentsController < ApplicationController
+  include DesktopItemPayloads
+
   before_action :authenticate_user!, only: [ :create, :update ]
 
   def create
+    parent_path = VirtualFilesystem.normalize_parent_path(params[:parent_path])
+    return head :not_found unless valid_parent_path?(parent_path)
+
+    title = VirtualFilesystem.next_document_title(user: current_user, parent_path: parent_path)
     document = current_user.documents.create!(
-      title: draft_title_for(current_user),
+      title: title,
       content: "",
-      content_ast: Document::EMPTY_CONTENT_AST
+      content_ast: Document::EMPTY_CONTENT_AST,
+      path: VirtualFilesystem.build_path(parent_path, title)
     )
 
-    redirect_to doc_path(document)
+    respond_to do |format|
+      format.html { redirect_to doc_path(document) }
+      format.json do
+        render json: {
+          document: {
+            id: document.id,
+            title: document.title,
+            path: document.path
+          },
+          desktop_item: desktop_item_payload(document)
+        }
+      end
+    end
   end
 
   def show
@@ -33,9 +52,7 @@ class DocumentsController < ApplicationController
     permitted.to_h
   end
 
-  def draft_title_for(user)
-    Time.use_zone(user.timezone) do
-      "#{Time.zone.today.strftime("%b %-d")} - Draft"
-    end
+  def valid_parent_path?(parent_path)
+    parent_path == VirtualFilesystem.root_path || current_user.folders.exists?(path: parent_path)
   end
 end

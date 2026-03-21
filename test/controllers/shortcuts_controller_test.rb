@@ -5,7 +5,7 @@ class ShortcutsControllerTest < ActionDispatch::IntegrationTest
 
   test "redirects unauthenticated users when deleting a document by shortcut" do
     user = users(:one)
-    document = user.documents.create!(title: "Draft", content: "")
+    document = user.documents.create!(title: "Draft", content: "", path: "root/Draft")
     shortcut = document.shortcut
 
     patch "/shortcuts/#{shortcut.id}/delete_document"
@@ -17,7 +17,7 @@ class ShortcutsControllerTest < ActionDispatch::IntegrationTest
     user = users(:one)
     sign_in user
 
-    document = user.documents.create!(title: "Draft", content: "")
+    document = user.documents.create!(title: "Draft", content: "", path: "root/Draft")
     shortcut = document.shortcut
 
     patch "/shortcuts/#{shortcut.id}/delete_document"
@@ -31,7 +31,7 @@ class ShortcutsControllerTest < ActionDispatch::IntegrationTest
     other_user = users(:two)
     sign_in other_user
 
-    document = owner.documents.create!(title: "Owner Draft", content: "")
+    document = owner.documents.create!(title: "Owner Draft", content: "", path: "root/Owner Draft")
     shortcut = document.shortcut
 
     patch "/shortcuts/#{shortcut.id}/delete_document"

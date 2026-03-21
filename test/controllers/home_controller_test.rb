@@ -11,10 +11,10 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "backfills missing document shortcuts only for the logged-in user" do
-    owner_document = Document.create!(user: users(:one), title: "Backfill Me", content: "Body")
+    owner_document = Document.create!(user: users(:one), title: "Backfill Me", content: "Body", path: "root/Backfill Me")
     owner_document.shortcut.destroy!
 
-    other_user_document = Document.create!(user: users(:two), title: "Do Not Backfill", content: "Body")
+    other_user_document = Document.create!(user: users(:two), title: "Do Not Backfill", content: "Body", path: "root/Do Not Backfill")
     other_user_document.shortcut.destroy!
 
     sign_in_as(users(:one))
@@ -26,8 +26,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "renders only shortcuts for the logged-in user" do
-    Document.create!(user: users(:one), title: "Chapter 1", content: "Start")
-    Document.create!(user: users(:two), title: "Hidden Chapter", content: "Middle")
+    Document.create!(user: users(:one), title: "Chapter 1", content: "Start", path: "root/Chapter 1")
+    Document.create!(user: users(:two), title: "Hidden Chapter", content: "Middle", path: "root/Hidden Chapter")
 
     sign_in_as(users(:one))
     get root_path
@@ -36,11 +36,11 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Chapter 1"
     assert_not_includes response.body, "Hidden Chapter"
     assert_includes response.body, "Trash"
-    assert_includes response.body, "&quot;document_id&quot;"
+    assert_includes response.body, "&quot;item_kind&quot;:&quot;document&quot;"
   end
 
   test "does not render shortcuts for soft-deleted documents" do
-    deleted_document = Document.create!(user: users(:one), title: "Archived", content: "", is_deleted: true)
+    deleted_document = Document.create!(user: users(:one), title: "Archived", content: "", is_deleted: true, path: "root/Archived")
     deleted_document.create_desktop_shortcut! if deleted_document.shortcut.blank?
 
     sign_in_as(users(:one))
@@ -52,7 +52,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
 
   test "does not load user notes or user shortcuts when not authed" do
     Note.create!(user: users(:one), title: "Private Note", content: "Body", expanded: true, top: 55, left: 48)
-    Document.create!(user: users(:one), title: "Private Draft", content: "Hidden")
+    Document.create!(user: users(:one), title: "Private Draft", content: "Hidden", path: "root/Private Draft")
 
     get root_path
 
@@ -60,7 +60,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Trash"
     assert_not_includes response.body, "Private Note"
     assert_not_includes response.body, "Private Draft"
-    assert_not_includes response.body, "&quot;document_id&quot;"
+    assert_not_includes response.body, "&quot;item_kind&quot;:&quot;document&quot;"
   end
 
   test "renders system trash shortcut without creating a record" do
@@ -120,6 +120,19 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, 'data-desktop-window-key="welcome_window"'
     assert_not_includes response.body, "ig-window__title\">Welcome"
+  end
+
+  test "renders root folders and excludes nested documents from desktop" do
+    Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
+    Document.create!(user: users(:one), title: "Inside Folder", content: "", path: "root/Chapter 1/Inside Folder")
+
+    sign_in_as(users(:one))
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "Chapter 1"
+    assert_not_includes response.body, "Inside Folder"
+    assert_includes response.body, "&quot;item_kind&quot;:&quot;folder&quot;"
   end
 
   private

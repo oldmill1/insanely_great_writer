@@ -12,9 +12,13 @@ class Document < ApplicationRecord
     ]
   }.freeze
 
+  include VirtualPathItem
+
   belongs_to :user
   has_one :shortcut, dependent: :destroy
   scope :active, -> { where(is_deleted: false) }
+
+  validates :title, presence: true
 
   before_validation :normalize_editor_content!
   after_commit :ensure_desktop_shortcut!, on: :create
@@ -24,7 +28,16 @@ class Document < ApplicationRecord
     title.presence || FALLBACK_TITLE
   end
 
+  def name
+    title
+  end
+
+  def kind
+    "document"
+  end
+
   def create_desktop_shortcut!
+    return unless root_level?
     return shortcut if shortcut.present?
 
     create_shortcut!(
@@ -149,7 +162,7 @@ class Document < ApplicationRecord
   end
 
   def sync_desktop_shortcut_label!
-    return if shortcut.blank?
+    return if shortcut.blank? || !root_level?
 
     shortcut.update!(label: desktop_shortcut_label)
   end

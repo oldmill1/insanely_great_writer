@@ -1,4 +1,6 @@
 class HomeController < ApplicationController
+  include DesktopItemPayloads
+
   NOTE_PRESENTATIONS = [
     { variant: "blue", width: "28rem", height: "12rem" },
     { variant: "yellow", width: "22rem", height: "10rem" }
@@ -33,12 +35,12 @@ class HomeController < ApplicationController
   def ensure_demo_records!
     return unless authed?
 
-    ensure_document_shortcuts!
+    ensure_root_shortcuts!
   end
 
-  def ensure_document_shortcuts!
-    current_user.documents.active.includes(:shortcut).find_each do |document|
-      document.create_desktop_shortcut! if document.shortcut.blank?
+  def ensure_root_shortcuts!
+    VirtualFilesystem.root_children_for(current_user).values.flatten.each do |item|
+      item.create_desktop_shortcut! if item.shortcut.blank?
     end
   end
 
@@ -68,26 +70,9 @@ class HomeController < ApplicationController
   def load_shortcuts
     return SYSTEM_SHORTCUTS.map(&:dup) unless authed?
 
-    db_shortcuts = current_user.documents
-      .active
-      .includes(:shortcut)
-      .order(created_at: :asc)
-      .filter_map do |document|
-        shortcut = document.shortcut
-        next if shortcut.blank?
-
-        {
-          id: shortcut.id,
-          document_id: document.id,
-          kind: "record",
-          top: shortcut.top,
-          right: shortcut.right,
-          bottom: shortcut.bottom,
-          left: shortcut.left,
-          thumbnail: shortcut.thumbnail,
-          label: shortcut.label
-        }
-      end
+    root_children = VirtualFilesystem.root_children_for(current_user)
+    db_shortcuts = root_children[:folders].order(created_at: :asc).filter_map { |folder| desktop_item_payload(folder) } +
+      root_children[:documents].order(created_at: :asc).filter_map { |document| desktop_item_payload(document) }
 
     db_shortcuts + SYSTEM_SHORTCUTS.map(&:dup)
   end
@@ -95,6 +80,7 @@ class HomeController < ApplicationController
   def load_context_menu_items
     if authed?
       [
+        { label: "New", intent: "new", kind: "action" },
         { label: "New Note", intent: "new_note", kind: "action" },
         "break",
         { label: "Logout", intent: "logout", kind: "action" },

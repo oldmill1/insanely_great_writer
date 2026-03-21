@@ -13,18 +13,31 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     user = users(:one)
     sign_in user
 
-    travel_to Time.utc(2026, 2, 8, 13, 0, 0) do
-      assert_difference("Document.count", 1) do
-        post documents_path
-      end
+    assert_difference("Document.count", 1) do
+      post documents_path
     end
 
     document = Document.order(id: :desc).first
 
     assert_redirected_to doc_path(document)
-    assert_equal "Feb 8 - Draft", document.title
+    assert_equal "Untitled Document", document.title
     assert_equal "", document.content
+    assert_equal "root/Untitled Document", document.path
     assert_equal user.id, document.user_id
+  end
+
+  test "creates a nested document over json" do
+    user = users(:one)
+    sign_in user
+    Folder.create!(user: user, name: "Chapter 1", path: "root/Chapter 1")
+
+    assert_difference("Document.count", 1) do
+      post documents_path, params: { parent_path: "root/Chapter 1" }, as: :json
+    end
+
+    assert_response :success
+    document = Document.order(id: :desc).first
+    assert_equal "root/Chapter 1/Untitled Document", document.path
   end
 
   test "shows a document" do

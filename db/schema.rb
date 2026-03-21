@@ -10,16 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_21_131500) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_160000) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.json "content_ast", default: {}, null: false
     t.datetime "created_at", null: false
     t.boolean "is_deleted", default: false, null: false
+    t.string "path", null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.string "user_id", null: false
+    t.index ["path"], name: "index_documents_on_path", unique: true
     t.index ["user_id"], name: "index_documents_on_user_id"
+  end
+
+  create_table "folders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "path", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", null: false
+    t.index ["path"], name: "index_folders_on_path", unique: true
+    t.index ["user_id"], name: "index_folders_on_user_id"
   end
 
   create_table "notes", force: :cascade do |t|
@@ -42,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_131500) do
     t.integer "bottom"
     t.datetime "created_at", null: false
     t.integer "document_id"
+    t.integer "folder_id"
     t.string "label"
     t.integer "left"
     t.integer "right"
@@ -49,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_131500) do
     t.integer "top"
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_shortcuts_on_document_id", unique: true
+    t.index ["folder_id"], name: "index_shortcuts_on_folder_id", unique: true
   end
 
   create_table "users", id: :string, force: :cascade do |t|
@@ -75,6 +89,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_131500) do
   end
 
   add_foreign_key "documents", "users"
+  add_foreign_key "folders", "users"
   add_foreign_key "notes", "users"
   add_foreign_key "shortcuts", "documents"
+  add_foreign_key "shortcuts", "folders"
 end

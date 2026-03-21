@@ -6,7 +6,7 @@ class DocumentTest < ActiveSupport::TestCase
     user = users(:one)
 
     assert_difference("Shortcut.count", 1) do
-      document = Document.create!(user: user, title: "Act I", content: "Opening")
+      document = Document.create!(user: user, title: "Act I", content: "Opening", path: "root/Act I")
     end
 
     assert_equal "Act I", document.shortcut.label
@@ -14,7 +14,7 @@ class DocumentTest < ActiveSupport::TestCase
   end
 
   test "keeps shortcut label in sync with document title" do
-    document = Document.create!(user: users(:one), title: "Working Title", content: "Draft")
+    document = Document.create!(user: users(:one), title: "Working Title", content: "Draft", path: "root/Working Title")
 
     document.update!(title: "Final Title")
 
@@ -22,7 +22,7 @@ class DocumentTest < ActiveSupport::TestCase
   end
 
   test "normalizes plain text content into canonical ast" do
-    document = Document.create!(user: users(:one), title: "Draft", content: "hello\nworld")
+    document = Document.create!(user: users(:one), title: "Draft", content: "hello\nworld", path: "root/Draft")
 
     assert_equal "doc", document.content_ast["type"]
     assert_equal "paragraph", document.content_ast["children"].first["type"]
@@ -34,6 +34,7 @@ class DocumentTest < ActiveSupport::TestCase
     document = Document.create!(
       user: users(:one),
       title: "Draft",
+      path: "root/Draft",
       content_ast: {
         "type" => "doc",
         "version" => 1,
@@ -58,6 +59,7 @@ class DocumentTest < ActiveSupport::TestCase
     document = Document.create!(
       user: users(:one),
       title: "Screenplay",
+      path: "root/Screenplay",
       content_ast: {
         "type" => "doc",
         "version" => 1,
@@ -89,6 +91,7 @@ class DocumentTest < ActiveSupport::TestCase
     document = Document.create!(
       user: users(:one),
       title: "Bad Element",
+      path: "root/Bad Element",
       content_ast: {
         "type" => "doc",
         "version" => 1,
@@ -112,6 +115,7 @@ class DocumentTest < ActiveSupport::TestCase
     document = Document.create!(
       user: users(:one),
       title: "Formatted",
+      path: "root/Formatted",
       content_ast: {
         "type" => "doc",
         "version" => 1,
@@ -150,6 +154,7 @@ class DocumentTest < ActiveSupport::TestCase
     document = Document.create!(
       user: users(:one),
       title: "Legacy",
+      path: "root/Legacy",
       content_ast: {
         "type" => "doc",
         "version" => 1,
@@ -167,5 +172,11 @@ class DocumentTest < ActiveSupport::TestCase
     assert_equal "<p>old doc</p>", document.editor_html
     assert_equal "old doc", document.content
     assert_nil document.content_ast["children"][0]["attrs"]
+  end
+
+  test "does not create a desktop shortcut for nested documents" do
+    document = Document.create!(user: users(:one), title: "Nested", content: "", path: "root/Chapters/Nested")
+
+    assert_nil document.shortcut
   end
 end

@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :documents, dependent: :destroy
+  has_many :folders, dependent: :destroy
   has_many :notes, dependent: :destroy
 
   # Devise handles authentication while app-specific fields remain local.
