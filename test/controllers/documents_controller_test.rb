@@ -40,6 +40,18 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "root/Chapter 1/Untitled Document", document.path
   end
 
+  test "returns a desktop item payload for root document creation over json" do
+    user = users(:one)
+    sign_in user
+
+    post documents_path, as: :json
+
+    assert_response :success
+    payload = JSON.parse(response.body)
+    assert_equal "document", payload.dig("desktop_item", "item_kind")
+    assert_equal "Untitled Document", payload.dig("desktop_item", "label")
+  end
+
   test "shows a document" do
     document = documents(:one)
 

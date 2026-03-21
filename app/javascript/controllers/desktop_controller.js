@@ -99,6 +99,7 @@ export default class extends Controller {
   }
 
   render() {
+    this.syncRenderedShortcutPositions()
     this.element.innerHTML = ""
 
     this.shortcutsValue.forEach((shortcut) => {
@@ -782,9 +783,43 @@ export default class extends Controller {
   addShortcut(shortcut) {
     if (!shortcut || shortcut.kind !== "record") return
 
+    this.syncRenderedShortcutPositions()
     this.shortcutsValue = this.shortcutsValue.filter((item) => String(item.id) !== String(shortcut.id))
     this.shortcutsValue.push(shortcut)
     this.render()
+  }
+
+  syncRenderedShortcutPositions() {
+    if (!Array.isArray(this.shortcutsValue) || this.shortcutsValue.length === 0) return
+
+    const nextShortcuts = this.shortcutsValue.map((shortcut) => {
+      const shortcutId = this.shortcutDomId(shortcut)
+      if (!shortcutId) return shortcut
+
+      const button = this.element.querySelector(`.ig-shortcut[data-shortcut-id="${shortcutId}"]`)
+      const item = button?.closest(".home__desktop-item")
+      if (!item) return shortcut
+
+      return {
+        ...shortcut,
+        ...this.currentRenderedOffsets(item)
+      }
+    })
+
+    this.shortcutsValue = nextShortcuts
+  }
+
+  currentRenderedOffsets(item) {
+    const itemRect = item.getBoundingClientRect()
+    const desktopRect = this.element.getBoundingClientRect()
+    const styles = window.getComputedStyle(item)
+
+    const top = styles.top !== "auto" ? Math.round(itemRect.top - desktopRect.top) : null
+    const bottom = styles.bottom !== "auto" ? Math.round(desktopRect.bottom - itemRect.bottom) : null
+    const left = styles.left !== "auto" ? Math.round(itemRect.left - desktopRect.left) : null
+    const right = styles.right !== "auto" ? Math.round(desktopRect.right - itemRect.right) : null
+
+    return { top, right, bottom, left }
   }
 
   openDocumentWindow(documentId, titleText = "Document") {

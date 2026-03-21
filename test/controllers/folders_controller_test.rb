@@ -11,9 +11,12 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
+    payload = JSON.parse(response.body)
     folder = Folder.order(id: :desc).first
     assert_equal "Untitled Folder", folder.name
     assert_equal "root/Untitled Folder", folder.path
+    assert_equal "folder", payload.dig("desktop_item", "item_kind")
+    assert_equal "Untitled Folder", payload.dig("desktop_item", "label")
   end
 
   test "creates a nested folder" do
