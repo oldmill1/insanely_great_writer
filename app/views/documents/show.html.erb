@@ -12,7 +12,7 @@
         contenteditable="true"
         data-doc-editor-target="content"
         data-action="input->doc-editor#handleInput keydown->doc-editor#handleKeydown"
-      ><%= raw(@document.editor_html) %></div>
+      ><%= sanitize(@document.editor_html, tags: %w[p br], attributes: %w[data-element]) %></div>
       <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
         <%= render "shared/ig_select",
           name: "insert_block_type",
