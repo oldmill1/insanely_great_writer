@@ -83,15 +83,14 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "User Settings"
   end
 
-  test "embeds global menu bar contexts for desktop and document windows" do
+  test "does not render the global menu bar" do
     sign_in_as(users(:one))
     get root_path
 
     assert_response :success
-    assert_includes response.body, "data-controller=\"menu-bar\""
-    assert_includes response.body, "document_window"
-    assert_includes response.body, "Close Window"
-    assert_includes response.body, "Arrange Icons"
+    assert_not_includes response.body, "data-controller=\"menu-bar\""
+    assert_includes response.body, 'data-controller="desktop"'
+    assert_includes response.body, "New Note"
   end
 
   test "shows logout/user settings menu when authed" do

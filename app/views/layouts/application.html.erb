@@ -23,15 +23,6 @@
   </head>
 
   <body>
-    <% menu_bar_contexts = if content_for(:menu_bar_contexts).presence
-         JSON.parse(CGI.unescapeHTML(content_for(:menu_bar_contexts)))
-       else
-         { default: { menus: [] } }
-       end %>
-    <%= render "shared/menu_bar",
-      contexts: menu_bar_contexts,
-      default_context: content_for(:menu_bar_default_context),
-      current_context: content_for(:menu_bar_current_context) %>
     <%= yield %>
   </body>
 </html>
