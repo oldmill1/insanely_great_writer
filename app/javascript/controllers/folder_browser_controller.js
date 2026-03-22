@@ -33,13 +33,13 @@ export default class extends Controller {
     const itemName = row.dataset.itemName
     if (!itemKind || !itemId) return
 
-    const desktopController = this.desktopController()
-    if (!desktopController) return
-
     if (itemKind === "folder") {
-      desktopController.openFolderWindow(itemId, itemName)
+      this.navigateToFolder(itemId, itemName)
       return
     }
+
+    const desktopController = this.desktopController()
+    if (!desktopController) return
 
     desktopController.openDocumentWindow(itemId, itemName)
   }
@@ -84,6 +84,22 @@ export default class extends Controller {
     if (!frame) return
 
     frame.src = `${this.showPathValue}?frame_id=${encodeURIComponent(frame.id)}&refresh=${Date.now()}`
+  }
+
+  navigateToFolder(folderId, folderName) {
+    const frame = this.element.closest("turbo-frame")
+    if (!frame) return
+
+    const windowEl = frame.closest(".home__window")
+    if (windowEl) {
+      const title = windowEl.querySelector(".ig-window__title")
+      if (title) title.textContent = folderName
+
+      windowEl.setAttribute("aria-label", folderName)
+      windowEl.dataset.desktopWindowKey = `folder_window_${folderId}`
+    }
+
+    frame.src = `/folders/${folderId}?frame_id=${encodeURIComponent(frame.id)}&refresh=${Date.now()}`
   }
 
   applySort() {
