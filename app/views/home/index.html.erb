@@ -47,7 +47,11 @@
   <div
     class="home__context-menu"
     data-home-context-menu-target="menu"
-    data-action="click->home-context-menu#handleMenuClick"
+    data-action="
+      click->home-context-menu#handleMenuClick
+      mouseover->home-context-menu#handleMenuHover
+      mouseout->home-context-menu#handleMenuLeave
+    "
     hidden
   >
     <%= render "shared/ig_menu", items: @context_menu_items %>

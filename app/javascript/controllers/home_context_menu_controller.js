@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
+const SUBMENU_HOVER_DELAY = 500
+
 export default class extends Controller {
   static targets = ["menu", "submenu"]
   static values = {
@@ -13,6 +15,12 @@ export default class extends Controller {
     this.selectedRecordShortcutId = null
     this.selectedItemKind = null
     this.menuPosition = { x: 48, y: 55 }
+    this.submenuHoverTimeout = null
+    this.pendingSubmenuTrigger = null
+  }
+
+  disconnect() {
+    this.clearSubmenuHover()
   }
 
   open(event) {
@@ -91,8 +99,25 @@ export default class extends Controller {
     this.hide()
   }
 
+  handleMenuHover(event) {
+    const button = event.target.closest("[data-submenu-trigger='true']")
+    if (!button || !this.menuTarget.contains(button)) return
+    if (button.contains(event.relatedTarget)) return
+
+    this.scheduleSubmenuHover(button)
+  }
+
+  handleMenuLeave(event) {
+    const button = event.target.closest("[data-submenu-trigger='true']")
+    if (!button || !this.menuTarget.contains(button)) return
+    if (button.contains(event.relatedTarget)) return
+
+    this.clearSubmenuHover()
+  }
+
   hide() {
     if (!this.hasMenuTarget) return
+    this.clearSubmenuHover()
     this.menuTarget.hidden = true
     this.hideSubmenu()
     this.syncSubmenuTriggerState(false)
@@ -105,6 +130,7 @@ export default class extends Controller {
   showAt(x, y) {
     if (!this.hasMenuTarget) return
 
+    this.clearSubmenuHover()
     this.hideSubmenu()
     this.syncSubmenuTriggerState(false)
     this.menuTarget.hidden = false
@@ -128,6 +154,7 @@ export default class extends Controller {
   renderMenuForTarget(target) {
     if (!this.hasMenuTarget) return false
 
+    this.clearSubmenuHover()
     this.hideSubmenu()
     this.syncSubmenuTriggerState(false)
 
@@ -183,9 +210,31 @@ export default class extends Controller {
     this.submenuTarget.hidden = true
   }
 
+  scheduleSubmenuHover(triggerButton) {
+    if (this.pendingSubmenuTrigger === triggerButton && !this.submenuHoverTimeout) return
+
+    this.clearSubmenuHover()
+    this.pendingSubmenuTrigger = triggerButton
+    this.submenuHoverTimeout = window.setTimeout(() => {
+      this.showSubmenuFor(triggerButton)
+      this.submenuHoverTimeout = null
+      this.pendingSubmenuTrigger = null
+    }, SUBMENU_HOVER_DELAY)
+  }
+
+  clearSubmenuHover() {
+    if (this.submenuHoverTimeout) {
+      window.clearTimeout(this.submenuHoverTimeout)
+      this.submenuHoverTimeout = null
+    }
+
+    this.pendingSubmenuTrigger = null
+  }
+
   showSubmenuFor(triggerButton) {
     if (!this.hasSubmenuTarget) return
 
+    this.clearSubmenuHover()
     this.submenuTarget.hidden = false
     this.submenuTarget.style.visibility = "hidden"
 
