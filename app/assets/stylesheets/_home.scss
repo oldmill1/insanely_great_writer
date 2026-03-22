@@ -62,7 +62,7 @@
   position: fixed;
   inset: 0;
   z-index: 10;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .home__dock {
@@ -628,7 +628,6 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  min-height: 2.6rem;
   padding: 0.45rem 0.75rem 0.5rem;
   border-top: 1px solid rgba(118, 132, 166, 0.36);
   background: linear-gradient(180deg, #334762 0%, #273853 100%);

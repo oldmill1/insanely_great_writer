@@ -45,6 +45,8 @@ export default class extends Controller {
   select(event) {
     const shortcutButton = event.target.closest(".ig-shortcut")
     if (!shortcutButton || !this.element.contains(shortcutButton)) {
+      this.selectedShortcutId = null
+      this.applySelectionState()
       this.activeWindowElement = null
       return
     }
