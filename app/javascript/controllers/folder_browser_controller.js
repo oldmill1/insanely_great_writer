@@ -18,7 +18,18 @@ export default class extends Controller {
     showPath: String
   }
 
-  static targets = ["list", "row", "sortButton", "upButton", "backButton", "deleteButton", "contextMenu", "sidebarGroup"]
+  static targets = [
+    "list",
+    "row",
+    "sortButton",
+    "upButton",
+    "backButton",
+    "deleteButton",
+    "contextMenu",
+    "sidebarGroup",
+    "shortcutDropzone",
+    "temporaryShortcuts"
+  ]
 
   connect() {
     this.sortKey = "kind"
@@ -27,10 +38,20 @@ export default class extends Controller {
     this.editingRow = null
     this.renameInput = null
     this.renameTextElement = null
+    this.dragThreshold = 6
+    this.dragState = null
+    this.dragPreview = null
+    this.consumeNextRowActivation = false
+    this.temporaryShortcuts = this.readTemporaryShortcuts()
+    this.renderTemporaryShortcuts()
     this.applySort()
     this.updateNavButtons()
     this.updateDeleteButton()
     this.hideContextMenu()
+  }
+
+  disconnect() {
+    this.cleanupDragState()
   }
 
   async createFolder() {
@@ -43,6 +64,7 @@ export default class extends Controller {
 
   selectRow(event) {
     if (event.target.closest(".folder-window__name-input")) return
+    if (this.consumeRowActivation()) return
 
     const row = event.currentTarget
     if (!row) return
@@ -118,6 +140,7 @@ export default class extends Controller {
 
   openItem(event) {
     if (this.editingRow === event.currentTarget) return
+    if (this.consumeRowActivation()) return
 
     const row = event.currentTarget
     const itemKind = row.dataset.itemKind
@@ -202,17 +225,90 @@ export default class extends Controller {
   }
 
   navigateSidebarItem(event) {
-    const { folderId, folderName, folderPath, showPath } = event.currentTarget.dataset
-    if (!showPath || folderPath === this.folderPathValue) return
-
     this.hideContextMenu()
     this.clearSelection()
+
+    const item = event.currentTarget
+    const sidebarItemKind = item.dataset.sidebarItemKind
+
+    if (sidebarItemKind === "temporary") {
+      this.openTemporaryShortcut(item)
+      return
+    }
+
+    const { folderId, folderName, folderPath, showPath } = item.dataset
+    if (!showPath || folderPath === this.folderPathValue) return
+
     this.pushCurrentLocationToHistory()
     this.navigateWithinWindow({
       folderId: folderId || null,
       folderName: folderName || "Root",
       showPath
     })
+  }
+
+  startRowDrag(event) {
+    if (event.button !== 0) return
+    if (event.target.closest(".folder-window__name-input")) return
+    if (this.editingRow) return
+
+    const row = event.currentTarget
+    if (!row) return
+
+    this.dragState = {
+      pointerId: event.pointerId,
+      row,
+      startX: event.clientX,
+      startY: event.clientY,
+      activated: false,
+      overDropzone: false,
+      payload: this.dragPayloadForRow(row)
+    }
+
+    if (row.setPointerCapture) {
+      row.setPointerCapture(event.pointerId)
+    }
+  }
+
+  moveDrag(event) {
+    if (!this.dragState || event.pointerId !== this.dragState.pointerId) return
+
+    const deltaX = event.clientX - this.dragState.startX
+    const deltaY = event.clientY - this.dragState.startY
+    const movedEnough = Math.abs(deltaX) >= this.dragThreshold || Math.abs(deltaY) >= this.dragThreshold
+    if (!this.dragState.activated && !movedEnough) return
+
+    if (!this.dragState.activated) {
+      this.activateRowDrag()
+    }
+
+    this.positionDragPreview(event.clientX, event.clientY)
+    this.updateDropzoneState(event.clientX, event.clientY)
+    event.preventDefault()
+  }
+
+  endDrag(event) {
+    if (!this.dragState || event.pointerId !== this.dragState.pointerId) return
+
+    const { row, activated, payload } = this.dragState
+    const droppedOnShortcutArea = activated && this.pointIsInsideShortcutDropzone(event.clientX, event.clientY)
+
+    if (row?.hasPointerCapture?.(event.pointerId)) {
+      row.releasePointerCapture(event.pointerId)
+    }
+
+    this.cleanupDragState()
+
+    if (!activated) return
+
+    this.consumeNextRowActivation = true
+    window.setTimeout(() => {
+      this.consumeNextRowActivation = false
+    }, 0)
+
+    if (!droppedOnShortcutArea) return
+
+    this.appendTemporaryShortcut(payload)
   }
 
   async createItem(path) {
@@ -622,5 +718,183 @@ export default class extends Controller {
     this.editingRow = null
     this.renameInput = null
     this.renameTextElement = null
+  }
+
+  consumeRowActivation() {
+    if (!this.consumeNextRowActivation) return false
+
+    this.consumeNextRowActivation = false
+    return true
+  }
+
+  activateRowDrag() {
+    if (!this.dragState) return
+
+    this.dragState.activated = true
+    this.dragState.row.classList.add("is-dragging")
+    this.dragPreview = this.buildDragPreview(this.dragState.payload)
+    if (this.dragPreview) {
+      document.body.appendChild(this.dragPreview)
+    }
+  }
+
+  cleanupDragState() {
+    if (this.dragState?.row) {
+      this.dragState.row.classList.remove("is-dragging")
+    }
+
+    this.dragState = null
+    this.setDropzoneReceiving(false)
+
+    if (this.dragPreview) {
+      this.dragPreview.remove()
+      this.dragPreview = null
+    }
+  }
+
+  dragPayloadForRow(row) {
+    return {
+      itemKind: row.dataset.itemKind,
+      itemId: row.dataset.itemId,
+      label: row.dataset.itemName,
+      icon: row.dataset.itemIcon || (row.dataset.itemKind === "folder" ? "/icons/folders/blue.png" : "/icons/write.png")
+    }
+  }
+
+  buildDragPreview(payload) {
+    if (!payload?.label) return null
+
+    const preview = document.createElement("div")
+    preview.className = "folder-window__drag-preview"
+
+    const icon = document.createElement("img")
+    icon.className = "folder-window__drag-preview-icon"
+    icon.src = payload.icon || ""
+    icon.alt = ""
+    icon.setAttribute("aria-hidden", "true")
+
+    const label = document.createElement("span")
+    label.className = "folder-window__drag-preview-label"
+    label.textContent = payload.label
+
+    preview.appendChild(icon)
+    preview.appendChild(label)
+    return preview
+  }
+
+  positionDragPreview(clientX, clientY) {
+    if (!this.dragPreview) return
+
+    this.dragPreview.style.left = `${Math.round(clientX + 16)}px`
+    this.dragPreview.style.top = `${Math.round(clientY + 18)}px`
+  }
+
+  updateDropzoneState(clientX, clientY) {
+    this.setDropzoneReceiving(this.pointIsInsideShortcutDropzone(clientX, clientY))
+  }
+
+  pointIsInsideShortcutDropzone(clientX, clientY) {
+    if (!this.hasShortcutDropzoneTarget) return false
+    if (!this.shortcutDropzoneTarget.offsetParent && this.shortcutDropzoneTarget !== document.body) return false
+
+    const rect = this.shortcutDropzoneTarget.getBoundingClientRect()
+    return clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom
+  }
+
+  setDropzoneReceiving(isReceiving) {
+    if (!this.hasShortcutDropzoneTarget) return
+
+    this.shortcutDropzoneTarget.classList.toggle("is-receiving-drop", isReceiving)
+  }
+
+  readTemporaryShortcuts() {
+    const windowEl = this.currentWindow()
+    const raw = windowEl?.dataset.folderTemporaryShortcuts
+    if (!raw) return []
+
+    try {
+      const parsed = JSON.parse(raw)
+      if (!Array.isArray(parsed)) return []
+
+      return parsed.filter((item) => item?.itemKind && item?.itemId && item?.label)
+    } catch {
+      return []
+    }
+  }
+
+  writeTemporaryShortcuts() {
+    const windowEl = this.currentWindow()
+    if (!windowEl) return
+
+    windowEl.dataset.folderTemporaryShortcuts = JSON.stringify(this.temporaryShortcuts)
+  }
+
+  appendTemporaryShortcut(payload) {
+    if (!payload?.itemKind || !payload?.itemId || !payload?.label) return
+
+    const exists = this.temporaryShortcuts.some((item) => (
+      item.itemKind === payload.itemKind && String(item.itemId) === String(payload.itemId)
+    ))
+    if (exists) return
+
+    this.temporaryShortcuts.push(payload)
+    this.writeTemporaryShortcuts()
+    this.renderTemporaryShortcuts()
+  }
+
+  renderTemporaryShortcuts() {
+    if (!this.hasTemporaryShortcutsTarget) return
+
+    this.temporaryShortcutsTarget.innerHTML = ""
+    this.temporaryShortcuts.forEach((shortcut) => {
+      this.temporaryShortcutsTarget.appendChild(this.buildTemporaryShortcutButton(shortcut))
+    })
+  }
+
+  buildTemporaryShortcutButton(shortcut) {
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "folder-window__sidebar-item folder-window__sidebar-item--temporary"
+    button.dataset.action = "folder-browser#navigateSidebarItem"
+    button.dataset.sidebarItemKind = "temporary"
+    button.dataset.itemKind = shortcut.itemKind
+    button.dataset.itemId = String(shortcut.itemId)
+    button.dataset.folderId = shortcut.itemKind === "folder" ? String(shortcut.itemId) : ""
+    button.dataset.folderName = shortcut.label
+    button.dataset.showPath = shortcut.itemKind === "folder" ? `/folders/${shortcut.itemId}` : ""
+
+    const icon = document.createElement("img")
+    icon.className = "folder-window__sidebar-icon"
+    icon.src = shortcut.icon || ""
+    icon.alt = ""
+    icon.setAttribute("aria-hidden", "true")
+
+    const label = document.createElement("span")
+    label.textContent = shortcut.label
+
+    button.appendChild(icon)
+    button.appendChild(label)
+    return button
+  }
+
+  openTemporaryShortcut(item) {
+    const itemKind = item.dataset.itemKind
+    const itemId = item.dataset.itemId
+    const label = item.querySelector("span")?.textContent?.trim() || item.dataset.folderName || "Item"
+    if (!itemKind || !itemId) return
+
+    if (itemKind === "document") {
+      this.desktopController()?.openDocumentWindow(itemId, label)
+      return
+    }
+
+    if (String(this.folderIdValue) === String(itemId)) return
+
+    this.pushCurrentLocationToHistory()
+    this.navigateWithinWindow({
+      folderId: itemId,
+      folderName: label,
+      showPath: item.dataset.showPath || `/folders/${itemId}`
+    })
   }
 }

@@ -68,6 +68,8 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'data-action="folder-browser#navigateSidebarItem"'
     assert_includes response.body, 'data-folder-path="root"'
     assert_includes response.body, 'data-show-path="/folders/root"'
+    assert_includes response.body, 'data-folder-browser-target="shortcutDropzone"'
+    assert_includes response.body, 'data-folder-browser-target="temporaryShortcuts"'
     assert_not_includes response.body, "Drafts"
     assert_not_includes response.body, "Audio Notes"
     assert_includes response.body, "Smart Folders"
@@ -85,6 +87,8 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "folder-window__status-segment"
     assert_includes response.body, 'data-folder-path="root"'
     assert_includes response.body, 'contextmenu->folder-browser#openRowContextMenu'
+    assert_includes response.body, 'pointerdown->folder-browser#startRowDrag'
+    assert_includes response.body, 'data-item-icon="/icons/folders/default.png"'
     assert_includes response.body, 'data-intent="rename"'
     assert_includes response.body, '/icons/write.png'
     assert_includes response.body, 'data-intent="delete"'

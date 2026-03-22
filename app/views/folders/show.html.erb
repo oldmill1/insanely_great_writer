@@ -25,6 +25,7 @@
 
       sidebar_groups = [
         {
+          key: "shortcuts",
           title: "Shortcuts",
           items: [
             {
@@ -38,6 +39,7 @@
           ]
         },
         {
+          key: "smart-folders",
           title: "Smart Folders",
           items: [
             { label: "Recent", icon: "/icons/folders/white.png" },
@@ -56,6 +58,9 @@
       data-controller="folder-browser"
       data-action="
         pointerdown@window->folder-browser#closeContextMenuOnWindowPointerDown
+        pointermove@window->folder-browser#moveDrag
+        pointerup@window->folder-browser#endDrag
+        pointercancel@window->folder-browser#endDrag
         keydown.esc@window->folder-browser#closeContextMenuWithEscape
       "
       data-folder-browser-folder-id-value="<%= @folder_id %>"
@@ -120,12 +125,17 @@
                 aria-controls="<%= section_id %>"
                 data-action="folder-browser#toggleSidebarGroup"
               ><%= group[:title] %></button>
-              <div class="folder-window__sidebar-list" id="<%= section_id %>">
+              <div
+                class="folder-window__sidebar-list"
+                id="<%= section_id %>"
+                data-folder-browser-target="<%= "shortcutDropzone" if group[:key] == "shortcuts" %>"
+              >
                 <% group[:items].each do |item| %>
                   <button
                     type="button"
                     class="folder-window__sidebar-item"
                     data-action="<%= "folder-browser#navigateSidebarItem" if item[:show_path].present? %>"
+                    data-sidebar-item-kind="static"
                     data-folder-id="<%= item[:folder_id] %>"
                     data-folder-name="<%= item[:folder_name] %>"
                     data-folder-path="<%= item[:folder_path] %>"
@@ -134,6 +144,13 @@
                     <img class="folder-window__sidebar-icon" src="<%= item[:icon] %>" alt="" aria-hidden="true">
                     <span><%= item[:label] %></span>
                   </button>
+                <% end %>
+                <% if group[:key] == "shortcuts" %>
+                  <div
+                    class="folder-window__sidebar-shortcuts"
+                    data-folder-browser-target="temporaryShortcuts"
+                    aria-live="polite"
+                  ></div>
                 <% end %>
               </div>
             </section>
@@ -190,10 +207,16 @@
                       type="button"
                       class="folder-window__row"
                       data-folder-browser-target="row"
-                      data-action="click->folder-browser#selectRow dblclick->folder-browser#openItem contextmenu->folder-browser#openRowContextMenu"
+                      data-action="
+                        pointerdown->folder-browser#startRowDrag
+                        click->folder-browser#selectRow
+                        dblclick->folder-browser#openItem
+                        contextmenu->folder-browser#openRowContextMenu
+                      "
                       data-item-kind="<%= item[:kind].downcase %>"
                       data-item-id="<%= item[:id] %>"
                       data-item-name="<%= item[:name] %>"
+                      data-item-icon="<%= icon_path %>"
                       data-sort-name="<%= item[:name].to_s.downcase %>"
                       data-sort-kind="<%= item[:kind_rank] %>"
                       data-sort-created="<%= item[:created_at]&.iso8601 %>"
