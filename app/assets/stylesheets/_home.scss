@@ -95,24 +95,18 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background: linear-gradient(180deg, #eef4de 0%, #dce7c7 100%);
-  color: #1d2a1d;
+  background: #101417;
+  color: #c2c7cf;
 }
 
 .folder-window__toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
   padding: 0.9rem 1rem 0.75rem;
-  border-bottom: 1px solid rgba(43, 62, 43, 0.18);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(231, 239, 215, 0.75) 100%);
-}
-
-.folder-window__title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
+  border-bottom: 1px solid rgba(194, 199, 207, 0.11);
+  background: #101417;
 }
 
 .folder-window__actions {
@@ -138,16 +132,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(29, 42, 29, 0.72);
+  color: rgba(194, 199, 207, 0.72);
 }
 
 .folder-window__list {
   display: grid;
   gap: 0;
-  border: 1px solid rgba(43, 62, 43, 0.18);
+  border: 1px solid rgba(194, 199, 207, 0.11);
   border-radius: 0.5rem;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.64);
+  background: #101417;
 }
 
 .folder-window__row {
@@ -157,7 +151,7 @@
   width: 100%;
   padding: 0.7rem 0.9rem;
   border: 0;
-  border-bottom: 1px solid rgba(43, 62, 43, 0.1);
+  border-bottom: 1px solid rgba(194, 199, 207, 0.08);
   background: transparent;
   color: inherit;
   text-align: left;
@@ -170,31 +164,30 @@
 
 .folder-window__row:hover,
 .folder-window__row:focus-visible {
-  background: rgba(112, 153, 108, 0.18);
+  background: rgba(194, 199, 207, 0.08);
   outline: none;
 }
 
 .folder-window__cell--type {
-  color: rgba(29, 42, 29, 0.65);
+  color: rgba(194, 199, 207, 0.65);
 }
 
 .folder-window__empty {
   margin: 0;
   padding: 0.85rem 0.95rem;
-  border: 1px dashed rgba(43, 62, 43, 0.18);
+  border: 1px dashed rgba(194, 199, 207, 0.18);
   border-radius: 0.5rem;
-  color: rgba(29, 42, 29, 0.7);
+  color: rgba(194, 199, 207, 0.7);
 }
 
 @media (max-width: 720px) {
   .folder-window__toolbar {
-    align-items: flex-start;
-    flex-direction: column;
+    justify-content: center;
   }
 
   .folder-window__actions {
-    width: 100%;
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   .folder-window__row {
