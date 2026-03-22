@@ -104,8 +104,8 @@ class HomeController < ApplicationController
     return [] unless authed?
 
     [
-      { label: "Folder", intent: "new_folder", kind: "action" },
-      { label: "Document", intent: "new_document", kind: "action" },
+      { label: "Folder", intent: "new_folder", kind: "action", icon: "/icons/folders/default.png" },
+      { label: "Document", intent: "new_document", kind: "action", icon: "/icons/write.png" },
       { label: "Note", intent: "new_note", kind: "action" }
     ]
   end

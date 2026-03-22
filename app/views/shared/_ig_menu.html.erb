@@ -44,6 +44,7 @@
     <% kind = item[:kind] || raise(ArgumentError, "IGMenu item requires :kind") %>
     <% payload = ig_menu_payload_data(item[:payload]) %>
     <% submenu_key = item[:submenu].presence %>
+    <% icon_path = item[:icon].presence %>
 
     <%= button_tag type: "button",
       role: "menuitem",
@@ -57,7 +58,12 @@
         submenu_trigger: submenu_key.present?,
         submenu: submenu_key
       } do %>
-      <span class="ig-menu__item-label"><%= label %></span>
+      <span class="ig-menu__item-content">
+        <% if icon_path.present? %>
+          <img class="ig-menu__item-icon" src="<%= icon_path %>" alt="" aria-hidden="true">
+        <% end %>
+        <span class="ig-menu__item-label"><%= label %></span>
+      </span>
       <% if submenu_key.present? %>
         <span class="ig-menu__item-caret" aria-hidden="true">▶</span>
       <% end %>

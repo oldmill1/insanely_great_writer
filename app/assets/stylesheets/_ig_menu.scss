@@ -66,6 +66,22 @@
   flex: 1 1 auto;
 }
 
+.ig-menu__item-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ig-menu__item-icon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
 .ig-menu__item-caret {
   flex: 0 0 auto;
   font-size: 0.72rem;
