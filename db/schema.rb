@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_21_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_170000) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.json "content_ast", default: {}, null: false
@@ -26,6 +26,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_160000) do
 
   create_table "folders", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "is_deleted", default: false, null: false
     t.string "name", null: false
     t.string "path", null: false
     t.datetime "updated_at", null: false

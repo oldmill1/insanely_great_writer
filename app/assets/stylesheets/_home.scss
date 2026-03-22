@@ -184,6 +184,16 @@
   filter: saturate(0.75);
 }
 
+.folder-window__nav-button--delete {
+  border-color: rgba(194, 112, 112, 0.42);
+  background:
+    linear-gradient(180deg, rgba(139, 62, 62, 0.94) 0%, rgba(99, 37, 37, 0.94) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 220, 0.16),
+    inset 0 -1px 0 rgba(33, 10, 10, 0.4);
+  color: #fff3f3;
+}
+
 .folder-window__sidebar-group {
   display: grid;
   gap: 0.35rem;
@@ -351,6 +361,11 @@
 .folder-window__row:focus-visible {
   background: linear-gradient(180deg, rgba(126, 149, 203, 0.28) 0%, rgba(86, 105, 156, 0.28) 100%);
   outline: none;
+}
+
+.folder-window__row.is-selected {
+  background: linear-gradient(180deg, rgba(82, 120, 211, 0.48) 0%, rgba(47, 82, 171, 0.48) 100%);
+  box-shadow: inset 0 0 0 1px rgba(202, 220, 255, 0.22);
 }
 
 .folder-window__cell {

@@ -160,6 +160,16 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "&quot;item_kind&quot;:&quot;folder&quot;"
   end
 
+  test "does not render deleted root folders on desktop" do
+    Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1", is_deleted: true)
+
+    sign_in_as(users(:one))
+    get root_path
+
+    assert_response :success
+    assert_not_includes response.body, "Chapter 1"
+  end
+
   private
 
   def sign_in_as(user)

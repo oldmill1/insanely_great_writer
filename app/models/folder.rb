@@ -6,6 +6,7 @@ class Folder < ApplicationRecord
 
   belongs_to :user
   has_one :shortcut, dependent: :destroy
+  scope :active, -> { where(is_deleted: false) }
 
   validates :name, presence: true
 
@@ -31,7 +32,24 @@ class Folder < ApplicationRecord
     )
   end
 
+  def soft_delete_tree!
+    deleted_at = Time.current
+
+    transaction do
+      user.folders.where(path: subtree_paths).update_all(is_deleted: true, updated_at: deleted_at)
+      user.documents.where(path: subtree_paths).update_all(is_deleted: true, updated_at: deleted_at)
+    end
+  end
+
   private
+
+  def subtree_paths
+    prefix = "#{path}/"
+    descendant_folder_paths = user.folders.where("path LIKE ?", "#{prefix}%").pluck(:path)
+    descendant_document_paths = user.documents.where("path LIKE ?", "#{prefix}%").pluck(:path)
+
+    [path, *descendant_folder_paths, *descendant_document_paths].uniq
+  end
 
   def ensure_desktop_shortcut!
     create_desktop_shortcut!

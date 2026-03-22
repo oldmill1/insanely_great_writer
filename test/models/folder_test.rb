@@ -24,4 +24,19 @@ class FolderTest < ActiveSupport::TestCase
     assert_includes folder.errors[:name], "can't be blank"
     assert_includes folder.errors[:path], "can't be blank"
   end
+
+  test "soft deletes the full subtree" do
+    user = users(:one)
+    folder = Folder.create!(user: user, name: "Acts", path: "root/Acts")
+    child_folder = Folder.create!(user: user, name: "Scenes", path: "root/Acts/Scenes")
+    child_document = Document.create!(user: user, title: "Opening", content: "", path: "root/Acts/Opening")
+    nested_document = Document.create!(user: user, title: "Deep", content: "", path: "root/Acts/Scenes/Deep")
+
+    folder.soft_delete_tree!
+
+    assert_equal true, folder.reload.is_deleted
+    assert_equal true, child_folder.reload.is_deleted
+    assert_equal true, child_document.reload.is_deleted
+    assert_equal true, nested_document.reload.is_deleted
+  end
 end

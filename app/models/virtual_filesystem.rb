@@ -8,7 +8,7 @@ class VirtualFilesystem
 
     def children_for(user, parent_path)
       normalized_parent = normalize_parent_path(parent_path)
-      folders = user.folders.where(path: direct_child_paths_for(Folder, user, normalized_parent)).order(:name)
+      folders = user.folders.active.where(path: direct_child_paths_for(Folder, user, normalized_parent)).order(:name)
       documents = user.documents.active.where(path: direct_child_paths_for(Document, user, normalized_parent)).order(:title)
 
       { folders:, documents: }
@@ -29,7 +29,7 @@ class VirtualFilesystem
     end
 
     def next_folder_name(user:, parent_path:)
-      next_name_for(scope: user.folders, parent_path:, base_name: Folder::FALLBACK_NAME, column: :name)
+      next_name_for(scope: user.folders.active, parent_path:, base_name: Folder::FALLBACK_NAME, column: :name)
     end
 
     def next_document_title(user:, parent_path:)

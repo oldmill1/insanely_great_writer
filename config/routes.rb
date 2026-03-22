@@ -29,11 +29,13 @@ Rails.application.routes.draw do
   post "docs" => "documents#create", as: :documents
   get "docs/:id" => "documents#show", as: :doc
   patch "docs/:id" => "documents#update"
+  patch "docs/:id/delete" => "documents#delete", as: :delete_doc
   resources :folders, only: [ :show, :create ] do
     collection do
       get :root
     end
   end
+  patch "folders/:id/delete" => "folders#delete", as: :delete_folder
   post "notes" => "notes#create"
   patch "notes/:id" => "notes#update"
   delete "notes/:id" => "notes#destroy"

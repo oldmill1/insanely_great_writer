@@ -96,6 +96,21 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Saved from autosave", document.reload.content
   end
 
+  test "soft deletes a document for the authenticated owner" do
+    user = users(:one)
+    document = documents(:one)
+    sign_in user
+
+    patch delete_doc_path(document), as: :json
+
+    assert_response :success
+    payload = JSON.parse(response.body)
+    assert_equal true, payload["deleted"]
+    assert_equal "document", payload["item_kind"]
+    assert_equal document.id, payload["item_id"]
+    assert_equal true, document.reload.is_deleted
+  end
+
   test "updates canonical content ast and preserves line breaks" do
     user = users(:one)
     document = documents(:one)

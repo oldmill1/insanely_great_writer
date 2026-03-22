@@ -53,6 +53,8 @@
       data-folder-browser-folder-path-value="<%= @folder_path %>"
       data-folder-browser-create-folder-path-value="<%= folders_path %>"
       data-folder-browser-create-document-path-value="<%= documents_path %>"
+      data-folder-browser-delete-folder-path-template-value="<%= delete_folder_path("__ID__") %>"
+      data-folder-browser-delete-document-path-template-value="<%= delete_doc_path("__ID__") %>"
       data-folder-browser-show-path-value="<%= @show_path %>"
       data-folder-browser-parent-folder-id-value="<%= @parent_folder&.dig(:id) %>"
       data-folder-browser-parent-folder-name-value="<%= @parent_folder&.dig(:name) %>"
@@ -73,6 +75,13 @@
             data-folder-browser-target="backButton"
             data-action="folder-browser#goBack"
           >Back</button>
+          <button
+            type="button"
+            class="folder-window__nav-button folder-window__nav-button--delete"
+            data-folder-browser-target="deleteButton"
+            data-action="folder-browser#deleteSelectedItem"
+            hidden
+          >Delete</button>
         </div>
 
         <div class="folder-window__toolbar-spacer" aria-hidden="true"></div>
@@ -156,7 +165,7 @@
                       type="button"
                       class="folder-window__row"
                       data-folder-browser-target="row"
-                      data-action="dblclick->folder-browser#openItem"
+                      data-action="click->folder-browser#selectRow dblclick->folder-browser#openItem"
                       data-item-kind="<%= item[:kind].downcase %>"
                       data-item-id="<%= item[:id] %>"
                       data-item-name="<%= item[:name] %>"

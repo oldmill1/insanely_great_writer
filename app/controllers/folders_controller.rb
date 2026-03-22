@@ -2,7 +2,7 @@ class FoldersController < ApplicationController
   include DesktopItemPayloads
 
   before_action :authenticate_user!
-  before_action :set_folder, only: :show
+  before_action :set_folder, only: [ :show, :delete ]
 
   def show
     assign_folder_view_state(
@@ -43,6 +43,11 @@ class FoldersController < ApplicationController
     }
   end
 
+  def delete
+    @folder.soft_delete_tree!
+    render json: { deleted: true, item_kind: @folder.kind, item_id: @folder.id }, status: :ok
+  end
+
   private
 
   def assign_folder_view_state(id:, name:, path:, show_path:)
@@ -67,7 +72,7 @@ class FoldersController < ApplicationController
         show_path: root_folders_path
       }
     else
-      parent_folder = current_user.folders.find_by(path: parent_path)
+      parent_folder = current_user.folders.active.find_by(path: parent_path)
       if parent_folder.present?
         {
           id: parent_folder.id,
@@ -86,10 +91,10 @@ class FoldersController < ApplicationController
   end
 
   def set_folder
-    @folder = current_user.folders.find(params[:id])
+    @folder = current_user.folders.active.find(params[:id])
   end
 
   def valid_parent_path?(parent_path)
-    parent_path == VirtualFilesystem.root_path || current_user.folders.exists?(path: parent_path)
+    parent_path == VirtualFilesystem.root_path || current_user.folders.active.exists?(path: parent_path)
   end
 end

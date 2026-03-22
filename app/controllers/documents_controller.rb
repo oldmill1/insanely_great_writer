@@ -1,7 +1,7 @@
 class DocumentsController < ApplicationController
   include DesktopItemPayloads
 
-  before_action :authenticate_user!, only: [ :create, :update ]
+  before_action :authenticate_user!, only: [ :create, :update, :delete ]
 
   def create
     parent_path = VirtualFilesystem.normalize_parent_path(params[:parent_path])
@@ -40,6 +40,16 @@ class DocumentsController < ApplicationController
 
     if document.update(document_params)
       render json: { saved: true }, status: :ok
+    else
+      render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def delete
+    document = current_user.documents.find(params[:id])
+
+    if document.update(is_deleted: true)
+      render json: { deleted: true, item_kind: document.kind, item_id: document.id }, status: :ok
     else
       render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
     end

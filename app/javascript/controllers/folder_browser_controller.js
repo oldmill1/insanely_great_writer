@@ -11,16 +11,20 @@ export default class extends Controller {
     parentShowPath: String,
     createFolderPath: String,
     createDocumentPath: String,
+    deleteFolderPathTemplate: String,
+    deleteDocumentPathTemplate: String,
     showPath: String
   }
 
-  static targets = ["list", "row", "sortButton", "upButton", "backButton"]
+  static targets = ["list", "row", "sortButton", "upButton", "backButton", "deleteButton"]
 
   connect() {
     this.sortKey = "kind"
     this.sortDirection = "asc"
+    this.selectedRow = null
     this.applySort()
     this.updateNavButtons()
+    this.updateDeleteButton()
   }
 
   async createFolder() {
@@ -29,6 +33,21 @@ export default class extends Controller {
 
   async createDocument() {
     await this.createItem(this.createDocumentPathValue)
+  }
+
+  selectRow(event) {
+    const row = event.currentTarget
+    if (!row) return
+
+    if (this.selectedRow && this.selectedRow !== row) {
+      this.selectedRow.classList.remove("is-selected")
+      this.selectedRow.setAttribute("aria-selected", "false")
+    }
+
+    this.selectedRow = row
+    this.selectedRow.classList.add("is-selected")
+    this.selectedRow.setAttribute("aria-selected", "true")
+    this.updateDeleteButton()
   }
 
   openItem(event) {
@@ -105,6 +124,30 @@ export default class extends Controller {
 
     if (!response.ok) return
 
+    this.clearSelection()
+    this.refreshFrame()
+  }
+
+  async deleteSelectedItem() {
+    if (!this.selectedRow) return
+
+    const itemId = this.selectedRow.dataset.itemId
+    const itemKind = this.selectedRow.dataset.itemKind
+    const path = this.deletePathFor(itemKind, itemId)
+    if (!path) return
+
+    const response = await fetch(path, {
+      method: "PATCH",
+      headers: {
+        "Accept": "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      credentials: "same-origin"
+    })
+
+    if (!response.ok) return
+
+    this.clearSelection()
     this.refreshFrame()
   }
 
@@ -127,6 +170,7 @@ export default class extends Controller {
   applySort() {
     if (!this.hasListTarget || !this.hasRowTarget) {
       this.updateSortButtons()
+      this.updateDeleteButton()
       return
     }
 
@@ -145,6 +189,7 @@ export default class extends Controller {
 
     rows.forEach((row) => this.listTarget.appendChild(row))
     this.updateSortButtons()
+    this.syncSelectionState()
   }
 
   compareRows(left, right, key) {
@@ -186,6 +231,64 @@ export default class extends Controller {
     const value = row.dataset[key]
     const time = value ? Date.parse(value) : 0
     return Number.isNaN(time) ? 0 : time
+  }
+
+  clearSelection() {
+    if (this.selectedRow) {
+      this.selectedRow.classList.remove("is-selected")
+      this.selectedRow.setAttribute("aria-selected", "false")
+    }
+
+    this.selectedRow = null
+    this.updateDeleteButton()
+  }
+
+  syncSelectionState() {
+    if (!this.selectedRow || !this.hasRowTarget) {
+      this.updateDeleteButton()
+      return
+    }
+
+    const selectedItemId = this.selectedRow.dataset.itemId
+    const selectedItemKind = this.selectedRow.dataset.itemKind
+    const nextSelectedRow = this.rowTargets.find((row) => (
+      row.dataset.itemId === selectedItemId && row.dataset.itemKind === selectedItemKind
+    ))
+
+    if (!nextSelectedRow) {
+      this.clearSelection()
+      return
+    }
+
+    this.selectedRow = nextSelectedRow
+    this.selectedRow.classList.add("is-selected")
+    this.selectedRow.setAttribute("aria-selected", "true")
+    this.updateDeleteButton()
+  }
+
+  updateDeleteButton() {
+    if (!this.hasDeleteButtonTarget) return
+
+    this.deleteButtonTarget.hidden = !this.selectedRow
+    this.deleteButtonTarget.disabled = !this.selectedRow
+  }
+
+  deletePathFor(itemKind, itemId) {
+    if (!itemKind || !itemId) return null
+
+    if (itemKind === "folder" && this.hasDeleteFolderPathTemplateValue) {
+      return this.deleteFolderPathTemplateValue.replace("__ID__", encodeURIComponent(itemId))
+    }
+
+    if (itemKind === "document" && this.hasDeleteDocumentPathTemplateValue) {
+      return this.deleteDocumentPathTemplateValue.replace("__ID__", encodeURIComponent(itemId))
+    }
+
+    return null
+  }
+
+  csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content
   }
 
   desktopController() {
