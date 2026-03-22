@@ -354,13 +354,13 @@
 }
 
 .folder-window__nav-button-icon--folder {
-  width: 1.4rem;
-  height: 1.1rem;
+  width:2rem;
+  height:2rem;
 }
 
 .folder-window__nav-button-icon--document {
-  width: 1.25rem;
-  height: 1.25rem;
+  width:2rem;
+  height:2rem;
 }
 
 .folder-window__nav-button-icon--delete {
@@ -628,8 +628,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  min-height: 2rem;
-  padding: 0.4rem 0.75rem 0.45rem;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.75rem 0.5rem;
   border-top: 1px solid rgba(118, 132, 166, 0.36);
   background: linear-gradient(180deg, #334762 0%, #273853 100%);
   box-shadow:
@@ -649,9 +649,49 @@
 
 .folder-window__status-value {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.folder-window__status-segment {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0.24rem 0.52rem 0.28rem;
+  border: 1px solid rgba(214, 225, 248, 0.14);
+  border-radius: 0.42rem;
+  background: rgba(233, 240, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(10, 16, 28, 0.24);
+  color: #eef3ff;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.1;
   white-space: nowrap;
+  text-align: left;
+}
+
+.folder-window__status-segment--link:hover,
+.folder-window__status-segment--link:focus-visible {
+  background: rgba(233, 240, 255, 0.14);
+  border-color: rgba(214, 225, 248, 0.22);
+  outline: none;
+}
+
+.folder-window__status-segment--link:active {
+  transform: translateY(1px);
+}
+
+.folder-window__status-segment--link {
+  cursor: pointer;
+}
+
+.folder-window__status-segment--current {
+  background: rgba(233, 240, 255, 0.12);
+  border-color: rgba(214, 225, 248, 0.2);
+  color: #ffffff;
 }
 
 @media (max-width: 720px) {

@@ -229,7 +229,23 @@
 
       <footer class="folder-window__status-bar" aria-label="Folder path">
         <span class="folder-window__status-label">Path</span>
-        <span class="folder-window__status-value"><%= @folder_path %></span>
+        <div class="folder-window__status-value" role="navigation" aria-label="Folder breadcrumbs">
+          <% @breadcrumbs.each do |breadcrumb| %>
+            <% if breadcrumb[:path] == @folder_path %>
+              <span class="folder-window__status-segment folder-window__status-segment--current" aria-current="page"><%= breadcrumb[:label] %></span>
+            <% else %>
+              <button
+                type="button"
+                class="folder-window__status-segment folder-window__status-segment--link"
+                data-action="folder-browser#navigateToBreadcrumb"
+                data-folder-id="<%= breadcrumb[:id] %>"
+                data-folder-name="<%= breadcrumb[:label] %>"
+                data-folder-path="<%= breadcrumb[:path] %>"
+                data-show-path="<%= breadcrumb[:show_path] %>"
+              ><%= breadcrumb[:label] %></button>
+            <% end %>
+          <% end %>
+        </div>
       </footer>
     </section>
   <% end %>

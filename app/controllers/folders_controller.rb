@@ -55,6 +55,7 @@ class FoldersController < ApplicationController
     @folder_name = name
     @folder_path = path
     @show_path = show_path
+    @breadcrumbs = build_breadcrumbs(path:, current_folder_id: id, current_show_path: show_path)
     @frame_id = params[:frame_id].presence || default_frame_id_for(id)
     @children = VirtualFilesystem.children_for(current_user, path)
 
@@ -88,6 +89,37 @@ class FoldersController < ApplicationController
     return "folder_window_root_content" if id.blank?
 
     "folder_window_#{id}_content"
+  end
+
+  def build_breadcrumbs(path:, current_folder_id:, current_show_path:)
+    normalized_path = VirtualFilesystem.normalize_parent_path(path)
+    segments = normalized_path.split("/")
+    breadcrumb_paths = segments.each_index.map { |index| segments[0..index].join("/") }
+    folders_by_path = current_user.folders.active.where(path: breadcrumb_paths.drop(1)).index_by(&:path)
+
+    breadcrumb_paths.map do |breadcrumb_path|
+      if breadcrumb_path == VirtualFilesystem.root_path
+        {
+          id: nil,
+          label: VirtualFilesystem.root_path,
+          path: VirtualFilesystem.root_path,
+          show_path: root_folders_path
+        }
+      else
+        folder = if breadcrumb_path == normalized_path && current_folder_id.present?
+          current_user.folders.active.find_by(id: current_folder_id) || folders_by_path[breadcrumb_path]
+        else
+          folders_by_path[breadcrumb_path]
+        end
+
+        {
+          id: folder&.id,
+          label: breadcrumb_path.split("/").last,
+          path: breadcrumb_path,
+          show_path: folder.present? ? folder_path(folder) : current_show_path
+        }
+      end
+    end
   end
 
   def set_folder

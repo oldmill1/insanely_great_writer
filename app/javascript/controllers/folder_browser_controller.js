@@ -74,6 +74,18 @@ export default class extends Controller {
     desktopController.openDocumentWindow(itemId, itemName)
   }
 
+  navigateToBreadcrumb(event) {
+    const { folderId, folderName, folderPath, showPath } = event.currentTarget.dataset
+    if (!showPath || folderPath === this.folderPathValue) return
+
+    this.pushCurrentLocationToHistory()
+    this.navigateWithinWindow({
+      folderId: folderId || null,
+      folderName: folderName || "Root",
+      showPath
+    })
+  }
+
   goUp() {
     if (!this.hasParentShowPathValue || !this.parentShowPathValue) return
 
