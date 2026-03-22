@@ -107,6 +107,7 @@
   padding: 0.9rem 1rem 0.75rem;
   border-bottom: 1px solid rgba(194, 199, 207, 0.11);
   background: #101417;
+  box-shadow: none;
 }
 
 .folder-window__actions {
@@ -116,7 +117,7 @@
 
 .folder-window__groups {
   display: grid;
-  gap: 1rem;
+  gap: 0.75rem;
   padding: 1rem;
   overflow: auto;
 }
@@ -135,27 +136,100 @@
   color: rgba(194, 199, 207, 0.72);
 }
 
+.folder-window__table {
+  border: 1px solid rgba(122, 138, 173, 0.42);
+  border-radius: 0.55rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, #18202c 0%, #121822 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(221, 229, 255, 0.14),
+    inset 0 -1px 0 rgba(3, 7, 18, 0.55),
+    0 12px 24px rgba(2, 6, 23, 0.18);
+}
+
+.folder-window__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(7rem, 0.7fr) minmax(11rem, 0.95fr) minmax(11rem, 0.95fr);
+  gap: 0;
+  border-bottom: 1px solid rgba(118, 132, 166, 0.48);
+  background:
+    linear-gradient(180deg, #5f7398 0%, #495b7a 44%, #354360 45%, #566a8c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(243, 247, 255, 0.28),
+    inset 0 -1px 0 rgba(9, 14, 26, 0.42);
+}
+
+.folder-window__sort-button {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.62rem 0.9rem;
+  border: 0;
+  border-right: 1px solid rgba(196, 206, 230, 0.16);
+  background: transparent;
+  color: #eef3ff;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-align: left;
+  text-transform: none;
+  text-shadow: 0 1px 0 rgba(10, 15, 28, 0.75);
+}
+
+.folder-window__sort-button:last-child {
+  border-right: 0;
+}
+
+.folder-window__sort-button::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 0.28rem solid transparent;
+  border-right: 0.28rem solid transparent;
+  border-top: 0.38rem solid rgba(234, 240, 255, 0.8);
+  opacity: 0;
+  transform: translateY(1px);
+}
+
+.folder-window__sort-button.is-active::after {
+  opacity: 1;
+}
+
+.folder-window__sort-button[aria-sort="descending"]::after {
+  transform: rotate(180deg) translateY(1px);
+}
+
+.folder-window__sort-button:hover,
+.folder-window__sort-button:focus-visible {
+  background: rgba(232, 239, 255, 0.09);
+  color: #ffffff;
+  outline: none;
+}
+
 .folder-window__list {
   display: grid;
   gap: 0;
-  border: 1px solid rgba(194, 199, 207, 0.11);
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background: #101417;
 }
 
 .folder-window__row {
   display: grid;
-  grid-template-columns: 1fr 8rem;
+  grid-template-columns: minmax(0, 1.7fr) minmax(7rem, 0.7fr) minmax(11rem, 0.95fr) minmax(11rem, 0.95fr);
   gap: 0.75rem;
   width: 100%;
-  padding: 0.7rem 0.9rem;
+  padding: 0.56rem 0.9rem;
   border: 0;
-  border-bottom: 1px solid rgba(194, 199, 207, 0.08);
+  border-bottom: 1px solid rgba(133, 147, 182, 0.12);
   background: transparent;
   color: inherit;
   text-align: left;
   font: inherit;
+  transition: background 120ms ease;
+}
+
+.folder-window__row:nth-child(even) {
+  background: linear-gradient(180deg, rgba(117, 132, 174, 0.14) 0%, rgba(73, 86, 121, 0.14) 100%);
 }
 
 .folder-window__row:last-child {
@@ -164,12 +238,41 @@
 
 .folder-window__row:hover,
 .folder-window__row:focus-visible {
-  background: rgba(194, 199, 207, 0.08);
+  background: linear-gradient(180deg, rgba(126, 149, 203, 0.28) 0%, rgba(86, 105, 156, 0.28) 100%);
   outline: none;
 }
 
-.folder-window__cell--type {
-  color: rgba(194, 199, 207, 0.65);
+.folder-window__cell {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  align-self: center;
+  color: #b8c0d3;
+}
+
+.folder-window__cell--name {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #edf2ff;
+}
+
+.folder-window__name-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-window__icon {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  image-rendering: auto;
+}
+
+.folder-window__cell--kind {
+  color: #aeb8d0;
 }
 
 .folder-window__empty {
@@ -177,6 +280,7 @@
   padding: 0.85rem 0.95rem;
   border: 1px dashed rgba(194, 199, 207, 0.18);
   border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
   color: rgba(194, 199, 207, 0.7);
 }
 
@@ -191,6 +295,10 @@
   }
 
   .folder-window__row {
-    grid-template-columns: 1fr 5.5rem;
+    grid-template-columns: minmax(0, 1.4fr) minmax(6rem, 0.7fr) minmax(9rem, 0.95fr) minmax(9rem, 0.95fr);
+  }
+
+  .folder-window__header {
+    grid-template-columns: minmax(0, 1.4fr) minmax(6rem, 0.7fr) minmax(9rem, 0.95fr) minmax(9rem, 0.95fr);
   }
 }

@@ -32,7 +32,7 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_nil folder.shortcut
   end
 
-  test "shows direct children grouped by type" do
+  test "shows direct children in a combined sortable list" do
     sign_in users(:one)
     folder = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
     Folder.create!(user: users(:one), name: "Scenes", path: "root/Chapter 1/Scenes")
@@ -42,8 +42,11 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     get folder_path(folder), params: { frame_id: "folder_window_test" }
 
     assert_response :success
-    assert_includes response.body, "Folders"
-    assert_includes response.body, "Documents"
+    assert_includes response.body, "Items"
+    assert_includes response.body, "Name"
+    assert_includes response.body, "Kind"
+    assert_includes response.body, "Date Created"
+    assert_includes response.body, "Date Modified"
     assert_includes response.body, "Scenes"
     assert_includes response.body, "Opening"
     assert_not_includes response.body, "Deep"
