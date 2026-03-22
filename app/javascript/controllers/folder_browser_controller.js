@@ -75,6 +75,12 @@ export default class extends Controller {
   }
 
   navigateToBreadcrumb(event) {
+    if (event.type === "keydown") {
+      const isActivationKey = event.key === "Enter" || event.key === " "
+      if (!isActivationKey) return
+      event.preventDefault()
+    }
+
     const { folderId, folderName, folderPath, showPath } = event.currentTarget.dataset
     if (!showPath || folderPath === this.folderPathValue) return
 

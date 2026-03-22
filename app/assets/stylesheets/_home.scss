@@ -651,37 +651,33 @@
   min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.1rem;
+  color: #eef3ff;
+  font-family: v.$font-mono;
+  font-size: 1rem;
+  line-height: 1.2;
 }
 
 .folder-window__status-segment {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
-  padding: 0.24rem 0.52rem 0.28rem;
-  border: 1px solid rgba(214, 225, 248, 0.14);
-  border-radius: 0.42rem;
-  background: rgba(233, 240, 255, 0.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -1px 0 rgba(10, 16, 28, 0.24);
-  color: #eef3ff;
+  color: inherit;
   font: inherit;
-  font-size: 0.8rem;
-  line-height: 1.1;
   white-space: nowrap;
-  text-align: left;
+}
+
+.folder-window__status-separator {
+  color: rgba(232, 238, 255, 0.5);
 }
 
 .folder-window__status-segment--link:hover,
 .folder-window__status-segment--link:focus-visible {
-  background: rgba(233, 240, 255, 0.14);
-  border-color: rgba(214, 225, 248, 0.22);
+  color: #ffffff;
+  text-decoration: underline;
   outline: none;
 }
 
 .folder-window__status-segment--link:active {
-  transform: translateY(1px);
+  opacity: 0.82;
 }
 
 .folder-window__status-segment--link {
@@ -689,8 +685,6 @@
 }
 
 .folder-window__status-segment--current {
-  background: rgba(233, 240, 255, 0.12);
-  border-color: rgba(214, 225, 248, 0.2);
   color: #ffffff;
 }
 
