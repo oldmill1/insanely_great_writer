@@ -48,12 +48,16 @@
       class="folder-window"
       aria-label="Folder window"
       data-controller="folder-browser"
-      data-folder-browser-folder-id-value="<%= @folder.id %>"
-      data-folder-browser-folder-name-value="<%= @folder.name %>"
-      data-folder-browser-folder-path-value="<%= @folder.path %>"
+      data-folder-browser-folder-id-value="<%= @folder_id %>"
+      data-folder-browser-folder-name-value="<%= @folder_name %>"
+      data-folder-browser-folder-path-value="<%= @folder_path %>"
       data-folder-browser-create-folder-path-value="<%= folders_path %>"
       data-folder-browser-create-document-path-value="<%= documents_path %>"
-      data-folder-browser-show-path-value="<%= folder_path(@folder) %>"
+      data-folder-browser-show-path-value="<%= @show_path %>"
+      data-folder-browser-parent-folder-id-value="<%= @parent_folder&.dig(:id) %>"
+      data-folder-browser-parent-folder-name-value="<%= @parent_folder&.dig(:name) %>"
+      data-folder-browser-parent-folder-path-value="<%= @parent_folder&.dig(:path) %>"
+      data-folder-browser-parent-show-path-value="<%= @parent_folder&.dig(:show_path) %>"
     >
       <header class="folder-window__toolbar">
         <div class="folder-window__actions">
@@ -70,6 +74,21 @@
 
       <div class="folder-window__groups">
         <aside class="folder-window__sidebar" aria-label="Sidebar">
+          <div class="folder-window__nav">
+            <button
+              type="button"
+              class="folder-window__nav-button"
+              data-folder-browser-target="upButton"
+              data-action="folder-browser#goUp"
+            >Up</button>
+            <button
+              type="button"
+              class="folder-window__nav-button"
+              data-folder-browser-target="backButton"
+              data-action="folder-browser#goBack"
+            >Back</button>
+          </div>
+
           <% sidebar_groups.each do |group| %>
             <section class="folder-window__sidebar-group">
               <h2 class="folder-window__sidebar-title"><%= group[:title] %></h2>
@@ -166,7 +185,7 @@
 
       <footer class="folder-window__status-bar" aria-label="Folder path">
         <span class="folder-window__status-label">Path</span>
-        <span class="folder-window__status-value"><%= @folder.path %></span>
+        <span class="folder-window__status-value"><%= @folder_path %></span>
       </footer>
     </section>
   <% end %>

@@ -136,6 +136,40 @@
   overflow: auto;
 }
 
+.folder-window__nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.folder-window__nav-button {
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid rgba(120, 136, 174, 0.34);
+  border-radius: 0.45rem;
+  background:
+    linear-gradient(180deg, rgba(91, 109, 150, 0.92) 0%, rgba(50, 64, 95, 0.92) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(238, 243, 255, 0.18),
+    inset 0 -1px 0 rgba(7, 11, 20, 0.42);
+  color: #eef3ff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.folder-window__nav-button:hover,
+.folder-window__nav-button:focus-visible {
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.folder-window__nav-button:disabled {
+  opacity: 0.45;
+  filter: saturate(0.75);
+}
+
 .folder-window__sidebar-group {
   display: grid;
   gap: 0.35rem;

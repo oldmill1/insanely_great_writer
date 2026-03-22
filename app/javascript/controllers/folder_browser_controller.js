@@ -5,17 +5,22 @@ export default class extends Controller {
     folderId: Number,
     folderName: String,
     folderPath: String,
+    parentFolderId: Number,
+    parentFolderName: String,
+    parentFolderPath: String,
+    parentShowPath: String,
     createFolderPath: String,
     createDocumentPath: String,
     showPath: String
   }
 
-  static targets = ["list", "row", "sortButton"]
+  static targets = ["list", "row", "sortButton", "upButton", "backButton"]
 
   connect() {
     this.sortKey = "kind"
     this.sortDirection = "asc"
     this.applySort()
+    this.updateNavButtons()
   }
 
   async createFolder() {
@@ -42,6 +47,30 @@ export default class extends Controller {
     if (!desktopController) return
 
     desktopController.openDocumentWindow(itemId, itemName)
+  }
+
+  goUp() {
+    if (!this.hasParentShowPathValue || !this.parentShowPathValue) return
+
+    this.pushCurrentLocationToHistory()
+    this.navigateWithinWindow({
+      folderId: this.hasParentFolderIdValue ? this.parentFolderIdValue : null,
+      folderName: this.parentFolderNameValue || "Root",
+      showPath: this.parentShowPathValue
+    })
+  }
+
+  goBack() {
+    const windowEl = this.currentWindow()
+    if (!windowEl) return
+
+    const history = this.readHistory(windowEl)
+    const previous = history.pop()
+    this.writeHistory(windowEl, history)
+    this.updateNavButtons()
+    if (!previous) return
+
+    this.navigateWithinWindow(previous)
   }
 
   sortBy(event) {
@@ -87,19 +116,12 @@ export default class extends Controller {
   }
 
   navigateToFolder(folderId, folderName) {
-    const frame = this.element.closest("turbo-frame")
-    if (!frame) return
-
-    const windowEl = frame.closest(".home__window")
-    if (windowEl) {
-      const title = windowEl.querySelector(".ig-window__title")
-      if (title) title.textContent = folderName
-
-      windowEl.setAttribute("aria-label", folderName)
-      windowEl.dataset.desktopWindowKey = `folder_window_${folderId}`
-    }
-
-    frame.src = `/folders/${folderId}?frame_id=${encodeURIComponent(frame.id)}&refresh=${Date.now()}`
+    this.pushCurrentLocationToHistory()
+    this.navigateWithinWindow({
+      folderId,
+      folderName,
+      showPath: `/folders/${folderId}`
+    })
   }
 
   applySort() {
@@ -171,5 +193,68 @@ export default class extends Controller {
     if (!desktopElement) return null
 
     return this.application.getControllerForElementAndIdentifier(desktopElement, "desktop")
+  }
+
+  navigateWithinWindow({ folderId, folderName, showPath }) {
+    const frame = this.element.closest("turbo-frame")
+    if (!frame || !showPath) return
+
+    const windowEl = this.currentWindow()
+    if (windowEl) {
+      const title = windowEl.querySelector(".ig-window__title")
+      if (title) title.textContent = folderName
+
+      windowEl.setAttribute("aria-label", folderName)
+      windowEl.dataset.desktopWindowKey = folderId ? `folder_window_${folderId}` : "folder_window_root"
+    }
+
+    frame.src = `${showPath}?frame_id=${encodeURIComponent(frame.id)}&refresh=${Date.now()}`
+  }
+
+  pushCurrentLocationToHistory() {
+    const windowEl = this.currentWindow()
+    if (!windowEl || !this.showPathValue) return
+
+    const history = this.readHistory(windowEl)
+    history.push({
+      folderId: this.hasFolderIdValue ? this.folderIdValue : null,
+      folderName: this.folderNameValue || "Root",
+      folderPath: this.folderPathValue || "root",
+      showPath: this.showPathValue
+    })
+    this.writeHistory(windowEl, history)
+    this.updateNavButtons()
+  }
+
+  currentWindow() {
+    return this.element.closest(".home__window")
+  }
+
+  readHistory(windowEl) {
+    try {
+      const raw = windowEl.dataset.folderBackHistory || "[]"
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+
+  writeHistory(windowEl, history) {
+    windowEl.dataset.folderBackHistory = JSON.stringify(history)
+  }
+
+  updateNavButtons() {
+    const windowEl = this.currentWindow()
+    const history = windowEl ? this.readHistory(windowEl) : []
+
+    if (this.hasUpButtonTarget) {
+      const canGoUp = this.hasParentShowPathValue && Boolean(this.parentShowPathValue)
+      this.upButtonTarget.disabled = !canGoUp
+    }
+
+    if (this.hasBackButtonTarget) {
+      this.backButtonTarget.disabled = history.length === 0
+    }
   }
 }

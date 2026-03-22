@@ -5,8 +5,22 @@ class FoldersController < ApplicationController
   before_action :set_folder, only: :show
 
   def show
-    @frame_id = params[:frame_id].presence || "folder_window_#{@folder.id}_content"
-    @children = VirtualFilesystem.children_for(current_user, @folder.path)
+    assign_folder_view_state(
+      id: @folder.id,
+      name: @folder.name,
+      path: @folder.path,
+      show_path: folder_path(@folder)
+    )
+  end
+
+  def root
+    assign_folder_view_state(
+      id: nil,
+      name: "Root",
+      path: VirtualFilesystem.root_path,
+      show_path: root_folders_path
+    )
+    render :show
   end
 
   def create
@@ -30,6 +44,46 @@ class FoldersController < ApplicationController
   end
 
   private
+
+  def assign_folder_view_state(id:, name:, path:, show_path:)
+    @folder_id = id
+    @folder_name = name
+    @folder_path = path
+    @show_path = show_path
+    @frame_id = params[:frame_id].presence || default_frame_id_for(id)
+    @children = VirtualFilesystem.children_for(current_user, path)
+
+    parent_path = VirtualFilesystem.parent_path_for(path)
+    if path == VirtualFilesystem.root_path
+      @parent_folder = nil
+      return
+    end
+
+    @parent_folder = if parent_path == VirtualFilesystem.root_path
+      {
+        id: nil,
+        name: "Root",
+        path: VirtualFilesystem.root_path,
+        show_path: root_folders_path
+      }
+    else
+      parent_folder = current_user.folders.find_by(path: parent_path)
+      if parent_folder.present?
+        {
+          id: parent_folder.id,
+          name: parent_folder.name,
+          path: parent_folder.path,
+          show_path: folder_path(parent_folder)
+        }
+      end
+    end
+  end
+
+  def default_frame_id_for(id)
+    return "folder_window_root_content" if id.blank?
+
+    "folder_window_#{id}_content"
+  end
 
   def set_folder
     @folder = current_user.folders.find(params[:id])
