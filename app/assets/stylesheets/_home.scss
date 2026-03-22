@@ -120,7 +120,6 @@
   justify-content: space-between;
   gap: 1.25rem;
   padding: 0.9rem 1rem 0.75rem;
-  border-bottom: 1px solid rgba(194, 199, 207, 0.11);
   background: #101417;
   box-shadow: none;
 }
@@ -418,6 +417,7 @@
   flex-direction: column;
   min-width: 0;
   overflow: auto;
+  border-radius: 0.75rem;
 }
 
 .folder-window__group {
@@ -444,6 +444,7 @@
 .folder-window__table {
   --folder-window-table-columns: minmax(0, 1.7fr) minmax(7rem, 0.7fr) minmax(11rem, 0.95fr) minmax(11rem, 0.95fr);
 
+  border-radius: 25px;
   overflow: hidden;
   background: linear-gradient(180deg, #18202c 0%, #121822 100%);
   // box-shadow:
