@@ -7,6 +7,7 @@ export default class extends Controller {
 
   static SYSTEM_SHORTCUT_COOKIE = "desktop_system_shortcut_positions"
   static WINDOW_LAYOUT_COOKIE = "desktop_window_layouts"
+  static OPEN_WINDOWS_COOKIE = "desktop_open_windows"
   static WINDOW_Z_BASE = 24
 
   connect() {
@@ -21,6 +22,7 @@ export default class extends Controller {
 
     this.render()
     this.bindWindows()
+    this.restoreOpenWindows()
   }
 
   disconnect() {
@@ -225,6 +227,7 @@ export default class extends Controller {
     }
 
     windowEl.dataset.desktopWindowBound = "true"
+    this.persistOpenWindows()
   }
 
   openShortcutWindow(shortcutButton) {
@@ -256,21 +259,24 @@ export default class extends Controller {
     this.bindWindow(windowEl)
   }
 
-  buildDocumentWindow(windowKey, documentId, titleText) {
+  buildDocumentWindow(windowKey, documentId, titleText, options = {}) {
     const openWindowCount = document.querySelectorAll(".home__window").length
     const offsetStep = 26
     const x = 220 + (openWindowCount % 8) * offsetStep
     const y = 88 + (openWindowCount % 7) * offsetStep
     const width = 760
     const height = 520
-    const frameId = `document_window_${documentId}_content`
-    const frameSrc = `/docs/${documentId}?terminal_frame_id=${encodeURIComponent(frameId)}`
+    const frameId = options.frameId || `document_window_${documentId}_content`
+    const frameSrc = options.frameSrc || `/docs/${documentId}?terminal_frame_id=${encodeURIComponent(frameId)}`
 
     const windowEl = document.createElement("section")
     windowEl.className = "ig-window home__window"
     windowEl.setAttribute("role", "dialog")
     windowEl.setAttribute("aria-label", titleText)
     windowEl.dataset.desktopWindowKey = windowKey
+    windowEl.dataset.windowKind = "document"
+    windowEl.dataset.windowItemId = String(documentId)
+    windowEl.dataset.windowTitle = titleText
     windowEl.dataset.desktopWindowX = String(x)
     windowEl.dataset.desktopWindowY = String(y)
     windowEl.dataset.desktopWindowWidth = String(width)
@@ -323,21 +329,27 @@ export default class extends Controller {
     return windowEl
   }
 
-  buildFolderWindow(windowKey, folderId, titleText) {
+  buildFolderWindow(windowKey, folderId, titleText, options = {}) {
     const openWindowCount = document.querySelectorAll(".home__window").length
     const offsetStep = 26
     const x = 220 + (openWindowCount % 8) * offsetStep
     const y = 88 + (openWindowCount % 7) * offsetStep
     const width = 680
     const height = 440
-    const frameId = `folder_window_${folderId}_content`
-    const frameSrc = `/folders/${folderId}?frame_id=${encodeURIComponent(frameId)}`
+    const normalizedFolderId = folderId == null || folderId === "" ? null : String(folderId)
+    const frameId = options.frameId || (normalizedFolderId ? `folder_window_${normalizedFolderId}_content` : "folder_window_root_content")
+    const frameSrc = options.frameSrc || (normalizedFolderId
+      ? `/folders/${normalizedFolderId}?frame_id=${encodeURIComponent(frameId)}`
+      : `/folders/root?frame_id=${encodeURIComponent(frameId)}`)
 
     const windowEl = document.createElement("section")
     windowEl.className = "ig-window home__window"
     windowEl.setAttribute("role", "dialog")
     windowEl.setAttribute("aria-label", titleText)
     windowEl.dataset.desktopWindowKey = windowKey
+    windowEl.dataset.windowKind = "folder"
+    windowEl.dataset.windowItemId = normalizedFolderId || ""
+    windowEl.dataset.windowTitle = titleText
     windowEl.dataset.desktopWindowX = String(x)
     windowEl.dataset.desktopWindowY = String(y)
     windowEl.dataset.desktopWindowWidth = String(width)
@@ -443,6 +455,7 @@ export default class extends Controller {
       this.activeWindowElement = this.windowElements[this.windowElements.length - 1] || null
     }
     windowEl.remove()
+    this.persistOpenWindows()
   }
 
   openDocumentPage(windowEl) {
@@ -589,6 +602,89 @@ export default class extends Controller {
     const oneYearInSeconds = 60 * 60 * 24 * 365
     document.cookie =
       `${this.constructor.WINDOW_LAYOUT_COOKIE}=${encoded}; path=/; max-age=${oneYearInSeconds}; samesite=lax`
+  }
+
+  persistOpenWindows() {
+    const snapshots = (this.windowElements || [])
+      .filter((windowEl) => windowEl?.isConnected)
+      .map((windowEl) => this.windowSnapshot(windowEl))
+      .filter(Boolean)
+
+    const encoded = encodeURIComponent(JSON.stringify(snapshots))
+    const oneYearInSeconds = 60 * 60 * 24 * 365
+    document.cookie =
+      `${this.constructor.OPEN_WINDOWS_COOKIE}=${encoded}; path=/; max-age=${oneYearInSeconds}; samesite=lax`
+  }
+
+  restoreOpenWindows() {
+    const snapshots = this.readOpenWindowsCookie()
+    if (snapshots.length === 0) return
+
+    snapshots.forEach((snapshot) => this.restoreWindowSnapshot(snapshot))
+  }
+
+  restoreWindowSnapshot(snapshot) {
+    const key = snapshot?.key
+    const kind = snapshot?.kind
+    const title = snapshot?.title
+    if (!key || !kind || !title) return
+
+    const existingWindow = document.querySelector(`.home__window[data-desktop-window-key="${key}"]`)
+    if (existingWindow) return
+
+    let windowEl = null
+
+    if (kind === "document" && snapshot.itemId) {
+      windowEl = this.buildDocumentWindow(key, snapshot.itemId, title, {
+        frameId: snapshot.frameId,
+        frameSrc: snapshot.frameSrc
+      })
+    } else if (kind === "folder") {
+      windowEl = this.buildFolderWindow(key, snapshot.itemId || null, title, {
+        frameId: snapshot.frameId,
+        frameSrc: snapshot.frameSrc
+      })
+    }
+
+    if (!windowEl) return
+
+    document.body.appendChild(windowEl)
+    this.windowElements = this.windowElements || []
+    this.windowElements.push(windowEl)
+    this.bindWindow(windowEl)
+  }
+
+  windowSnapshot(windowEl) {
+    const frame = windowEl.querySelector("turbo-frame")
+    const key = windowEl.dataset.desktopWindowKey
+    const kind = windowEl.dataset.windowKind
+    if (!frame || !key || !kind) return null
+
+    return {
+      key,
+      kind,
+      itemId: windowEl.dataset.windowItemId || null,
+      title: windowEl.querySelector(".ig-window__title")?.textContent?.trim() || windowEl.dataset.windowTitle || "Window",
+      frameId: frame.id,
+      frameSrc: frame.getAttribute("src") || "",
+      documentPath: windowEl.dataset.documentPath || null
+    }
+  }
+
+  readOpenWindowsCookie() {
+    const rawValue = document.cookie
+      .split("; ")
+      .find((entry) => entry.startsWith(`${this.constructor.OPEN_WINDOWS_COOKIE}=`))
+      ?.split("=")[1]
+
+    if (!rawValue) return []
+
+    try {
+      const parsed = JSON.parse(decodeURIComponent(rawValue))
+      return Array.isArray(parsed) ? parsed : []
+    } catch (_) {
+      return []
+    }
   }
 
   bringWindowToFront(windowEl) {

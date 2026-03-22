@@ -309,9 +309,12 @@ export default class extends Controller {
 
       windowEl.setAttribute("aria-label", folderName)
       windowEl.dataset.desktopWindowKey = folderId ? `folder_window_${folderId}` : "folder_window_root"
+      windowEl.dataset.windowItemId = folderId ? String(folderId) : ""
+      windowEl.dataset.windowTitle = folderName
     }
 
     frame.src = `${showPath}?frame_id=${encodeURIComponent(frame.id)}&refresh=${Date.now()}`
+    this.desktopController()?.persistOpenWindows()
   }
 
   pushCurrentLocationToHistory() {
