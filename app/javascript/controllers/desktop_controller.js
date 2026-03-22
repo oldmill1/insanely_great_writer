@@ -260,104 +260,113 @@ export default class extends Controller {
   }
 
   buildDocumentWindow(windowKey, documentId, titleText, options = {}) {
-    const openWindowCount = document.querySelectorAll(".home__window").length
-    const offsetStep = 26
-    const x = 220 + (openWindowCount % 8) * offsetStep
-    const y = 88 + (openWindowCount % 7) * offsetStep
-    const width = 760
-    const height = 520
     const frameId = options.frameId || `document_window_${documentId}_content`
     const frameSrc = options.frameSrc || `/docs/${documentId}?terminal_frame_id=${encodeURIComponent(frameId)}`
-
-    const windowEl = document.createElement("section")
-    windowEl.className = "ig-window home__window"
-    windowEl.setAttribute("role", "dialog")
-    windowEl.setAttribute("aria-label", titleText)
-    windowEl.dataset.desktopWindowKey = windowKey
-    windowEl.dataset.windowKind = "document"
-    windowEl.dataset.windowItemId = String(documentId)
-    windowEl.dataset.windowTitle = titleText
-    windowEl.dataset.desktopWindowX = String(x)
-    windowEl.dataset.desktopWindowY = String(y)
-    windowEl.dataset.desktopWindowWidth = String(width)
-    windowEl.dataset.desktopWindowHeight = String(height)
-    windowEl.dataset.documentPath = `/docs/${documentId}`
-
-    const titlebar = document.createElement("header")
-    titlebar.className = "ig-window__titlebar"
-
-    const traffic = document.createElement("div")
-    traffic.className = "ig-window__traffic"
-    traffic.setAttribute("aria-hidden", "true")
-
-    for (let index = 0; index < 3; index += 1) {
-      const dot = document.createElement("span")
-      dot.className = "ig-window__dot"
-      if (index === 0) {
-        dot.dataset.windowControl = "close"
-      } else if (index === 2) {
-        dot.dataset.windowControl = "open-document"
+    return this.buildIGWindow({
+      windowKey,
+      kind: "document",
+      itemId: String(documentId),
+      titleText,
+      width: 760,
+      height: 520,
+      frameId,
+      frameSrc,
+      loadingText: "Loading document...",
+      controls: ["close", null, "open-document"],
+      dataset: {
+        documentPath: `/docs/${documentId}`
       }
-      traffic.appendChild(dot)
-    }
-
-    const title = document.createElement("h2")
-    title.className = "ig-window__title"
-    title.textContent = titleText
-
-    const grip = document.createElement("span")
-    grip.className = "ig-window__grip"
-    grip.setAttribute("aria-hidden", "true")
-
-    titlebar.appendChild(traffic)
-    titlebar.appendChild(title)
-    titlebar.appendChild(grip)
-
-    const body = document.createElement("div")
-    body.className = "ig-window__body"
-
-    const frame = document.createElement("turbo-frame")
-    frame.id = frameId
-    frame.setAttribute("src", frameSrc)
-    frame.setAttribute("loading", "lazy")
-    frame.textContent = "Loading document..."
-    body.appendChild(frame)
-
-    windowEl.appendChild(titlebar)
-    windowEl.appendChild(body)
-
-    return windowEl
+    })
   }
 
   buildFolderWindow(windowKey, folderId, titleText, options = {}) {
-    const openWindowCount = document.querySelectorAll(".home__window").length
-    const offsetStep = 26
-    const x = 220 + (openWindowCount % 8) * offsetStep
-    const y = 88 + (openWindowCount % 7) * offsetStep
-    const width = 680
-    const height = 440
     const normalizedFolderId = folderId == null || folderId === "" ? null : String(folderId)
     const frameId = options.frameId || (normalizedFolderId ? `folder_window_${normalizedFolderId}_content` : "folder_window_root_content")
     const frameSrc = options.frameSrc || (normalizedFolderId
       ? `/folders/${normalizedFolderId}?frame_id=${encodeURIComponent(frameId)}`
       : `/folders/root?frame_id=${encodeURIComponent(frameId)}`)
 
+    return this.buildIGWindow({
+      windowKey,
+      kind: "folder",
+      itemId: normalizedFolderId || "",
+      titleText,
+      width: 680,
+      height: 440,
+      frameId,
+      frameSrc,
+      loadingText: "Loading folder...",
+      controls: ["close", null, null]
+    })
+  }
+
+  buildIGWindow({
+    windowKey,
+    kind,
+    itemId,
+    titleText,
+    width,
+    height,
+    frameId,
+    frameSrc,
+    loadingText,
+    controls = [],
+    dataset = {}
+  }) {
+    const { x, y } = this.nextWindowOrigin()
     const windowEl = document.createElement("section")
     windowEl.className = "ig-window home__window"
     windowEl.setAttribute("role", "dialog")
     windowEl.setAttribute("aria-label", titleText)
     windowEl.dataset.desktopWindowKey = windowKey
-    windowEl.dataset.windowKind = "folder"
-    windowEl.dataset.windowItemId = normalizedFolderId || ""
+    windowEl.dataset.windowKind = kind
+    windowEl.dataset.windowItemId = itemId || ""
     windowEl.dataset.windowTitle = titleText
     windowEl.dataset.desktopWindowX = String(x)
     windowEl.dataset.desktopWindowY = String(y)
     windowEl.dataset.desktopWindowWidth = String(width)
     windowEl.dataset.desktopWindowHeight = String(height)
 
+    Object.entries(dataset).forEach(([key, value]) => {
+      if (value == null || value === "") return
+      windowEl.dataset[key] = value
+    })
+
+    windowEl.appendChild(this.buildIGWindowTitlebar(titleText, controls))
+    windowEl.appendChild(this.buildIGWindowBody(frameId, frameSrc, loadingText))
+
+    return windowEl
+  }
+
+  nextWindowOrigin() {
+    const openWindowCount = document.querySelectorAll(".home__window").length
+    const offsetStep = 26
+
+    return {
+      x: 220 + (openWindowCount % 8) * offsetStep,
+      y: 88 + (openWindowCount % 7) * offsetStep
+    }
+  }
+
+  buildIGWindowTitlebar(titleText, controls = []) {
     const titlebar = document.createElement("header")
     titlebar.className = "ig-window__titlebar"
+    titlebar.appendChild(this.buildIGWindowTraffic(controls))
 
+    const title = document.createElement("h2")
+    title.className = "ig-window__title"
+    title.textContent = titleText
+    titlebar.appendChild(title)
+
+    const grip = document.createElement("span")
+    grip.className = "ig-window__grip"
+    grip.setAttribute("aria-hidden", "true")
+    titlebar.appendChild(grip)
+
+    return titlebar
+  }
+
+  buildIGWindowTraffic(controls = []) {
     const traffic = document.createElement("div")
     traffic.className = "ig-window__traffic"
     traffic.setAttribute("aria-hidden", "true")
@@ -365,24 +374,17 @@ export default class extends Controller {
     for (let index = 0; index < 3; index += 1) {
       const dot = document.createElement("span")
       dot.className = "ig-window__dot"
-      if (index === 0) {
-        dot.dataset.windowControl = "close"
+      const control = controls[index]
+      if (control) {
+        dot.dataset.windowControl = control
       }
       traffic.appendChild(dot)
     }
 
-    const title = document.createElement("h2")
-    title.className = "ig-window__title"
-    title.textContent = titleText
+    return traffic
+  }
 
-    const grip = document.createElement("span")
-    grip.className = "ig-window__grip"
-    grip.setAttribute("aria-hidden", "true")
-
-    titlebar.appendChild(traffic)
-    titlebar.appendChild(title)
-    titlebar.appendChild(grip)
-
+  buildIGWindowBody(frameId, frameSrc, loadingText) {
     const body = document.createElement("div")
     body.className = "ig-window__body"
 
@@ -390,13 +392,10 @@ export default class extends Controller {
     frame.id = frameId
     frame.setAttribute("src", frameSrc)
     frame.setAttribute("loading", "lazy")
-    frame.textContent = "Loading folder..."
+    frame.textContent = loadingText
     body.appendChild(frame)
 
-    windowEl.appendChild(titlebar)
-    windowEl.appendChild(body)
-
-    return windowEl
+    return body
   }
 
   startWindowDrag(event) {
