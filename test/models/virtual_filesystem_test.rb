@@ -16,6 +16,15 @@ class VirtualFilesystemTest < ActiveSupport::TestCase
     assert_equal "Untitled Document 2", VirtualFilesystem.next_document_title(user: user, parent_path: "root")
   end
 
+  test "increments default names when deleted items still occupy the path" do
+    user = users(:one)
+    Folder.create!(user: user, name: "Untitled Folder", path: "root/Untitled Folder", is_deleted: true)
+    Document.create!(user: user, title: "Untitled Document", content: "", path: "root/Untitled Document", is_deleted: true)
+
+    assert_equal "Untitled Folder 2", VirtualFilesystem.next_folder_name(user: user, parent_path: "root")
+    assert_equal "Untitled Document 2", VirtualFilesystem.next_document_title(user: user, parent_path: "root")
+  end
+
   test "allows same-name folder and document in the same parent" do
     user = users(:one)
 

@@ -29,11 +29,11 @@ class VirtualFilesystem
     end
 
     def next_folder_name(user:, parent_path:)
-      next_name_for(scope: user.folders.active, parent_path:, base_name: Folder::FALLBACK_NAME, column: :name)
+      next_name_for(scope: user.folders, parent_path:, base_name: Folder::FALLBACK_NAME, column: :name)
     end
 
     def next_document_title(user:, parent_path:)
-      next_name_for(scope: user.documents.active, parent_path:, base_name: Document::FALLBACK_TITLE, column: :title)
+      next_name_for(scope: user.documents, parent_path:, base_name: Document::FALLBACK_TITLE, column: :title)
     end
 
     def root_path

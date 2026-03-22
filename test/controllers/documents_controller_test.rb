@@ -40,6 +40,21 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "root/Chapter 1/Untitled Document", document.path
   end
 
+  test "creates an incremented root document when a deleted default path exists" do
+    user = users(:one)
+    sign_in user
+    Document.create!(user: user, title: "Untitled Document", content: "", path: "root/Untitled Document", is_deleted: true)
+
+    assert_difference("Document.count", 1) do
+      post documents_path, as: :json
+    end
+
+    assert_response :success
+    document = Document.order(id: :desc).first
+    assert_equal "Untitled Document 2", document.title
+    assert_equal "root/Untitled Document 2", document.path
+  end
+
   test "returns a desktop item payload for root document creation over json" do
     user = users(:one)
     sign_in user

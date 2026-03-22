@@ -32,6 +32,20 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_nil folder.shortcut
   end
 
+  test "creates an incremented root folder when a deleted default path exists" do
+    sign_in users(:one)
+    Folder.create!(user: users(:one), name: "Untitled Folder", path: "root/Untitled Folder", is_deleted: true)
+
+    assert_difference("Folder.count", 1) do
+      post folders_path, as: :json
+    end
+
+    assert_response :success
+    folder = Folder.order(id: :desc).first
+    assert_equal "Untitled Folder 2", folder.name
+    assert_equal "root/Untitled Folder 2", folder.path
+  end
+
   test "shows direct children in a combined sortable list" do
     sign_in users(:one)
     folder = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
