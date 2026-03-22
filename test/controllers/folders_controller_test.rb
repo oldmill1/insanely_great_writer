@@ -64,6 +64,7 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Opening"
     assert_not_includes response.body, "Deep"
     assert_includes response.body, "Delete"
+    assert_includes response.body, "Today"
   end
 
   test "shows root folder view" do

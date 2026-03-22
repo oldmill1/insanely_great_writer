@@ -1,4 +1,23 @@
 module ApplicationHelper
+  def ig_relative_date(time)
+    return nil if time.blank?
+
+    local_time = time.in_time_zone
+    today = Time.zone.today
+    date = local_time.to_date
+    day_delta = (today - date).to_i
+
+    return "Today" if day_delta == 0
+    return "Yesterday" if day_delta == 1
+    return "#{day_delta} days ago" if day_delta < 30
+
+    month_delta = day_delta / 30
+    return "#{month_delta} month".pluralize(month_delta) + " ago" if month_delta < 12
+
+    year_delta = day_delta / 365
+    "#{year_delta} year".pluralize(year_delta) + " ago"
+  end
+
   def ig_css_size(value)
     return nil if value.blank?
     return "#{value}px" if value.is_a?(Numeric)
