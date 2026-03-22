@@ -173,6 +173,26 @@
   text-align: center;
 }
 
+.folder-window__nav-icon-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.folder-window__nav-icon-trigger[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.folder-window__nav-icon {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
 .folder-window__nav-button:hover,
 .folder-window__nav-button:focus-visible {
   filter: brightness(1.08);
