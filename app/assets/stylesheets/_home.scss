@@ -117,10 +117,71 @@
 
 .folder-window__groups {
   display: grid;
-  gap: 0.75rem;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 0;
   padding: 0;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+}
+
+.folder-window__sidebar {
+  display: grid;
+  align-content: start;
+  gap: 0.9rem;
+  padding: 1rem 0.8rem 1rem 0.9rem;
+  border-right: 1px solid rgba(122, 138, 173, 0.22);
+  background:
+    linear-gradient(180deg, #131b27 0%, #0e141d 100%);
+  overflow: auto;
+}
+
+.folder-window__sidebar-group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.folder-window__sidebar-title {
+  margin: 0;
+  color: rgba(182, 199, 236, 0.78);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.folder-window__sidebar-list {
+  display: grid;
+  gap: 0.14rem;
+}
+
+.folder-window__sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.42rem 0.55rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: #e2e8f6;
+  font: inherit;
+  font-size: 0.96rem;
+  text-align: left;
+}
+
+.folder-window__sidebar-item:hover,
+.folder-window__sidebar-item:focus-visible {
+  background: linear-gradient(180deg, rgba(114, 134, 182, 0.25) 0%, rgba(83, 101, 147, 0.25) 100%);
+  outline: none;
+}
+
+.folder-window__sidebar-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+}
+
+.folder-window__main-pane {
+  min-width: 0;
   overflow: auto;
 }
 
@@ -141,7 +202,6 @@
 
 .folder-window__table {
   border: 1px solid rgba(122, 138, 173, 0.42);
-  border-radius: 0.55rem;
   overflow: hidden;
   background: linear-gradient(180deg, #18202c 0%, #121822 100%);
   box-shadow:
@@ -319,6 +379,15 @@
 }
 
 @media (max-width: 720px) {
+  .folder-window__groups {
+    grid-template-columns: 1fr;
+  }
+
+  .folder-window__sidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(122, 138, 173, 0.22);
+  }
+
   .folder-window__toolbar {
     justify-content: center;
   }

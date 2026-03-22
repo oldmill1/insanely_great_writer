@@ -22,6 +22,26 @@
       end
 
       items.sort_by! { |item| [item[:kind_rank], item[:name].to_s.downcase] }
+
+      sidebar_groups = [
+        {
+          title: "Shortcuts",
+          items: [
+            { label: "Desktop", icon: "/icons/folders/blue.png" },
+            { label: "Drafts", icon: "/icons/write.png" },
+            { label: "Scenes", icon: "/icons/scene.png" },
+            { label: "Audio Notes", icon: "/icons/sound.png" }
+          ]
+        },
+        {
+          title: "Favorites",
+          items: [
+            { label: "Story Bible", icon: "/icons/logo.png" },
+            { label: "Archive", icon: "/icons/folders/white.png" },
+            { label: "Trash", icon: "/icons/trash.png" }
+          ]
+        }
+      ]
     %>
 
     <section
@@ -49,81 +69,99 @@
       </header>
 
       <div class="folder-window__groups">
-        <% if items.any? %>
-          <section class="folder-window__group" aria-labelledby="folder-group-items">
-            <div class="folder-window__table" role="table" aria-label="Folder contents">
-              <div class="folder-window__header" role="row">
-                <button
-                  type="button"
-                  class="folder-window__sort-button is-active"
-                  role="columnheader"
-                  aria-sort="none"
-                  data-folder-browser-target="sortButton"
-                  data-action="folder-browser#sortBy"
-                  data-sort-key="name"
-                >Name</button>
-                <button
-                  type="button"
-                  class="folder-window__sort-button"
-                  role="columnheader"
-                  aria-sort="ascending"
-                  data-folder-browser-target="sortButton"
-                  data-action="folder-browser#sortBy"
-                  data-sort-key="kind"
-                >Kind</button>
-                <button
-                  type="button"
-                  class="folder-window__sort-button"
-                  role="columnheader"
-                  aria-sort="none"
-                  data-folder-browser-target="sortButton"
-                  data-action="folder-browser#sortBy"
-                  data-sort-key="created"
-                >Date Created</button>
-                <button
-                  type="button"
-                  class="folder-window__sort-button"
-                  role="columnheader"
-                  aria-sort="none"
-                  data-folder-browser-target="sortButton"
-                  data-action="folder-browser#sortBy"
-                  data-sort-key="modified"
-                >Date Modified</button>
-              </div>
-
-              <div class="folder-window__list" data-folder-browser-target="list">
-                <% items.each do |item| %>
-                  <% icon_path = item[:kind] == "Folder" ? "/icons/folders/default.png" : "/icons/write.png" %>
-                  <button
-                    type="button"
-                    class="folder-window__row"
-                    data-folder-browser-target="row"
-                    data-action="dblclick->folder-browser#openItem"
-                    data-item-kind="<%= item[:kind].downcase %>"
-                    data-item-id="<%= item[:id] %>"
-                    data-item-name="<%= item[:name] %>"
-                    data-sort-name="<%= item[:name].to_s.downcase %>"
-                    data-sort-kind="<%= item[:kind_rank] %>"
-                    data-sort-created="<%= item[:created_at]&.iso8601 %>"
-                    data-sort-modified="<%= item[:updated_at]&.iso8601 %>"
-                  >
-                    <span class="folder-window__cell folder-window__cell--name">
-                      <img class="folder-window__icon" src="<%= icon_path %>" alt="" aria-hidden="true">
-                      <span class="folder-window__name-text"><%= item[:name] %></span>
-                    </span>
-                    <span class="folder-window__cell folder-window__cell--kind"><%= item[:kind] %></span>
-                    <span class="folder-window__cell"><%= item[:created_at]&.strftime("%Y-%m-%d %H:%M") %></span>
-                    <span class="folder-window__cell"><%= item[:updated_at]&.strftime("%Y-%m-%d %H:%M") %></span>
+        <aside class="folder-window__sidebar" aria-label="Sidebar">
+          <% sidebar_groups.each do |group| %>
+            <section class="folder-window__sidebar-group">
+              <h2 class="folder-window__sidebar-title"><%= group[:title] %></h2>
+              <div class="folder-window__sidebar-list">
+                <% group[:items].each do |item| %>
+                  <button type="button" class="folder-window__sidebar-item">
+                    <img class="folder-window__sidebar-icon" src="<%= item[:icon] %>" alt="" aria-hidden="true">
+                    <span><%= item[:label] %></span>
                   </button>
                 <% end %>
               </div>
-            </div>
-          </section>
-        <% else %>
-          <section class="folder-window__group" aria-labelledby="folder-group-items">
-            <p class="folder-window__empty">No items yet.</p>
-          </section>
-        <% end %>
+            </section>
+          <% end %>
+        </aside>
+
+        <div class="folder-window__main-pane">
+          <% if items.any? %>
+            <section class="folder-window__group" aria-labelledby="folder-group-items">
+              <div class="folder-window__table" role="table" aria-label="Folder contents">
+                <div class="folder-window__header" role="row">
+                  <button
+                    type="button"
+                    class="folder-window__sort-button is-active"
+                    role="columnheader"
+                    aria-sort="none"
+                    data-folder-browser-target="sortButton"
+                    data-action="folder-browser#sortBy"
+                    data-sort-key="name"
+                  >Name</button>
+                  <button
+                    type="button"
+                    class="folder-window__sort-button"
+                    role="columnheader"
+                    aria-sort="ascending"
+                    data-folder-browser-target="sortButton"
+                    data-action="folder-browser#sortBy"
+                    data-sort-key="kind"
+                  >Kind</button>
+                  <button
+                    type="button"
+                    class="folder-window__sort-button"
+                    role="columnheader"
+                    aria-sort="none"
+                    data-folder-browser-target="sortButton"
+                    data-action="folder-browser#sortBy"
+                    data-sort-key="created"
+                  >Date Created</button>
+                  <button
+                    type="button"
+                    class="folder-window__sort-button"
+                    role="columnheader"
+                    aria-sort="none"
+                    data-folder-browser-target="sortButton"
+                    data-action="folder-browser#sortBy"
+                    data-sort-key="modified"
+                  >Date Modified</button>
+                </div>
+
+                <div class="folder-window__list" data-folder-browser-target="list">
+                  <% items.each do |item| %>
+                    <% icon_path = item[:kind] == "Folder" ? "/icons/folders/default.png" : "/icons/write.png" %>
+                    <button
+                      type="button"
+                      class="folder-window__row"
+                      data-folder-browser-target="row"
+                      data-action="dblclick->folder-browser#openItem"
+                      data-item-kind="<%= item[:kind].downcase %>"
+                      data-item-id="<%= item[:id] %>"
+                      data-item-name="<%= item[:name] %>"
+                      data-sort-name="<%= item[:name].to_s.downcase %>"
+                      data-sort-kind="<%= item[:kind_rank] %>"
+                      data-sort-created="<%= item[:created_at]&.iso8601 %>"
+                      data-sort-modified="<%= item[:updated_at]&.iso8601 %>"
+                    >
+                      <span class="folder-window__cell folder-window__cell--name">
+                        <img class="folder-window__icon" src="<%= icon_path %>" alt="" aria-hidden="true">
+                        <span class="folder-window__name-text"><%= item[:name] %></span>
+                      </span>
+                      <span class="folder-window__cell folder-window__cell--kind"><%= item[:kind] %></span>
+                      <span class="folder-window__cell"><%= item[:created_at]&.strftime("%Y-%m-%d %H:%M") %></span>
+                      <span class="folder-window__cell"><%= item[:updated_at]&.strftime("%Y-%m-%d %H:%M") %></span>
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+            </section>
+          <% else %>
+            <section class="folder-window__group" aria-labelledby="folder-group-items">
+              <p class="folder-window__empty">No items yet.</p>
+            </section>
+          <% end %>
+        </div>
       </div>
 
       <footer class="folder-window__status-bar" aria-label="Folder path">
