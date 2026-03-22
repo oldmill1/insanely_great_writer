@@ -27,16 +27,7 @@
         {
           key: "shortcuts",
           title: "Shortcuts",
-          items: [
-            {
-              label: "Desktop",
-              icon: "/icons/folders/blue.png",
-              folder_id: nil,
-              folder_name: "Root",
-              folder_path: VirtualFilesystem.root_path,
-              show_path: root_folders_path
-            }
-          ]
+          items: @sidebar_shortcuts
         },
         {
           key: "smart-folders",
@@ -68,6 +59,7 @@
       data-folder-browser-folder-path-value="<%= @folder_path %>"
       data-folder-browser-create-folder-path-value="<%= folders_path %>"
       data-folder-browser-create-document-path-value="<%= documents_path %>"
+      data-folder-browser-create-sidebar-shortcut-path-value="<%= user_sidebar_shortcuts_path %>"
       data-folder-browser-rename-folder-path-template-value="<%= folder_path("__ID__") %>"
       data-folder-browser-rename-document-path-template-value="<%= doc_path("__ID__") %>"
       data-folder-browser-delete-folder-path-template-value="<%= delete_folder_path("__ID__") %>"
@@ -134,8 +126,11 @@
                   <button
                     type="button"
                     class="folder-window__sidebar-item"
-                    data-action="<%= "folder-browser#navigateSidebarItem" if item[:show_path].present? %>"
-                    data-sidebar-item-kind="static"
+                    data-action="<%= "folder-browser#navigateSidebarItem" if item[:actionable] %>"
+                    data-sidebar-item-kind="<%= item[:item_kind] == "desktop" ? "static" : "persisted" %>"
+                    data-user-sidebar-shortcut-id="<%= item[:id] %>"
+                    data-item-kind="<%= item[:item_kind] %>"
+                    data-item-id="<%= item[:item_id] %>"
                     data-folder-id="<%= item[:folder_id] %>"
                     data-folder-name="<%= item[:folder_name] %>"
                     data-folder-path="<%= item[:folder_path] %>"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_21_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_22_120000) do
   create_table "documents", force: :cascade do |t|
     t.text "content"
     t.json "content_ast", default: {}, null: false
@@ -66,6 +66,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_170000) do
     t.index ["folder_id"], name: "index_shortcuts_on_folder_id", unique: true
   end
 
+  create_table "user_sidebar_shortcuts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "item_id"
+    t.string "item_kind", null: false
+    t.string "label", null: false
+    t.integer "position", default: 0, null: false
+    t.string "target_key", null: false
+    t.string "thumbnail", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", null: false
+    t.index ["user_id", "position"], name: "index_user_sidebar_shortcuts_on_user_id_and_position"
+    t.index ["user_id", "target_key"], name: "index_user_sidebar_shortcuts_on_user_id_and_target_key", unique: true
+  end
+
   create_table "users", id: :string, force: :cascade do |t|
     t.string "author_name", default: "", null: false
     t.datetime "confirmation_sent_at"
@@ -94,4 +108,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_170000) do
   add_foreign_key "notes", "users"
   add_foreign_key "shortcuts", "documents"
   add_foreign_key "shortcuts", "folders"
+  add_foreign_key "user_sidebar_shortcuts", "users"
 end

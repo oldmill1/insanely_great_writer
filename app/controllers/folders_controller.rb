@@ -65,6 +65,8 @@ class FoldersController < ApplicationController
   private
 
   def assign_folder_view_state(id:, name:, path:, show_path:)
+    UserSidebarShortcut.ensure_default_desktop_for(current_user)
+
     @folder_id = id
     @folder_name = name
     @folder_path = path
@@ -72,6 +74,7 @@ class FoldersController < ApplicationController
     @breadcrumbs = build_breadcrumbs(path:, current_folder_id: id, current_show_path: show_path)
     @frame_id = params[:frame_id].presence || default_frame_id_for(id)
     @children = VirtualFilesystem.children_for(current_user, path)
+    @sidebar_shortcuts = load_sidebar_shortcuts
 
     parent_path = VirtualFilesystem.parent_path_for(path)
     if path == VirtualFilesystem.root_path
@@ -138,6 +141,55 @@ class FoldersController < ApplicationController
 
   def set_folder
     @folder = current_user.folders.active.find(params[:id])
+  end
+
+  def load_sidebar_shortcuts
+    shortcuts = current_user.user_sidebar_shortcuts.ordered.to_a
+    folder_ids = shortcuts.select(&:folder?).filter_map(&:item_id)
+    document_ids = shortcuts.select(&:document?).filter_map(&:item_id)
+    folders_by_id = current_user.folders.active.where(id: folder_ids).index_by(&:id)
+    documents_by_id = current_user.documents.active.where(id: document_ids).index_by(&:id)
+
+    shortcuts.map do |shortcut|
+      if shortcut.desktop?
+        {
+          id: shortcut.id,
+          item_kind: shortcut.item_kind,
+          label: shortcut.label,
+          icon: shortcut.thumbnail,
+          actionable: true,
+          folder_id: nil,
+          folder_name: "Root",
+          folder_path: VirtualFilesystem.root_path,
+          show_path: root_folders_path
+        }
+      elsif shortcut.folder?
+        folder = folders_by_id[shortcut.item_id]
+
+        {
+          id: shortcut.id,
+          item_kind: shortcut.item_kind,
+          item_id: shortcut.item_id,
+          label: shortcut.label,
+          icon: shortcut.thumbnail,
+          actionable: folder.present?,
+          folder_id: shortcut.item_id,
+          folder_name: shortcut.label,
+          show_path: folder.present? ? folder_path(folder) : nil
+        }
+      else
+        document = documents_by_id[shortcut.item_id]
+
+        {
+          id: shortcut.id,
+          item_kind: shortcut.item_kind,
+          item_id: shortcut.item_id,
+          label: shortcut.label,
+          icon: shortcut.thumbnail,
+          actionable: document.present?
+        }
+      end
+    end
   end
 
   def valid_parent_path?(parent_path)

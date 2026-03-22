@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_many :documents, dependent: :destroy
   has_many :folders, dependent: :destroy
   has_many :notes, dependent: :destroy
+  has_many :user_sidebar_shortcuts, dependent: :destroy
 
   # Devise handles authentication while app-specific fields remain local.
   devise :database_authenticatable, :registerable,
@@ -15,6 +16,8 @@ class User < ApplicationRecord
   validates :timezone, presence: true, inclusion: { in: IANA_TIMEZONES }
   validates :author_name, presence: true, length: { maximum: 120 }, on: :create
 
+  after_create_commit :ensure_default_sidebar_shortcut!
+
   private
 
   def assign_uuid_id
@@ -23,5 +26,9 @@ class User < ApplicationRecord
 
   def assign_default_timezone
     self.timezone ||= "UTC"
+  end
+
+  def ensure_default_sidebar_shortcut!
+    UserSidebarShortcut.ensure_default_desktop_for(self)
   end
 end

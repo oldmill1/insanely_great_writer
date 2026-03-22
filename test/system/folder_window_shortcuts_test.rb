@@ -1,7 +1,7 @@
 require "application_system_test_case"
 
 class FolderWindowShortcutsTest < ApplicationSystemTestCase
-  test "dragging folders into shortcuts is ephemeral per window" do
+  test "dragging folders into shortcuts persists across reloads" do
     chapter = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
     scenes = Folder.create!(user: users(:one), name: "Scenes", path: "root/Chapter 1/Scenes")
 
@@ -26,11 +26,11 @@ class FolderWindowShortcutsTest < ApplicationSystemTestCase
     end
 
     assert_selector ".home__window[data-desktop-window-key='folder_window_#{scenes.id}'] .folder-window__status-segment--current", text: "Scenes"
-    assert_sidebar_shortcut_by_key("folder_window_#{scenes.id}", "Scenes", count: 1)
+    assert_selector ".home__window[data-desktop-window-key='folder_window_#{scenes.id}'] .folder-window__sidebar-item", text: "Scenes", count: 1
 
     visit current_path
 
-    assert_no_selector ".folder-window__sidebar-shortcuts .folder-window__sidebar-item", text: "Scenes"
+    assert_selector ".home__window[data-desktop-window-key='folder_window_#{scenes.id}'] .folder-window__sidebar-item", text: "Scenes"
   end
 
   test "dragging documents into shortcuts opens a document window on click" do

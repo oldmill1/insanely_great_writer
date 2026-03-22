@@ -52,6 +52,14 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     Folder.create!(user: users(:one), name: "Scenes", path: "root/Chapter 1/Scenes")
     Document.create!(user: users(:one), title: "Opening", content: "", path: "root/Chapter 1/Opening")
     Document.create!(user: users(:one), title: "Deep", content: "", path: "root/Chapter 1/Scenes/Deep")
+    users(:one).user_sidebar_shortcuts.create!(
+      target_key: "folder:#{folder.id}",
+      item_kind: "folder",
+      item_id: folder.id,
+      label: "Chapter 1",
+      thumbnail: Folder::FOLDER_SHORTCUT_THUMBNAIL,
+      position: 1
+    )
 
     get folder_path(folder), params: { frame_id: "folder_window_test" }
 
@@ -65,6 +73,8 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "Deep"
     assert_includes response.body, "Shortcuts"
     assert_includes response.body, "Desktop"
+    assert_includes response.body, "Chapter 1"
+    assert_includes response.body, 'data-user-sidebar-shortcut-id='
     assert_includes response.body, 'data-action="folder-browser#navigateSidebarItem"'
     assert_includes response.body, 'data-folder-path="root"'
     assert_includes response.body, 'data-show-path="/folders/root"'

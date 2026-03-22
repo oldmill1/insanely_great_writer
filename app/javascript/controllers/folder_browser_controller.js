@@ -11,6 +11,7 @@ export default class extends Controller {
     parentShowPath: String,
     createFolderPath: String,
     createDocumentPath: String,
+    createSidebarShortcutPath: String,
     renameFolderPathTemplate: String,
     renameDocumentPathTemplate: String,
     deleteFolderPathTemplate: String,
@@ -42,8 +43,6 @@ export default class extends Controller {
     this.dragState = null
     this.dragPreview = null
     this.consumeNextRowActivation = false
-    this.temporaryShortcuts = this.readTemporaryShortcuts()
-    this.renderTemporaryShortcuts()
     this.applySort()
     this.updateNavButtons()
     this.updateDeleteButton()
@@ -229,15 +228,16 @@ export default class extends Controller {
     this.clearSelection()
 
     const item = event.currentTarget
-    const sidebarItemKind = item.dataset.sidebarItemKind
+    const itemKind = item.dataset.itemKind
 
-    if (sidebarItemKind === "temporary") {
-      this.openTemporaryShortcut(item)
+    if (itemKind === "document") {
+      this.openDocumentShortcut(item)
       return
     }
 
     const { folderId, folderName, folderPath, showPath } = item.dataset
-    if (!showPath || folderPath === this.folderPathValue) return
+    if (!showPath) return
+    if ((itemKind === "desktop" && folderPath === this.folderPathValue) || String(this.folderIdValue) === String(folderId)) return
 
     this.pushCurrentLocationToHistory()
     this.navigateWithinWindow({
@@ -308,7 +308,7 @@ export default class extends Controller {
 
     if (!droppedOnShortcutArea) return
 
-    this.appendTemporaryShortcut(payload)
+    void this.createSidebarShortcut(payload)
   }
 
   async createItem(path) {
@@ -807,65 +807,52 @@ export default class extends Controller {
     this.shortcutDropzoneTarget.classList.toggle("is-receiving-drop", isReceiving)
   }
 
-  readTemporaryShortcuts() {
-    const windowEl = this.currentWindow()
-    const raw = windowEl?.dataset.folderTemporaryShortcuts
-    if (!raw) return []
-
-    try {
-      const parsed = JSON.parse(raw)
-      if (!Array.isArray(parsed)) return []
-
-      return parsed.filter((item) => item?.itemKind && item?.itemId && item?.label)
-    } catch {
-      return []
-    }
-  }
-
-  writeTemporaryShortcuts() {
-    const windowEl = this.currentWindow()
-    if (!windowEl) return
-
-    windowEl.dataset.folderTemporaryShortcuts = JSON.stringify(this.temporaryShortcuts)
-  }
-
-  appendTemporaryShortcut(payload) {
+  async createSidebarShortcut(payload) {
     if (!payload?.itemKind || !payload?.itemId || !payload?.label) return
+    if (this.sidebarShortcutExists(payload.itemKind, payload.itemId)) return
 
-    const exists = this.temporaryShortcuts.some((item) => (
-      item.itemKind === payload.itemKind && String(item.itemId) === String(payload.itemId)
-    ))
-    if (exists) return
+    if (!this.hasCreateSidebarShortcutPathValue) return
 
-    this.temporaryShortcuts.push(payload)
-    this.writeTemporaryShortcuts()
-    this.renderTemporaryShortcuts()
-  }
+    const response = await fetch(this.createSidebarShortcutPathValue, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        item_kind: payload.itemKind,
+        item_id: payload.itemId
+      })
+    })
 
-  renderTemporaryShortcuts() {
+    if (!response.ok) return
+
+    const responsePayload = await response.json()
+    const shortcut = responsePayload?.shortcut
+    if (!shortcut || this.sidebarShortcutExists(shortcut.item_kind, shortcut.item_id)) return
     if (!this.hasTemporaryShortcutsTarget) return
 
-    this.temporaryShortcutsTarget.innerHTML = ""
-    this.temporaryShortcuts.forEach((shortcut) => {
-      this.temporaryShortcutsTarget.appendChild(this.buildTemporaryShortcutButton(shortcut))
-    })
+    this.temporaryShortcutsTarget.appendChild(this.buildSidebarShortcutButton(shortcut))
   }
 
-  buildTemporaryShortcutButton(shortcut) {
+  buildSidebarShortcutButton(shortcut) {
     const button = document.createElement("button")
     button.type = "button"
-    button.className = "folder-window__sidebar-item folder-window__sidebar-item--temporary"
+    button.className = "folder-window__sidebar-item"
     button.dataset.action = "folder-browser#navigateSidebarItem"
-    button.dataset.sidebarItemKind = "temporary"
-    button.dataset.itemKind = shortcut.itemKind
-    button.dataset.itemId = String(shortcut.itemId)
-    button.dataset.folderId = shortcut.itemKind === "folder" ? String(shortcut.itemId) : ""
+    button.dataset.sidebarItemKind = "persisted"
+    button.dataset.userSidebarShortcutId = String(shortcut.id)
+    button.dataset.itemKind = shortcut.item_kind
+    button.dataset.itemId = String(shortcut.item_id)
+    button.dataset.folderId = shortcut.item_kind === "folder" ? String(shortcut.item_id) : ""
     button.dataset.folderName = shortcut.label
-    button.dataset.showPath = shortcut.itemKind === "folder" ? `/folders/${shortcut.itemId}` : ""
+    button.dataset.showPath = shortcut.show_path || ""
 
     const icon = document.createElement("img")
     icon.className = "folder-window__sidebar-icon"
-    icon.src = shortcut.icon || ""
+    icon.src = shortcut.thumbnail || ""
     icon.alt = ""
     icon.setAttribute("aria-hidden", "true")
 
@@ -877,24 +864,17 @@ export default class extends Controller {
     return button
   }
 
-  openTemporaryShortcut(item) {
-    const itemKind = item.dataset.itemKind
+  sidebarShortcutExists(itemKind, itemId) {
+    return this.element.querySelector(
+      `.folder-window__sidebar-item[data-item-kind="${itemKind}"][data-item-id="${itemId}"]`
+    )
+  }
+
+  openDocumentShortcut(item) {
     const itemId = item.dataset.itemId
+    if (!itemId) return
+
     const label = item.querySelector("span")?.textContent?.trim() || item.dataset.folderName || "Item"
-    if (!itemKind || !itemId) return
-
-    if (itemKind === "document") {
-      this.desktopController()?.openDocumentWindow(itemId, label)
-      return
-    }
-
-    if (String(this.folderIdValue) === String(itemId)) return
-
-    this.pushCurrentLocationToHistory()
-    this.navigateWithinWindow({
-      folderId: itemId,
-      folderName: label,
-      showPath: item.dataset.showPath || `/folders/${itemId}`
-    })
+    this.desktopController()?.openDocumentWindow(itemId, label)
   }
 }
