@@ -65,6 +65,9 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "Deep"
     assert_includes response.body, "Shortcuts"
     assert_includes response.body, "Desktop"
+    assert_includes response.body, 'data-action="folder-browser#navigateSidebarItem"'
+    assert_includes response.body, 'data-folder-path="root"'
+    assert_includes response.body, 'data-show-path="/folders/root"'
     assert_not_includes response.body, "Drafts"
     assert_not_includes response.body, "Audio Notes"
     assert_includes response.body, "Smart Folders"

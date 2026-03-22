@@ -201,6 +201,20 @@ export default class extends Controller {
     trigger.setAttribute("aria-expanded", String(!isCollapsed))
   }
 
+  navigateSidebarItem(event) {
+    const { folderId, folderName, folderPath, showPath } = event.currentTarget.dataset
+    if (!showPath || folderPath === this.folderPathValue) return
+
+    this.hideContextMenu()
+    this.clearSelection()
+    this.pushCurrentLocationToHistory()
+    this.navigateWithinWindow({
+      folderId: folderId || null,
+      folderName: folderName || "Root",
+      showPath
+    })
+  }
+
   async createItem(path) {
     if (!path) return
 

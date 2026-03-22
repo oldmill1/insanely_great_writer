@@ -27,7 +27,14 @@
         {
           title: "Shortcuts",
           items: [
-            { label: "Desktop", icon: "/icons/folders/blue.png" }
+            {
+              label: "Desktop",
+              icon: "/icons/folders/blue.png",
+              folder_id: nil,
+              folder_name: "Root",
+              folder_path: VirtualFilesystem.root_path,
+              show_path: root_folders_path
+            }
           ]
         },
         {
@@ -115,7 +122,15 @@
               ><%= group[:title] %></button>
               <div class="folder-window__sidebar-list" id="<%= section_id %>">
                 <% group[:items].each do |item| %>
-                  <button type="button" class="folder-window__sidebar-item">
+                  <button
+                    type="button"
+                    class="folder-window__sidebar-item"
+                    data-action="<%= "folder-browser#navigateSidebarItem" if item[:show_path].present? %>"
+                    data-folder-id="<%= item[:folder_id] %>"
+                    data-folder-name="<%= item[:folder_name] %>"
+                    data-folder-path="<%= item[:folder_path] %>"
+                    data-show-path="<%= item[:show_path] %>"
+                  >
                     <img class="folder-window__sidebar-icon" src="<%= item[:icon] %>" alt="" aria-hidden="true">
                     <span><%= item[:label] %></span>
                   </button>
