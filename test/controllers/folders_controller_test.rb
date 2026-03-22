@@ -71,7 +71,8 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "folder-window__status-segment"
     assert_includes response.body, 'data-folder-path="root"'
     assert_includes response.body, 'contextmenu->folder-browser#openRowContextMenu'
-    assert_includes response.body, 'data-intent="edit"'
+    assert_includes response.body, 'data-intent="rename"'
+    assert_includes response.body, '/icons/write.png'
     assert_includes response.body, 'data-intent="delete"'
   end
 

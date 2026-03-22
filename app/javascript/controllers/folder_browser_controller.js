@@ -104,7 +104,7 @@ export default class extends Controller {
     const button = event.target.closest("[data-intent]")
     if (!button || !this.hasContextMenuTarget || !this.contextMenuTarget.contains(button)) return
 
-    if (button.dataset.intent === "edit") {
+    if (button.dataset.intent === "rename") {
       this.hideContextMenu()
       this.startRenameSelectedItem()
       return
