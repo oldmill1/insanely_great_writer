@@ -102,17 +102,29 @@
 .folder-window__toolbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: space-between;
+  gap: 1.25rem;
   padding: 0.9rem 1rem 0.75rem;
   border-bottom: 1px solid rgba(194, 199, 207, 0.11);
   background: #101417;
   box-shadow: none;
 }
 
-.folder-window__actions {
+.folder-window__toolbar-group {
   display: flex;
+  align-items: center;
+}
+
+.folder-window__toolbar-group--nav {
   gap: 0.55rem;
+}
+
+.folder-window__toolbar-group--actions {
+  gap: 0.55rem;
+}
+
+.folder-window__toolbar-spacer {
+  flex: 1 1 auto;
 }
 
 .folder-window__groups {
@@ -134,12 +146,6 @@
   background:
     linear-gradient(180deg, #131b27 0%, #0e141d 100%);
   overflow: auto;
-}
-
-.folder-window__nav {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem;
 }
 
 .folder-window__nav-button {
@@ -423,10 +429,15 @@
   }
 
   .folder-window__toolbar {
-    justify-content: center;
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .folder-window__actions {
+  .folder-window__toolbar-spacer {
+    display: none;
+  }
+
+  .folder-window__toolbar-group {
     flex-wrap: wrap;
     justify-content: center;
   }
