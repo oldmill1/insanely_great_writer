@@ -433,10 +433,10 @@
   left: 0.55rem;
   right: 0.55rem;
   bottom: 0;
-  height: 2px;
+  height: 1px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(150, 212, 255, 0.92) 0%, rgba(96, 167, 236, 0.98) 100%);
-  box-shadow: 0 0 0 1px rgba(24, 43, 74, 0.18), 0 0 12px rgba(89, 169, 238, 0.22);
+  background: rgba(224, 226, 232, 0.6);
+  box-shadow: 0 0 0 1px rgba(24, 43, 74, 0.08);
 }
 
 .folder-window__sidebar-shortcuts {
