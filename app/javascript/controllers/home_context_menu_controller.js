@@ -14,6 +14,7 @@ export default class extends Controller {
     this.defaultMenuMarkup = this.hasMenuTarget ? this.menuTarget.innerHTML : ""
     this.selectedRecordShortcutId = null
     this.selectedItemKind = null
+    this.selectedItemId = null
     this.menuPosition = { x: 48, y: 55 }
     this.submenuHoverTimeout = null
     this.pendingSubmenuTrigger = null
@@ -86,7 +87,7 @@ export default class extends Controller {
         this.createDocument()
         return
       case "delete":
-        this.deleteSelectedRecordShortcut()
+        this.deleteSelectedItem()
         return
       case "view":
         this.openSelectedItem()
@@ -162,6 +163,7 @@ export default class extends Controller {
     if (shortcutButton && this.element.contains(shortcutButton)) {
       if (shortcutButton.dataset.shortcutKind !== "record") {
         this.selectedRecordShortcutId = null
+        this.selectedItemId = null
         return false
       }
 
@@ -169,11 +171,13 @@ export default class extends Controller {
       this.selectedItemKind = shortcutButton.dataset.itemKind || null
       this.menuTarget.innerHTML = this.shortcutMenuMarkup(this.selectedItemKind)
       this.selectedRecordShortcutId = shortcutButton.dataset.shortcutId || null
+      this.selectedItemId = shortcutButton.dataset.itemId || null
       return true
     }
 
     this.selectedRecordShortcutId = null
     this.selectedItemKind = null
+    this.selectedItemId = null
     this.menuTarget.innerHTML = this.defaultMenuMarkup
     return true
   }
@@ -192,7 +196,7 @@ export default class extends Controller {
   }
 
   shortcutMenuMarkup(itemKind) {
-    const deleteButton = itemKind === "document"
+    const deleteButton = ["document", "folder"].includes(itemKind)
       ? '<div class="ig-menu__separator" role="separator" aria-hidden="true"></div><button type="button" role="menuitem" class="ig-menu__item" data-intent="delete" data-kind="action" data-payload="">Delete</button>'
       : ""
 
@@ -274,7 +278,16 @@ export default class extends Controller {
     })
   }
 
-  async deleteSelectedRecordShortcut() {
+  async deleteSelectedItem() {
+    if (this.selectedItemKind === "folder") {
+      await this.deleteSelectedFolder()
+      return
+    }
+
+    await this.deleteSelectedDocument()
+  }
+
+  async deleteSelectedDocument() {
     if (!this.selectedRecordShortcutId) {
       this.hide()
       return
@@ -300,6 +313,38 @@ export default class extends Controller {
 
       const payload = await response.json()
       if (payload?.is_deleted !== true) return
+
+      this.removeShortcutFromDesktop(this.selectedRecordShortcutId)
+    } finally {
+      this.hide()
+    }
+  }
+
+  async deleteSelectedFolder() {
+    if (!this.selectedItemId || this.selectedItemKind !== "folder") {
+      this.hide()
+      return
+    }
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    try {
+      const response = await fetch(`/folders/${this.selectedItemId}/delete`, {
+        method: "PATCH",
+        headers: {
+          "Accept": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        credentials: "same-origin"
+      })
+
+      if (!response.ok) return
+
+      const contentType = response.headers.get("content-type") || ""
+      if (!contentType.includes("application/json")) return
+
+      const payload = await response.json()
+      if (payload?.deleted !== true || payload?.item_kind !== "folder") return
 
       this.removeShortcutFromDesktop(this.selectedRecordShortcutId)
     } finally {
