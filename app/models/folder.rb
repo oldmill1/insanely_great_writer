@@ -41,6 +41,27 @@ class Folder < ApplicationRecord
     end
   end
 
+  def rename_to!(next_name)
+    normalized_name = next_name.to_s.strip
+    old_path = path
+    new_path = VirtualFilesystem.build_path(parent_path, normalized_name)
+
+    transaction do
+      update!(name: normalized_name, path: new_path)
+
+      old_prefix = "#{old_path}/"
+      new_prefix = "#{new_path}/"
+
+      user.folders.active.where("path LIKE ?", "#{old_prefix}%").find_each do |folder|
+        folder.update!(path: folder.path.sub(old_prefix, new_prefix))
+      end
+
+      user.documents.active.where("path LIKE ?", "#{old_prefix}%").find_each do |document|
+        document.update!(path: document.path.sub(old_prefix, new_prefix))
+      end
+    end
+  end
+
   private
 
   def subtree_paths

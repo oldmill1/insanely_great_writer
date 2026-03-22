@@ -57,6 +57,8 @@
       data-folder-browser-folder-path-value="<%= @folder_path %>"
       data-folder-browser-create-folder-path-value="<%= folders_path %>"
       data-folder-browser-create-document-path-value="<%= documents_path %>"
+      data-folder-browser-rename-folder-path-template-value="<%= folder_path("__ID__") %>"
+      data-folder-browser-rename-document-path-template-value="<%= doc_path("__ID__") %>"
       data-folder-browser-delete-folder-path-template-value="<%= delete_folder_path("__ID__") %>"
       data-folder-browser-delete-document-path-template-value="<%= delete_doc_path("__ID__") %>"
       data-folder-browser-show-path-value="<%= @show_path %>"
@@ -263,6 +265,8 @@
       >
         <%= render "shared/ig_menu",
           items: [
+            { label: "Edit", intent: "edit", kind: "action" },
+            "break",
             { label: "Delete", intent: "delete", kind: "action", icon: "/icons/trash.png" }
           ],
           width: "10rem" %>

@@ -581,6 +581,21 @@
   text-overflow: ellipsis;
 }
 
+.folder-window__name-input {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+
+.folder-window__name-input:focus {
+  outline: none;
+}
+
 .folder-window__icon {
   width: 2rem;
   height: 2rem;

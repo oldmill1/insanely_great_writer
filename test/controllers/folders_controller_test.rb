@@ -71,7 +71,23 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "folder-window__status-segment"
     assert_includes response.body, 'data-folder-path="root"'
     assert_includes response.body, 'contextmenu->folder-browser#openRowContextMenu'
+    assert_includes response.body, 'data-intent="edit"'
     assert_includes response.body, 'data-intent="delete"'
+  end
+
+  test "renames a folder and updates descendant paths" do
+    sign_in users(:one)
+    folder = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
+    child_folder = Folder.create!(user: users(:one), name: "Scenes", path: "root/Chapter 1/Scenes")
+    child_document = Document.create!(user: users(:one), title: "Opening", content: "", path: "root/Chapter 1/Opening")
+
+    patch folder_path(folder), params: { folder: { name: "Act 1" } }, as: :json
+
+    assert_response :success
+    assert_equal "Act 1", folder.reload.name
+    assert_equal "root/Act 1", folder.path
+    assert_equal "root/Act 1/Scenes", child_folder.reload.path
+    assert_equal "root/Act 1/Opening", child_document.reload.path
   end
 
   test "shows root folder view" do

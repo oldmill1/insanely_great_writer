@@ -53,6 +53,11 @@ class Document < ApplicationRecord
     normalized.presence || plain_text_to_ast(content.to_s)
   end
 
+  def rename_to!(next_title)
+    normalized_title = next_title.to_s.strip
+    update!(title: normalized_title, path: VirtualFilesystem.build_path(parent_path, normalized_title))
+  end
+
   def editor_html
     blocks = content_ast_hash.fetch("children", [])
     return "<p><br></p>" if blocks.blank?

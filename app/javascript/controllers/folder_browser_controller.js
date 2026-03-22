@@ -11,6 +11,8 @@ export default class extends Controller {
     parentShowPath: String,
     createFolderPath: String,
     createDocumentPath: String,
+    renameFolderPathTemplate: String,
+    renameDocumentPathTemplate: String,
     deleteFolderPathTemplate: String,
     deleteDocumentPathTemplate: String,
     showPath: String
@@ -22,6 +24,9 @@ export default class extends Controller {
     this.sortKey = "kind"
     this.sortDirection = "asc"
     this.selectedRow = null
+    this.editingRow = null
+    this.renameInput = null
+    this.renameTextElement = null
     this.applySort()
     this.updateNavButtons()
     this.updateDeleteButton()
@@ -37,6 +42,8 @@ export default class extends Controller {
   }
 
   selectRow(event) {
+    if (event.target.closest(".folder-window__name-input")) return
+
     const row = event.currentTarget
     if (!row) return
 
@@ -53,6 +60,7 @@ export default class extends Controller {
 
   clearSelectionFromPane(event) {
     this.hideContextMenu()
+    if (event.target.closest(".folder-window__name-input")) return
     if (event.target.closest(".folder-window__row")) return
 
     this.clearSelection()
@@ -96,6 +104,12 @@ export default class extends Controller {
     const button = event.target.closest("[data-intent]")
     if (!button || !this.hasContextMenuTarget || !this.contextMenuTarget.contains(button)) return
 
+    if (button.dataset.intent === "edit") {
+      this.hideContextMenu()
+      this.startRenameSelectedItem()
+      return
+    }
+
     if (button.dataset.intent === "delete") {
       this.hideContextMenu()
       await this.deleteSelectedItem()
@@ -103,6 +117,8 @@ export default class extends Controller {
   }
 
   openItem(event) {
+    if (this.editingRow === event.currentTarget) return
+
     const row = event.currentTarget
     const itemKind = row.dataset.itemKind
     const itemId = row.dataset.itemId
@@ -199,6 +215,7 @@ export default class extends Controller {
   }
 
   async deleteSelectedItem() {
+    this.cancelRename()
     if (!this.selectedRow) return
 
     const itemId = this.selectedRow.dataset.itemId
@@ -263,6 +280,109 @@ export default class extends Controller {
     this.syncSelectionState()
   }
 
+  startRenameSelectedItem() {
+    if (!this.selectedRow) return
+
+    if (this.editingRow && this.editingRow !== this.selectedRow) {
+      this.cancelRename()
+    }
+
+    if (this.editingRow === this.selectedRow && this.renameInput) {
+      this.renameInput.focus()
+      this.renameInput.select()
+      return
+    }
+
+    const nameText = this.selectedRow.querySelector(".folder-window__name-text")
+    if (!nameText) return
+
+    const input = document.createElement("input")
+    input.type = "text"
+    input.className = "folder-window__name-input"
+    input.value = this.selectedRow.dataset.itemName || nameText.textContent.trim()
+    input.setAttribute("aria-label", `Rename ${this.selectedRow.dataset.itemKind || "item"}`)
+
+    input.addEventListener("click", (event) => event.stopPropagation())
+    input.addEventListener("dblclick", (event) => event.stopPropagation())
+    input.addEventListener("pointerdown", (event) => event.stopPropagation())
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault()
+        this.submitRename()
+        return
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault()
+        this.cancelRename()
+      }
+    })
+    input.addEventListener("blur", () => {
+      if (this.renameInput === input) this.cancelRename()
+    })
+
+    nameText.hidden = true
+    nameText.insertAdjacentElement("afterend", input)
+
+    this.editingRow = this.selectedRow
+    this.renameInput = input
+    this.renameTextElement = nameText
+    input.focus()
+    input.select()
+  }
+
+  async submitRename() {
+    if (!this.editingRow || !this.renameInput || !this.renameTextElement) return
+
+    const nextName = this.renameInput.value.trim()
+    const currentName = this.editingRow.dataset.itemName || this.renameTextElement.textContent.trim()
+    if (!nextName || nextName === currentName) {
+      this.cancelRename()
+      return
+    }
+
+    const itemKind = this.editingRow.dataset.itemKind
+    const itemId = this.editingRow.dataset.itemId
+    const path = this.renamePathFor(itemKind, itemId)
+    if (!path) {
+      this.cancelRename()
+      return
+    }
+
+    const payloadKey = itemKind === "folder" ? "folder" : "document"
+    const payloadNameKey = itemKind === "folder" ? "name" : "title"
+
+    const response = await fetch(path, {
+      method: "PATCH",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        [payloadKey]: {
+          [payloadNameKey]: nextName
+        }
+      })
+    })
+
+    if (!response.ok) {
+      this.renameInput.focus()
+      this.renameInput.select()
+      return
+    }
+
+    const payload = await response.json()
+    const savedName = itemKind === "folder"
+      ? payload?.folder?.name
+      : payload?.document?.title
+
+    this.applyRenameToRow(this.editingRow, savedName || nextName)
+    this.cancelRename()
+    this.applySort()
+  }
+
   compareRows(left, right, key) {
     switch (key) {
       case "kind":
@@ -306,6 +426,7 @@ export default class extends Controller {
 
   clearSelection() {
     this.hideContextMenu()
+    this.cancelRename()
     if (this.selectedRow) {
       this.selectedRow.classList.remove("is-selected")
       this.selectedRow.setAttribute("aria-selected", "false")
@@ -357,6 +478,33 @@ export default class extends Controller {
     }
 
     return null
+  }
+
+  renamePathFor(itemKind, itemId) {
+    if (!itemKind || !itemId) return null
+
+    if (itemKind === "folder" && this.hasRenameFolderPathTemplateValue) {
+      return this.renameFolderPathTemplateValue.replace("__ID__", encodeURIComponent(itemId))
+    }
+
+    if (itemKind === "document" && this.hasRenameDocumentPathTemplateValue) {
+      return this.renameDocumentPathTemplateValue.replace("__ID__", encodeURIComponent(itemId))
+    }
+
+    return null
+  }
+
+  applyRenameToRow(row, nextName) {
+    if (!row || !nextName) return
+
+    row.dataset.itemName = nextName
+    row.dataset.sortName = nextName.toLowerCase()
+
+    const nameText = row.querySelector(".folder-window__name-text")
+    if (nameText) {
+      nameText.textContent = nextName
+      nameText.title = nextName
+    }
   }
 
   csrfToken() {
@@ -441,5 +589,15 @@ export default class extends Controller {
 
     this.contextMenuTarget.hidden = true
     this.contextMenuTarget.style.visibility = "hidden"
+  }
+
+  cancelRename() {
+    if (!this.renameInput || !this.renameTextElement) return
+
+    this.renameInput.remove()
+    this.renameTextElement.hidden = false
+    this.editingRow = null
+    this.renameInput = null
+    this.renameTextElement = null
   }
 }

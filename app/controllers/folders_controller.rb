@@ -2,7 +2,7 @@ class FoldersController < ApplicationController
   include DesktopItemPayloads
 
   before_action :authenticate_user!
-  before_action :set_folder, only: [ :show, :delete ]
+  before_action :set_folder, only: [ :show, :update, :delete ]
 
   def show
     assign_folder_view_state(
@@ -41,6 +41,20 @@ class FoldersController < ApplicationController
       },
       desktop_item: desktop_item_payload(folder)
     }
+  end
+
+  def update
+    @folder.rename_to!(folder_params[:name])
+    render json: {
+      saved: true,
+      folder: {
+        id: @folder.id,
+        name: @folder.name,
+        path: @folder.path
+      }
+    }, status: :ok
+  rescue ActiveRecord::RecordInvalid => error
+    render json: { errors: error.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   def delete
@@ -128,5 +142,9 @@ class FoldersController < ApplicationController
 
   def valid_parent_path?(parent_path)
     parent_path == VirtualFilesystem.root_path || current_user.folders.active.exists?(path: parent_path)
+  end
+
+  def folder_params
+    params.require(:folder).permit(:name)
   end
 end

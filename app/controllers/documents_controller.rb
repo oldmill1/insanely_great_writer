@@ -37,12 +37,24 @@ class DocumentsController < ApplicationController
 
   def update
     document = current_user.documents.find(params[:id])
+    title = params.dig(:document, :title).to_s.strip
+
+    document.rename_to!(title) if title.present?
 
     if document.update(document_params)
-      render json: { saved: true }, status: :ok
+      render json: {
+        saved: true,
+        document: {
+          id: document.id,
+          title: document.title,
+          path: document.path
+        }
+      }, status: :ok
     else
       render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordInvalid => error
+    render json: { errors: error.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   def delete
@@ -58,7 +70,8 @@ class DocumentsController < ApplicationController
   private
 
   def document_params
-    permitted = params.require(:document).permit(:content, content_ast: {})
+    permitted = params.require(:document).permit(:content, :title, content_ast: {})
+    permitted.delete(:title)
     permitted.to_h
   end
 

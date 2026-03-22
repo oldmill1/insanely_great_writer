@@ -111,6 +111,18 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Saved from autosave", document.reload.content
   end
 
+  test "renames a document for the authenticated owner" do
+    user = users(:one)
+    document = documents(:one)
+    sign_in user
+
+    patch doc_path(document), params: { document: { title: "Renamed Draft" } }, as: :json
+
+    assert_response :success
+    assert_equal "Renamed Draft", document.reload.title
+    assert_equal "root/Renamed Draft", document.path
+  end
+
   test "soft deletes a document for the authenticated owner" do
     user = users(:one)
     document = documents(:one)

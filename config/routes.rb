@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   get "docs/:id" => "documents#show", as: :doc
   patch "docs/:id" => "documents#update"
   patch "docs/:id/delete" => "documents#delete", as: :delete_doc
-  resources :folders, only: [ :show, :create ] do
+  resources :folders, only: [ :show, :create, :update ] do
     collection do
       get :root
     end
