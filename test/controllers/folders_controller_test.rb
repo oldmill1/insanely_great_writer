@@ -42,7 +42,6 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     get folder_path(folder), params: { frame_id: "folder_window_test" }
 
     assert_response :success
-    assert_includes response.body, "Items"
     assert_includes response.body, "Name"
     assert_includes response.body, "Kind"
     assert_includes response.body, "Date Created"

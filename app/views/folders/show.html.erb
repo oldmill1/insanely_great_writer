@@ -51,8 +51,6 @@
       <div class="folder-window__groups">
         <% if items.any? %>
           <section class="folder-window__group" aria-labelledby="folder-group-items">
-            <h2 id="folder-group-items" class="folder-window__group-title">Items</h2>
-
             <div class="folder-window__table" role="table" aria-label="Folder contents">
               <div class="folder-window__header" role="row">
                 <button
@@ -123,7 +121,6 @@
           </section>
         <% else %>
           <section class="folder-window__group" aria-labelledby="folder-group-items">
-            <h2 id="folder-group-items" class="folder-window__group-title">Items</h2>
             <p class="folder-window__empty">No items yet.</p>
           </section>
         <% end %>
