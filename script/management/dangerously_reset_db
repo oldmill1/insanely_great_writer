@@ -1,0 +1,107 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+
+APP_ROOT = File.expand_path("../..", __dir__)
+require File.expand_path("config/environment", APP_ROOT)
+
+class DangerouslyResetDb
+  INTERNAL_TABLES = %w[ar_internal_metadata schema_migrations].freeze
+  PRESERVED_TABLES = %w[users].freeze
+  CONFIRMATION = "DELETE MY LOCAL APP DATA".freeze
+
+  def self.run(argv)
+    new(argv).run
+  end
+
+  def initialize(argv)
+    @argv = argv
+    @connection = ActiveRecord::Base.connection
+  end
+
+  def run
+    ensure_local_development!
+
+    tables_to_clear = application_tables - PRESERVED_TABLES
+    if tables_to_clear.empty?
+      puts "Nothing to clear."
+      return
+    end
+
+    confirm!(tables_to_clear)
+
+    deleted_counts = clear_tables(tables_to_clear)
+    reset_sqlite_sequences!(tables_to_clear)
+
+    puts
+    puts "Local database reset complete."
+    deleted_counts.each do |table, count|
+      puts "- #{table}: removed #{count} rows"
+    end
+    puts "- preserved tables: #{PRESERVED_TABLES.join(', ')}"
+  end
+
+  private
+
+  attr_reader :argv, :connection
+
+  def ensure_local_development!
+    unless Rails.env.development?
+      abort "Refusing to run outside development. Current environment: #{Rails.env.inspect}"
+    end
+
+    config = ActiveRecord::Base.connection_db_config
+    unless config.adapter == "sqlite3"
+      abort "Refusing to run on non-SQLite database adapter: #{config.adapter.inspect}"
+    end
+
+    db_path = Pathname.new(config.database.to_s)
+    expanded_db_path = db_path.absolute? ? db_path : Rails.root.join(db_path)
+    expected_db_path = Rails.root.join("storage/development.sqlite3")
+
+    unless expanded_db_path == expected_db_path
+      abort "Refusing to run on unexpected database path: #{expanded_db_path}"
+    end
+  end
+
+  def application_tables
+    connection.data_sources.sort - INTERNAL_TABLES
+  end
+
+  def confirm!(tables_to_clear)
+    return if argv.include?("--yes")
+
+    puts "This will permanently delete all local application data except users."
+    puts "Environment: #{Rails.env}"
+    puts "Database: #{ActiveRecord::Base.connection_db_config.database}"
+    puts "Tables to clear: #{tables_to_clear.join(', ')}"
+    puts
+    puts "Type #{CONFIRMATION.inspect} to continue:"
+
+    input = $stdin.gets&.strip
+    abort "Aborted." unless input == CONFIRMATION
+  end
+
+  def clear_tables(tables)
+    deleted_counts = {}
+
+    connection.disable_referential_integrity do
+      tables.each do |table|
+        deleted_counts[table] = connection.select_value("SELECT COUNT(*) FROM #{connection.quote_table_name(table)}").to_i
+        connection.execute("DELETE FROM #{connection.quote_table_name(table)}")
+      end
+    end
+
+    deleted_counts
+  end
+
+  def reset_sqlite_sequences!(tables)
+    return unless connection.data_source_exists?("sqlite_sequence")
+
+    quoted_tables = tables.map { |table| connection.quote(table) }.join(", ")
+    connection.execute("DELETE FROM sqlite_sequence WHERE name IN (#{quoted_tables})")
+  end
+end
+
+DangerouslyResetDb.run(ARGV)

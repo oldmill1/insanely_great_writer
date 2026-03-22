@@ -35,13 +35,13 @@
   min-height: 2rem;
   padding: 0.32rem 0.5rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.64);
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.16) 0 1px,
-      rgba(255, 255, 255, 0.02) 1px 5px
-    ),
-    linear-gradient(180deg, rgba(188, 211, 244, 0.5) 0%, rgba(119, 148, 190, 0.44) 100%);
+  // background:
+  //   repeating-linear-gradient(
+  //     0deg,
+  //     rgba(255, 255, 255, 0.16) 0 1px,
+  //     rgba(255, 255, 255, 0.02) 1px 5px
+  //   ),
+  //   linear-gradient(180deg, rgba(188, 211, 244, 0.5) 0%, rgba(119, 148, 190, 0.44) 100%);
   cursor: inherit;
   user-select: none;
 }
