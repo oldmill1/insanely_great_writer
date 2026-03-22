@@ -4,7 +4,15 @@
   display: grid;
   min-height: 100vh;
   place-items: center;
-  padding: 2rem;
+  padding: calc(2rem + 2rem) 2rem 2rem;
+}
+
+.home::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2rem;
+  pointer-events: none;
 }
 
 .home__title {

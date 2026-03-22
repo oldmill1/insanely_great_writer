@@ -62,6 +62,18 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, document.content
   end
 
+  test "renders the global menu bar for the document page context" do
+    document = documents(:one)
+
+    get doc_path(document)
+
+    assert_response :success
+    assert_includes response.body, "data-controller=\"menu-bar\""
+    assert_includes response.body, "document_page"
+    assert_includes response.body, "Scene Heading"
+    assert_includes response.body, "Format"
+  end
+
   test "shows a document inside the requested turbo frame id" do
     document = documents(:one)
 
