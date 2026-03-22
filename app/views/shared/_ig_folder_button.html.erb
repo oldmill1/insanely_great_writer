@@ -1,0 +1,59 @@
+<%
+  raise ArgumentError, "IGFolderButton requires :kind" unless local_assigns.key?(:kind)
+
+  button_kind = local_assigns[:kind].to_s.strip.downcase
+  button_config = {
+    "up" => {
+      label: "Up",
+      button_classes: %w[
+        folder-window__nav-button
+        folder-window__nav-button--transport
+        folder-window__nav-button--up
+      ],
+      glyph_class: "folder-window__nav-glyph--up"
+    },
+    "back" => {
+      label: "Back",
+      button_classes: %w[
+        folder-window__nav-button
+        folder-window__nav-button--transport
+        folder-window__nav-button--back
+      ],
+      glyph_class: "folder-window__nav-glyph--back"
+    },
+    "delete" => {
+      label: "Delete",
+      button_classes: %w[
+        folder-window__nav-button
+        folder-window__nav-button--delete
+      ],
+      glyph_class: nil
+    }
+  }[button_kind]
+
+  raise ArgumentError, "Unknown IGFolderButton kind: #{button_kind.inspect}" if button_config.blank?
+
+  button_classes = button_config[:button_classes].dup
+  button_classes << local_assigns[:class_name] if local_assigns[:class_name].present?
+
+  button_label = local_assigns[:label].presence || button_config[:label]
+  button_title = local_assigns.key?(:title) ? local_assigns[:title] : button_config[:label]
+  button_aria_label = local_assigns.key?(:aria_label) ? local_assigns[:aria_label] : button_config[:label]
+  button_hidden = local_assigns[:hidden] == true
+  button_disabled = local_assigns[:disabled] == true
+%>
+
+<%= content_tag :button,
+  type: local_assigns[:type].presence || "button",
+  class: button_classes.join(" "),
+  data: local_assigns[:data],
+  title: button_title,
+  hidden: button_hidden,
+  disabled: button_disabled,
+  "aria-label": button_aria_label do %>
+  <% if button_config[:glyph_class].present? %>
+    <span class="folder-window__nav-glyph <%= button_config[:glyph_class] %>" aria-hidden="true"></span>
+  <% else %>
+    <%= button_label %>
+  <% end %>
+<% end %>

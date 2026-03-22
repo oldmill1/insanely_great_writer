@@ -65,6 +65,9 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "Deep"
     assert_includes response.body, "Delete"
     assert_includes response.body, "Today"
+    assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--transport folder-window__nav-button--up"'
+    assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--transport folder-window__nav-button--back"'
+    assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--delete"'
   end
 
   test "shows root folder view" do

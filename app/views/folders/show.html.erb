@@ -63,33 +63,25 @@
     >
       <header class="folder-window__toolbar">
         <div class="folder-window__toolbar-group folder-window__toolbar-group--nav">
-          <button
-            type="button"
-            class="folder-window__nav-button folder-window__nav-button--transport folder-window__nav-button--up"
-            data-folder-browser-target="upButton"
-            data-action="folder-browser#goUp"
-            aria-label="Up"
-            title="Up"
-          >
-            <span class="folder-window__nav-glyph folder-window__nav-glyph--up" aria-hidden="true"></span>
-          </button>
-          <button
-            type="button"
-            class="folder-window__nav-button folder-window__nav-button--transport folder-window__nav-button--back"
-            data-folder-browser-target="backButton"
-            data-action="folder-browser#goBack"
-            aria-label="Back"
-            title="Back"
-          >
-            <span class="folder-window__nav-glyph folder-window__nav-glyph--back" aria-hidden="true"></span>
-          </button>
-          <button
-            type="button"
-            class="folder-window__nav-button folder-window__nav-button--delete"
-            data-folder-browser-target="deleteButton"
-            data-action="folder-browser#deleteSelectedItem"
-            hidden
-          >Delete</button>
+          <%= render "shared/ig_folder_button",
+            kind: "up",
+            data: {
+              folder_browser_target: "upButton",
+              action: "folder-browser#goUp"
+            } %>
+          <%= render "shared/ig_folder_button",
+            kind: "back",
+            data: {
+              folder_browser_target: "backButton",
+              action: "folder-browser#goBack"
+            } %>
+          <%= render "shared/ig_folder_button",
+            kind: "delete",
+            data: {
+              folder_browser_target: "deleteButton",
+              action: "folder-browser#deleteSelectedItem"
+            },
+            hidden: true %>
         </div>
 
         <div class="folder-window__toolbar-spacer" aria-hidden="true"></div>
