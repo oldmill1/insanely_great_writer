@@ -18,15 +18,20 @@ export default class extends Controller {
     this.windowPointerEndHandler = this.onWindowPointerEnd.bind(this)
     this.windowResizeObserver = null
     this.windowCleanupCallbacks = []
+    this.boundMenuActionHandler = this.handleMenuAction.bind(this)
+
+    window.addEventListener("ig:menu-action", this.boundMenuActionHandler)
 
     this.render()
     this.bindWindows()
+    this.setMenuContext("desktop")
   }
 
   disconnect() {
     window.removeEventListener("pointermove", this.windowPointerMoveHandler)
     window.removeEventListener("pointerup", this.windowPointerEndHandler)
     window.removeEventListener("pointercancel", this.windowPointerEndHandler)
+    window.removeEventListener("ig:menu-action", this.boundMenuActionHandler)
 
     if (this.windowResizeObserver) {
       this.windowResizeObserver.disconnect()
@@ -42,7 +47,11 @@ export default class extends Controller {
 
   select(event) {
     const shortcutButton = event.target.closest(".ig-shortcut")
-    if (!shortcutButton || !this.element.contains(shortcutButton)) return
+    if (!shortcutButton || !this.element.contains(shortcutButton)) {
+      this.activeWindowElement = null
+      this.setMenuContext("desktop")
+      return
+    }
 
     this.selectByButton(shortcutButton)
   }
@@ -368,6 +377,10 @@ export default class extends Controller {
     }
 
     this.windowElements = (this.windowElements || []).filter((element) => element !== windowEl)
+    if (this.activeWindowElement === windowEl) {
+      this.activeWindowElement = this.windowElements[this.windowElements.length - 1] || null
+      this.setMenuContext(this.activeWindowElement ? "document_window" : "desktop")
+    }
     windowEl.remove()
   }
 
@@ -520,6 +533,8 @@ export default class extends Controller {
   bringWindowToFront(windowEl) {
     this.windowZCounter += 1
     windowEl.style.zIndex = String(this.windowZCounter)
+    this.activeWindowElement = windowEl
+    this.setMenuContext("document_window")
   }
 
   applyEdgeOffsets(element, shortcut) {
@@ -690,6 +705,52 @@ export default class extends Controller {
     const oneYearInSeconds = 60 * 60 * 24 * 365
     document.cookie =
       `${this.constructor.SYSTEM_SHORTCUT_COOKIE}=${encoded}; path=/; max-age=${oneYearInSeconds}; samesite=lax`
+  }
+
+  handleMenuAction(event) {
+    const action = event.detail?.action
+    if (!action) return
+
+    if (action === "close-active-window") {
+      this.closeWindow(this.activeWindowElement)
+      return
+    }
+
+    if (action === "open-active-window-page") {
+      this.openDocumentPage(this.activeWindowElement)
+      return
+    }
+
+    if (action === "focus-desktop") {
+      this.activeWindowElement = null
+      this.setMenuContext("desktop")
+      return
+    }
+
+    if (action === "new-note") {
+      this.createDesktopNoteFromMenu()
+    }
+  }
+
+  createDesktopNoteFromMenu() {
+    const homeElement = this.element.closest("[data-controller~='home-context-menu']")
+    if (!homeElement) return
+
+    const homeContextMenuController = this.application.getControllerForElementAndIdentifier(
+      homeElement,
+      "home-context-menu"
+    )
+    if (!homeContextMenuController?.createNote) return
+
+    homeContextMenuController.menuPosition = {
+      x: Math.max(72, Math.round(window.innerWidth * 0.18)),
+      y: 92
+    }
+    homeContextMenuController.createNote()
+  }
+
+  setMenuContext(context) {
+    window.dispatchEvent(new CustomEvent("ig:menu-context", { detail: { context } }))
   }
 
   removeShortcutById(shortcutId) {
