@@ -119,12 +119,15 @@
   display: grid;
   gap: 0.75rem;
   padding: 1rem;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 
 .folder-window__group {
   display: grid;
   gap: 0.45rem;
+  align-content: start;
 }
 
 .folder-window__group-title {
@@ -282,6 +285,37 @@
   border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.02);
   color: rgba(194, 199, 207, 0.7);
+}
+
+.folder-window__status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2rem;
+  padding: 0.4rem 0.75rem 0.45rem;
+  border-top: 1px solid rgba(118, 132, 166, 0.36);
+  background:
+    linear-gradient(180deg, #3d4e6d 0%, #2e3b55 45%, #1f293d 46%, #334562 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(232, 239, 255, 0.18),
+    inset 0 -1px 0 rgba(7, 11, 20, 0.46);
+  color: #e8eeff;
+  font-size: 0.82rem;
+}
+
+.folder-window__status-label {
+  flex: 0 0 auto;
+  color: rgba(232, 238, 255, 0.72);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.folder-window__status-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 720px) {
