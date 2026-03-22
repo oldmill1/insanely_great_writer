@@ -87,13 +87,11 @@
         <div class="folder-window__toolbar-spacer" aria-hidden="true"></div>
 
         <div class="folder-window__toolbar-group folder-window__toolbar-group--actions">
-          <%= button_tag "New Folder",
-            type: "button",
-            class: "ig-button",
+          <%= render "shared/ig_folder_button",
+            kind: "new_folder",
             data: { action: "folder-browser#createFolder" } %>
-          <%= button_tag "New Document",
-            type: "button",
-            class: "ig-button ig-button--subtle",
+          <%= render "shared/ig_folder_button",
+            kind: "new_document",
             data: { action: "folder-browser#createDocument" } %>
         </div>
       </header>

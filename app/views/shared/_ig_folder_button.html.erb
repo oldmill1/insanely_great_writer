@@ -28,7 +28,28 @@
         folder-window__nav-button--delete
       ],
       glyph_class: nil,
-      icon_path: "/icons/trash.png"
+      icon_path: "/icons/trash.png",
+      icon_class: "folder-window__nav-button-icon--delete"
+    },
+    "new_folder" => {
+      label: "New Folder",
+      button_classes: %w[
+        folder-window__nav-button
+        folder-window__nav-button--action
+      ],
+      glyph_class: nil,
+      icon_path: "/icons/folders/default.png",
+      icon_class: "folder-window__nav-button-icon--folder"
+    },
+    "new_document" => {
+      label: "New Document",
+      button_classes: %w[
+        folder-window__nav-button
+        folder-window__nav-button--action
+      ],
+      glyph_class: nil,
+      icon_path: "/icons/write.png",
+      icon_class: "folder-window__nav-button-icon--document"
     }
   }[button_kind]
 
@@ -56,7 +77,7 @@
     <span class="folder-window__nav-glyph <%= button_config[:glyph_class] %>" aria-hidden="true"></span>
   <% elsif button_config[:icon_path].present? %>
     <img
-      class="folder-window__nav-button-icon folder-window__nav-button-icon--delete"
+      class="folder-window__nav-button-icon <%= button_config[:icon_class] %>"
       src="<%= button_config[:icon_path] %>"
       alt=""
       aria-hidden="true"
