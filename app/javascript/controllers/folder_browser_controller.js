@@ -18,7 +18,7 @@ export default class extends Controller {
     showPath: String
   }
 
-  static targets = ["list", "row", "sortButton", "upButton", "backButton", "deleteButton", "contextMenu"]
+  static targets = ["list", "row", "sortButton", "upButton", "backButton", "deleteButton", "contextMenu", "sidebarGroup"]
 
   connect() {
     this.sortKey = "kind"
@@ -190,6 +190,15 @@ export default class extends Controller {
     }
 
     this.applySort()
+  }
+
+  toggleSidebarGroup(event) {
+    const trigger = event.currentTarget
+    const group = trigger.closest(".folder-window__sidebar-group")
+    if (!group) return
+
+    const isCollapsed = group.classList.toggle("is-collapsed")
+    trigger.setAttribute("aria-expanded", String(!isCollapsed))
   }
 
   async createItem(path) {

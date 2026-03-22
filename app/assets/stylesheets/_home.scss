@@ -381,16 +381,45 @@
 }
 
 .folder-window__sidebar-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: rgba(182, 199, 236, 0.78);
+  font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  text-align: left;
+}
+
+.folder-window__sidebar-title::after {
+  content: "▾";
+  font-size: 0.8rem;
+  line-height: 1;
+  color: rgba(182, 199, 236, 0.62);
+}
+
+.folder-window__sidebar-title:hover,
+.folder-window__sidebar-title:focus-visible {
+  color: #e8efff;
+  outline: none;
+}
+
+.folder-window__sidebar-group.is-collapsed .folder-window__sidebar-title::after {
+  content: "▸";
 }
 
 .folder-window__sidebar-list {
   display: grid;
   gap: 0.14rem;
+}
+
+.folder-window__sidebar-group.is-collapsed .folder-window__sidebar-list {
+  display: none;
 }
 
 .folder-window__sidebar-item {

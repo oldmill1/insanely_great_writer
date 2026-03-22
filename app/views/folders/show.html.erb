@@ -104,10 +104,17 @@
 
       <div class="folder-window__groups">
         <aside class="folder-window__sidebar" aria-label="Sidebar">
-          <% sidebar_groups.each do |group| %>
-            <section class="folder-window__sidebar-group">
-              <h2 class="folder-window__sidebar-title"><%= group[:title] %></h2>
-              <div class="folder-window__sidebar-list">
+          <% sidebar_groups.each_with_index do |group, index| %>
+            <% section_id = "folder-window-sidebar-group-#{index}" %>
+            <section class="folder-window__sidebar-group" data-folder-browser-target="sidebarGroup">
+              <button
+                type="button"
+                class="folder-window__sidebar-title"
+                aria-expanded="true"
+                aria-controls="<%= section_id %>"
+                data-action="folder-browser#toggleSidebarGroup"
+              ><%= group[:title] %></button>
+              <div class="folder-window__sidebar-list" id="<%= section_id %>">
                 <% group[:items].each do |item| %>
                   <button type="button" class="folder-window__sidebar-item">
                     <img class="folder-window__sidebar-icon" src="<%= item[:icon] %>" alt="" aria-hidden="true">
