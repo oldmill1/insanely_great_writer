@@ -63,6 +63,17 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Scenes"
     assert_includes response.body, "Opening"
     assert_not_includes response.body, "Deep"
+    assert_includes response.body, "Shortcuts"
+    assert_includes response.body, "Desktop"
+    assert_not_includes response.body, "Drafts"
+    assert_not_includes response.body, "Audio Notes"
+    assert_includes response.body, "Smart Folders"
+    assert_includes response.body, "Recent"
+    assert_includes response.body, "Last Week"
+    assert_includes response.body, "Last 2 Weeks"
+    assert_includes response.body, "Last Month"
+    assert_includes response.body, "Trash"
+    assert_not_includes response.body, "Favorites"
     assert_includes response.body, "Delete"
     assert_includes response.body, "Today"
     assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--transport folder-window__nav-button--up"'
@@ -135,7 +146,7 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, "Deleted Scene Folder"
     assert_not_includes response.body, "Opening"
-    assert_includes response.body, "No items yet."
+    assert_includes response.body, "This folder is empty"
   end
 
   test "returns not found when showing a deleted folder" do
