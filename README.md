@@ -187,6 +187,7 @@ Because production uses SQLite on a Fly volume, the current documented setup is 
 - `AGENTS.md` — repo-specific developer notes and commands
 - `BOOTSTRAP.md` — practical setup and deployment guide
 - `DEPLOY_FIXES.md` — Fly deployment issues and fixes already applied
+- `docs/launch_checklist.md` — launch readiness checklist with safety and anti-hacking review steps
 
 ## Health check
 
