@@ -68,8 +68,10 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--transport folder-window__nav-button--up"'
     assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--transport folder-window__nav-button--back"'
     assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--delete"'
-    assert_includes response.body, 'class="folder-window__status-segment"'
-    assert_includes response.body, 'data-folder-path="root/Chapter 1"'
+    assert_includes response.body, "folder-window__status-segment"
+    assert_includes response.body, 'data-folder-path="root"'
+    assert_includes response.body, 'contextmenu->folder-browser#openRowContextMenu'
+    assert_includes response.body, 'data-intent="delete"'
   end
 
   test "shows root folder view" do

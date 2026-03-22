@@ -101,6 +101,13 @@
   z-index: 81;
 }
 
+.folder-window__context-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+}
+
 .folder-window-page,
 .folder-window {
   height: 100%;

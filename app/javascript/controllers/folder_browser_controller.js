@@ -16,7 +16,7 @@ export default class extends Controller {
     showPath: String
   }
 
-  static targets = ["list", "row", "sortButton", "upButton", "backButton", "deleteButton"]
+  static targets = ["list", "row", "sortButton", "upButton", "backButton", "deleteButton", "contextMenu"]
 
   connect() {
     this.sortKey = "kind"
@@ -25,6 +25,7 @@ export default class extends Controller {
     this.applySort()
     this.updateNavButtons()
     this.updateDeleteButton()
+    this.hideContextMenu()
   }
 
   async createFolder() {
@@ -51,9 +52,54 @@ export default class extends Controller {
   }
 
   clearSelectionFromPane(event) {
+    this.hideContextMenu()
     if (event.target.closest(".folder-window__row")) return
 
     this.clearSelection()
+  }
+
+  openRowContextMenu(event) {
+    event.preventDefault()
+    this.selectRow(event)
+
+    if (!this.hasContextMenuTarget) return
+
+    this.contextMenuTarget.hidden = false
+    this.contextMenuTarget.style.visibility = "hidden"
+    this.contextMenuTarget.style.left = `${event.clientX}px`
+    this.contextMenuTarget.style.top = `${event.clientY}px`
+
+    const rect = this.contextMenuTarget.getBoundingClientRect()
+    const margin = 8
+    const maxLeft = window.innerWidth - rect.width - margin
+    const maxTop = window.innerHeight - rect.height - margin
+    const left = Math.max(margin, Math.min(event.clientX, maxLeft))
+    const top = Math.max(margin, Math.min(event.clientY, maxTop))
+
+    this.contextMenuTarget.style.left = `${left}px`
+    this.contextMenuTarget.style.top = `${top}px`
+    this.contextMenuTarget.style.visibility = "visible"
+  }
+
+  closeContextMenuOnWindowPointerDown(event) {
+    if (!this.hasContextMenuTarget || this.contextMenuTarget.hidden) return
+    if (this.contextMenuTarget.contains(event.target)) return
+
+    this.hideContextMenu()
+  }
+
+  closeContextMenuWithEscape() {
+    this.hideContextMenu()
+  }
+
+  async handleContextMenuClick(event) {
+    const button = event.target.closest("[data-intent]")
+    if (!button || !this.hasContextMenuTarget || !this.contextMenuTarget.contains(button)) return
+
+    if (button.dataset.intent === "delete") {
+      this.hideContextMenu()
+      await this.deleteSelectedItem()
+    }
   }
 
   openItem(event) {
@@ -171,6 +217,7 @@ export default class extends Controller {
 
     if (!response.ok) return
 
+    this.hideContextMenu()
     this.clearSelection()
     this.refreshFrame()
   }
@@ -258,6 +305,7 @@ export default class extends Controller {
   }
 
   clearSelection() {
+    this.hideContextMenu()
     if (this.selectedRow) {
       this.selectedRow.classList.remove("is-selected")
       this.selectedRow.setAttribute("aria-selected", "false")
@@ -386,5 +434,12 @@ export default class extends Controller {
     if (this.hasBackButtonTarget) {
       this.backButtonTarget.disabled = history.length === 0
     }
+  }
+
+  hideContextMenu() {
+    if (!this.hasContextMenuTarget) return
+
+    this.contextMenuTarget.hidden = true
+    this.contextMenuTarget.style.visibility = "hidden"
   }
 }

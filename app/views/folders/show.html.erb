@@ -48,6 +48,10 @@
       class="folder-window"
       aria-label="Folder window"
       data-controller="folder-browser"
+      data-action="
+        pointerdown@window->folder-browser#closeContextMenuOnWindowPointerDown
+        keydown.esc@window->folder-browser#closeContextMenuWithEscape
+      "
       data-folder-browser-folder-id-value="<%= @folder_id %>"
       data-folder-browser-folder-name-value="<%= @folder_name %>"
       data-folder-browser-folder-path-value="<%= @folder_path %>"
@@ -163,7 +167,7 @@
                       type="button"
                       class="folder-window__row"
                       data-folder-browser-target="row"
-                      data-action="click->folder-browser#selectRow dblclick->folder-browser#openItem"
+                      data-action="click->folder-browser#selectRow dblclick->folder-browser#openItem contextmenu->folder-browser#openRowContextMenu"
                       data-item-kind="<%= item[:kind].downcase %>"
                       data-item-id="<%= item[:id] %>"
                       data-item-name="<%= item[:name] %>"
@@ -250,6 +254,19 @@
           <% end %>
         </div>
       </footer>
+
+      <div
+        class="folder-window__context-menu"
+        data-folder-browser-target="contextMenu"
+        data-action="click->folder-browser#handleContextMenuClick"
+        hidden
+      >
+        <%= render "shared/ig_menu",
+          items: [
+            { label: "Delete", intent: "delete", kind: "action", icon: "/icons/trash.png" }
+          ],
+          width: "10rem" %>
+      </div>
     </section>
   <% end %>
 </main>
