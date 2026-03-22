@@ -52,4 +52,13 @@
   >
     <%= render "shared/ig_menu", items: @context_menu_items %>
   </div>
+
+  <div
+    class="home__context-submenu"
+    data-home-context-menu-target="submenu"
+    data-action="click->home-context-menu#handleMenuClick"
+    hidden
+  >
+    <%= render "shared/ig_menu", items: @new_context_menu_items %>
+  </div>
 </main>

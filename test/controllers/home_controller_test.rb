@@ -90,7 +90,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, "data-controller=\"menu-bar\""
     assert_includes response.body, 'data-controller="desktop"'
-    assert_includes response.body, "New Note"
+    assert_includes response.body, "aria-haspopup=\"menu\""
+    assert_includes response.body, ">Note<"
   end
 
   test "shows logout/user settings menu when authed" do
@@ -98,7 +99,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_includes response.body, "New Note"
+    assert_includes response.body, "aria-haspopup=\"menu\""
+    assert_includes response.body, ">Note<"
     assert_includes response.body, "Logout"
     assert_includes response.body, "User Settings"
     assert_not_includes response.body, "Login"

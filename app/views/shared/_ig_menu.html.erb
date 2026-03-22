@@ -43,16 +43,24 @@
     <% intent = item[:intent] || raise(ArgumentError, "IGMenu item requires :intent") %>
     <% kind = item[:kind] || raise(ArgumentError, "IGMenu item requires :kind") %>
     <% payload = ig_menu_payload_data(item[:payload]) %>
+    <% submenu_key = item[:submenu].presence %>
 
-    <%= button_tag label,
-      type: "button",
+    <%= button_tag type: "button",
       role: "menuitem",
-      class: "ig-menu__item",
+      class: ["ig-menu__item", ("ig-menu__item--submenu" if submenu_key.present?)].compact.join(" "),
       disabled: item[:disabled] == true,
+      aria: submenu_key.present? ? { haspopup: "menu", expanded: "false" } : {},
       data: {
         intent: intent,
         kind: kind,
-        payload: payload
-      } %>
+        payload: payload,
+        submenu_trigger: submenu_key.present?,
+        submenu: submenu_key
+      } do %>
+      <span class="ig-menu__item-label"><%= label %></span>
+      <% if submenu_key.present? %>
+        <span class="ig-menu__item-caret" aria-hidden="true">▶</span>
+      <% end %>
+    <% end %>
   <% end %>
 </div>

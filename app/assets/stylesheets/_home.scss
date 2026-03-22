@@ -94,6 +94,13 @@
   z-index: 80;
 }
 
+.home__context-submenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 81;
+}
+
 .folder-window-page,
 .folder-window {
   height: 100%;
@@ -151,8 +158,7 @@
   gap: 0.9rem;
   padding: 1rem 0.8rem 1rem 0.9rem;
   border-right: 1px solid rgba(122, 138, 173, 0.22);
-  background:
-    linear-gradient(180deg, #131b27 0%, #0e141d 100%);
+  background: #1D2022;
   overflow: auto;
 }
 
@@ -259,6 +265,8 @@
 }
 
 .folder-window__main-pane {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   overflow: auto;
 }
@@ -267,6 +275,12 @@
   display: grid;
   gap: 0.45rem;
   align-content: start;
+}
+
+.folder-window__group--empty {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 100%;
 }
 
 .folder-window__group-title {
@@ -421,13 +435,42 @@
   color: #aeb8d0;
 }
 
-.folder-window__empty {
+.folder-window__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  margin: auto;
+  width: 100%;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.folder-window__empty-illustration {
+  width: min(13rem, 54vw);
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 12px 24px rgba(3, 7, 18, 0.24));
+}
+
+.folder-window__empty-title,
+.folder-window__empty-copy {
   margin: 0;
-  padding: 0.85rem 0.95rem;
-  border: 1px dashed rgba(194, 199, 207, 0.18);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  color: rgba(194, 199, 207, 0.7);
+}
+
+.folder-window__empty-title {
+  color: #e8eeff;
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.folder-window__empty-copy {
+  max-width: 24rem;
+  color: rgba(194, 199, 207, 0.72);
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .folder-window__status-bar {

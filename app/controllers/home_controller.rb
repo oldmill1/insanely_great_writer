@@ -24,6 +24,7 @@ class HomeController < ApplicationController
     @desktop_shortcuts = load_shortcuts
     @desktop_windows = load_windows
     @context_menu_items = load_context_menu_items
+    @new_context_menu_items = load_new_context_menu_items
   end
 
   def desktop_items
@@ -86,8 +87,7 @@ class HomeController < ApplicationController
   def load_context_menu_items
     if authed?
       [
-        { label: "New", intent: "new", kind: "action" },
-        { label: "New Note", intent: "new_note", kind: "action" },
+        { label: "New", intent: "new", kind: "action", submenu: "new" },
         "break",
         { label: "Logout", intent: "logout", kind: "action" },
         { label: "User Settings", intent: "user_settings", kind: "action" }
@@ -98,6 +98,16 @@ class HomeController < ApplicationController
         { label: "Register", intent: "register", kind: "action" }
       ]
     end
+  end
+
+  def load_new_context_menu_items
+    return [] unless authed?
+
+    [
+      { label: "Folder", intent: "new_folder", kind: "action" },
+      { label: "Document", intent: "new_document", kind: "action" },
+      { label: "Note", intent: "new_note", kind: "action" }
+    ]
   end
 
   def load_windows

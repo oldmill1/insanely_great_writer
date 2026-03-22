@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["menu"]
+  static targets = ["menu", "submenu"]
   static values = {
     loginPath: String,
     registerPath: String,
@@ -10,7 +10,6 @@ export default class extends Controller {
 
   connect() {
     this.defaultMenuMarkup = this.hasMenuTarget ? this.menuTarget.innerHTML : ""
-    this.newMenuMarkupValue = this.newMenuMarkup()
     this.selectedRecordShortcutId = null
     this.selectedItemKind = null
     this.menuPosition = { x: 48, y: 55 }
@@ -30,6 +29,7 @@ export default class extends Controller {
   close(event) {
     if (!this.isOpen()) return
     if (event && this.menuTarget.contains(event.target)) return
+    if (event && this.hasSubmenuTarget && this.submenuTarget.contains(event.target)) return
 
     this.hide()
   }
@@ -42,10 +42,18 @@ export default class extends Controller {
 
   handleMenuClick(event) {
     const button = event.target.closest("[data-intent]")
-    if (!button || !this.menuTarget.contains(button)) return
+    if (!button) return
+    if (!this.menuTarget.contains(button) && (!this.hasSubmenuTarget || !this.submenuTarget.contains(button))) {
+      return
+    }
 
     const intent = button.dataset.intent
     if (!intent) return
+
+    if (button.dataset.submenuTrigger === "true") {
+      this.showSubmenuFor(button)
+      return
+    }
 
     switch (intent) {
       case "login":
@@ -62,14 +70,6 @@ export default class extends Controller {
         return
       case "new_note":
         this.createNote()
-        return
-      case "new":
-        this.menuTarget.innerHTML = this.newMenuMarkupValue
-        this.showAt(this.menuPosition.x, this.menuPosition.y)
-        return
-      case "back":
-        this.menuTarget.innerHTML = this.defaultMenuMarkup
-        this.showAt(this.menuPosition.x, this.menuPosition.y)
         return
       case "new_folder":
         this.createFolder()
@@ -94,6 +94,8 @@ export default class extends Controller {
   hide() {
     if (!this.hasMenuTarget) return
     this.menuTarget.hidden = true
+    this.hideSubmenu()
+    this.syncSubmenuTriggerState(false)
   }
 
   isOpen() {
@@ -103,6 +105,8 @@ export default class extends Controller {
   showAt(x, y) {
     if (!this.hasMenuTarget) return
 
+    this.hideSubmenu()
+    this.syncSubmenuTriggerState(false)
     this.menuTarget.hidden = false
     this.menuTarget.style.visibility = "hidden"
     this.menuTarget.style.left = `${x}px`
@@ -123,6 +127,9 @@ export default class extends Controller {
 
   renderMenuForTarget(target) {
     if (!this.hasMenuTarget) return false
+
+    this.hideSubmenu()
+    this.syncSubmenuTriggerState(false)
 
     const shortcutButton = target?.closest?.(".ig-shortcut")
     if (shortcutButton && this.element.contains(shortcutButton)) {
@@ -170,15 +177,52 @@ export default class extends Controller {
     `
   }
 
-  newMenuMarkup() {
-    return `
-      <div class="ig-menu" role="menu" aria-orientation="vertical">
-        <button type="button" role="menuitem" class="ig-menu__item" data-intent="new_folder" data-kind="action" data-payload="">Folder</button>
-        <button type="button" role="menuitem" class="ig-menu__item" data-intent="new_document" data-kind="action" data-payload="">Document</button>
-        <div class="ig-menu__separator" role="separator" aria-hidden="true"></div>
-        <button type="button" role="menuitem" class="ig-menu__item" data-intent="back" data-kind="action" data-payload="">Back</button>
-      </div>
-    `
+  hideSubmenu() {
+    if (!this.hasSubmenuTarget) return
+
+    this.submenuTarget.hidden = true
+  }
+
+  showSubmenuFor(triggerButton) {
+    if (!this.hasSubmenuTarget) return
+
+    this.submenuTarget.hidden = false
+    this.submenuTarget.style.visibility = "hidden"
+
+    let triggerRect = triggerButton.getBoundingClientRect()
+    const submenuRect = this.submenuTarget.getBoundingClientRect()
+    const margin = 8
+    const gap = 6
+    const desiredRight = triggerRect.right + gap + submenuRect.width + margin
+
+    if (desiredRight > window.innerWidth) {
+      const menuRect = this.menuTarget.getBoundingClientRect()
+      const overflow = desiredRight - window.innerWidth
+      const nextLeft = Math.max(margin, menuRect.left - overflow)
+
+      this.menuPosition = { x: nextLeft, y: menuRect.top }
+      this.menuTarget.style.left = `${nextLeft}px`
+      triggerRect = triggerButton.getBoundingClientRect()
+    }
+
+    const maxLeft = window.innerWidth - submenuRect.width - margin
+    const maxTop = window.innerHeight - submenuRect.height - margin
+    const left = Math.max(margin, Math.min(triggerRect.right + gap, maxLeft))
+    const top = Math.max(margin, Math.min(triggerRect.top, maxTop))
+
+    this.submenuTarget.style.left = `${left}px`
+    this.submenuTarget.style.top = `${top}px`
+    this.submenuTarget.style.visibility = "visible"
+    this.syncSubmenuTriggerState(true, triggerButton.dataset.submenu)
+  }
+
+  syncSubmenuTriggerState(isExpanded, submenuKey = null) {
+    if (!this.hasMenuTarget) return
+
+    this.menuTarget.querySelectorAll("[data-submenu-trigger='true']").forEach((button) => {
+      const matchesKey = submenuKey === null || button.dataset.submenu === submenuKey
+      button.setAttribute("aria-expanded", isExpanded && matchesKey ? "true" : "false")
+    })
   }
 
   async deleteSelectedRecordShortcut() {
