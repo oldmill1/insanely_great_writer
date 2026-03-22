@@ -115,7 +115,7 @@
           <% end %>
         </aside>
 
-        <div class="folder-window__main-pane">
+        <div class="folder-window__main-pane" data-action="click->folder-browser#clearSelectionFromPane">
           <% if items.any? %>
             <section class="folder-window__group" aria-labelledby="folder-group-items">
               <div class="folder-window__table" role="table" aria-label="Folder contents">

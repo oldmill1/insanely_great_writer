@@ -50,6 +50,12 @@ export default class extends Controller {
     this.updateDeleteButton()
   }
 
+  clearSelectionFromPane(event) {
+    if (event.target.closest(".folder-window__row")) return
+
+    this.clearSelection()
+  }
+
   openItem(event) {
     const row = event.currentTarget
     const itemKind = row.dataset.itemKind
