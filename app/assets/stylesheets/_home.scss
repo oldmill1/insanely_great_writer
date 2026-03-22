@@ -323,6 +323,10 @@
 }
 
 .folder-window__nav-button--delete {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border-radius: 999px;
   border-color: rgba(194, 112, 112, 0.42);
   background:
     linear-gradient(180deg, rgba(139, 62, 62, 0.94) 0%, rgba(99, 37, 37, 0.94) 100%);
@@ -330,6 +334,18 @@
     inset 0 1px 0 rgba(255, 220, 220, 0.16),
     inset 0 -1px 0 rgba(33, 10, 10, 0.4);
   color: #fff3f3;
+  overflow: hidden;
+}
+
+.folder-window__nav-button-icon {
+  display: block;
+  object-fit: contain;
+}
+
+.folder-window__nav-button-icon--delete {
+  width: 1.3rem;
+  height: 1.3rem;
+  filter: brightness(0) invert(1);
 }
 
 .folder-window__sidebar-group {

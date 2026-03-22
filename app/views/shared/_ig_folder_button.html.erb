@@ -27,7 +27,8 @@
         folder-window__nav-button
         folder-window__nav-button--delete
       ],
-      glyph_class: nil
+      glyph_class: nil,
+      icon_path: "/icons/trash.png"
     }
   }[button_kind]
 
@@ -53,6 +54,13 @@
   "aria-label": button_aria_label do %>
   <% if button_config[:glyph_class].present? %>
     <span class="folder-window__nav-glyph <%= button_config[:glyph_class] %>" aria-hidden="true"></span>
+  <% elsif button_config[:icon_path].present? %>
+    <img
+      class="folder-window__nav-button-icon folder-window__nav-button-icon--delete"
+      src="<%= button_config[:icon_path] %>"
+      alt=""
+      aria-hidden="true"
+    >
   <% else %>
     <%= button_label %>
   <% end %>
