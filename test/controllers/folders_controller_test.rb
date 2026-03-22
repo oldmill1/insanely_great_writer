@@ -74,7 +74,7 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Shortcuts"
     assert_includes response.body, "Desktop"
     assert_includes response.body, "Chapter 1"
-    assert_includes response.body, 'data-user-sidebar-shortcut-id='
+    assert_includes response.body, "data-user-sidebar-shortcut-id="
     assert_includes response.body, 'data-action="folder-browser#navigateSidebarItem"'
     assert_includes response.body, 'data-folder-path="root"'
     assert_includes response.body, 'data-show-path="/folders/root"'
@@ -96,11 +96,11 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'class="folder-window__nav-button folder-window__nav-button--delete"'
     assert_includes response.body, "folder-window__status-segment"
     assert_includes response.body, 'data-folder-path="root"'
-    assert_includes response.body, 'contextmenu->folder-browser#openRowContextMenu'
-    assert_includes response.body, 'pointerdown->folder-browser#startRowDrag'
+    assert_includes response.body, "contextmenu->folder-browser#openRowContextMenu"
+    assert_includes response.body, "pointerdown->folder-browser#startRowDrag"
     assert_includes response.body, 'data-item-icon="/icons/folders/default.png"'
     assert_includes response.body, 'data-intent="rename"'
-    assert_includes response.body, '/icons/write.png'
+    assert_includes response.body, "/icons/write.png"
     assert_includes response.body, 'data-intent="delete"'
   end
 

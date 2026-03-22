@@ -69,7 +69,7 @@ class Folder < ApplicationRecord
     descendant_folder_paths = user.folders.where("path LIKE ?", "#{prefix}%").pluck(:path)
     descendant_document_paths = user.documents.where("path LIKE ?", "#{prefix}%").pluck(:path)
 
-    [path, *descendant_folder_paths, *descendant_document_paths].uniq
+    [ path, *descendant_folder_paths, *descendant_document_paths ].uniq
   end
 
   def ensure_desktop_shortcut!
