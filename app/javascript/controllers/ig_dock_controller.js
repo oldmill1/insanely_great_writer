@@ -2,6 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["item"]
+  static values = {
+    authed: Boolean,
+    registerPath: String
+  }
 
   connect() {
     this.resetScale()
@@ -33,6 +37,13 @@ export default class extends Controller {
   handleClick(event) {
     const button = event.target.closest("[data-intent]")
     if (!button || !this.element.contains(button)) return
+
+    if (!this.authedValue) {
+      if (this.hasRegisterPathValue) {
+        window.location.assign(this.registerPathValue)
+      }
+      return
+    }
 
     const intent = button.dataset.intent
     if (intent === "new_draft") {

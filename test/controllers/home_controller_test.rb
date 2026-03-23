@@ -21,7 +21,17 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'data-intent="new_folder"'
     assert_includes response.body, 'data-path="/folders"'
     assert_includes response.body, 'data-parent-path="root"'
+    assert_includes response.body, 'data-ig-dock-authed-value="true"'
+    assert_includes response.body, 'data-ig-dock-register-path-value="/register"'
     assert_not_includes response.body, "New Scene"
+  end
+
+  test "renders dock register redirect metadata when not authed" do
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, 'data-ig-dock-authed-value="false"'
+    assert_includes response.body, 'data-ig-dock-register-path-value="/register"'
   end
 
   test "backfills missing document shortcuts only for the logged-in user" do

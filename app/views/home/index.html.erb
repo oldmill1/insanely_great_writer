@@ -34,6 +34,8 @@
 
   <div class="home__dock" aria-label="Application dock">
     <%= render "shared/ig_dock",
+      authed: authed?,
+      register_path: new_user_registration_path,
       items: [
         { thumbnail: "/icons/write.png", label: "New Document", intent: "new_draft", kind: "action", path: documents_path, parent_path: VirtualFilesystem.root_path },
         { thumbnail: "/icons/folders/default.png", label: "New Folder", intent: "new_folder", kind: "action", path: folders_path, parent_path: VirtualFilesystem.root_path }

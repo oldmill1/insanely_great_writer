@@ -10,6 +10,8 @@
   class="<%= dock_classes.join(" ") %>"
   aria-label="Dock"
   data-controller="ig-dock"
+  data-ig-dock-authed-value="<%= local_assigns.fetch(:authed, false) %>"
+  data-ig-dock-register-path-value="<%= local_assigns[:register_path].presence || new_user_registration_path %>"
   data-action="mousemove->ig-dock#hover mouseleave->ig-dock#leave click->ig-dock#handleClick"
 >
   <div class="ig-dock__rail" aria-hidden="true"></div>
