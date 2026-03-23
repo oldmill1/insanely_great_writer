@@ -138,6 +138,36 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal true, document.reload.is_deleted
   end
 
+  test "soft deletes a document and removes only the current user's matching sidebar shortcuts" do
+    owner = users(:one)
+    other_user = users(:two)
+    document = owner.documents.create!(title: "Draft", content: "", path: "root/Draft")
+    owner_shortcut = owner.user_sidebar_shortcuts.create!(
+      target_key: "document:#{document.id}",
+      item_kind: "document",
+      item_id: document.id,
+      label: document.title,
+      thumbnail: Document::DOC_SHORTCUT_THUMBNAIL,
+      position: UserSidebarShortcut.next_position_for(owner)
+    )
+    other_shortcut = other_user.user_sidebar_shortcuts.create!(
+      target_key: "document:#{document.id}",
+      item_kind: "document",
+      item_id: document.id,
+      label: document.title,
+      thumbnail: Document::DOC_SHORTCUT_THUMBNAIL,
+      position: UserSidebarShortcut.next_position_for(other_user)
+    )
+    sign_in owner
+
+    patch delete_doc_path(document), as: :json
+
+    assert_response :success
+    assert_equal true, document.reload.is_deleted
+    assert_not UserSidebarShortcut.exists?(owner_shortcut.id)
+    assert UserSidebarShortcut.exists?(other_shortcut.id)
+  end
+
   test "updates canonical content ast and preserves line breaks" do
     user = users(:one)
     document = documents(:one)

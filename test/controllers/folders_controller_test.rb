@@ -154,6 +154,71 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_equal true, nested_document.reload.is_deleted
   end
 
+  test "soft deletes a folder subtree and removes only the current user's matching sidebar shortcuts" do
+    owner = users(:one)
+    other_user = users(:two)
+    sign_in owner
+
+    folder = Folder.create!(user: owner, name: "Chapter 1", path: "root/Chapter 1")
+    child_folder = Folder.create!(user: owner, name: "Scenes", path: "root/Chapter 1/Scenes")
+    child_document = Document.create!(user: owner, title: "Opening", content: "", path: "root/Chapter 1/Opening")
+    nested_document = Document.create!(user: owner, title: "Deep", content: "", path: "root/Chapter 1/Scenes/Deep")
+
+    owner_folder_shortcut = owner.user_sidebar_shortcuts.create!(
+      target_key: "folder:#{folder.id}",
+      item_kind: "folder",
+      item_id: folder.id,
+      label: folder.name,
+      thumbnail: Folder::FOLDER_SHORTCUT_THUMBNAIL,
+      position: UserSidebarShortcut.next_position_for(owner)
+    )
+    owner_child_folder_shortcut = owner.user_sidebar_shortcuts.create!(
+      target_key: "folder:#{child_folder.id}",
+      item_kind: "folder",
+      item_id: child_folder.id,
+      label: child_folder.name,
+      thumbnail: Folder::FOLDER_SHORTCUT_THUMBNAIL,
+      position: UserSidebarShortcut.next_position_for(owner)
+    )
+    owner_child_document_shortcut = owner.user_sidebar_shortcuts.create!(
+      target_key: "document:#{child_document.id}",
+      item_kind: "document",
+      item_id: child_document.id,
+      label: child_document.title,
+      thumbnail: Document::DOC_SHORTCUT_THUMBNAIL,
+      position: UserSidebarShortcut.next_position_for(owner)
+    )
+    owner_nested_document_shortcut = owner.user_sidebar_shortcuts.create!(
+      target_key: "document:#{nested_document.id}",
+      item_kind: "document",
+      item_id: nested_document.id,
+      label: nested_document.title,
+      thumbnail: Document::DOC_SHORTCUT_THUMBNAIL,
+      position: UserSidebarShortcut.next_position_for(owner)
+    )
+    other_shortcut = other_user.user_sidebar_shortcuts.create!(
+      target_key: "folder:#{folder.id}",
+      item_kind: "folder",
+      item_id: folder.id,
+      label: folder.name,
+      thumbnail: Folder::FOLDER_SHORTCUT_THUMBNAIL,
+      position: UserSidebarShortcut.next_position_for(other_user)
+    )
+
+    patch delete_folder_path(folder), as: :json
+
+    assert_response :success
+    assert_equal true, folder.reload.is_deleted
+    assert_equal true, child_folder.reload.is_deleted
+    assert_equal true, child_document.reload.is_deleted
+    assert_equal true, nested_document.reload.is_deleted
+    assert_not UserSidebarShortcut.exists?(owner_folder_shortcut.id)
+    assert_not UserSidebarShortcut.exists?(owner_child_folder_shortcut.id)
+    assert_not UserSidebarShortcut.exists?(owner_child_document_shortcut.id)
+    assert_not UserSidebarShortcut.exists?(owner_nested_document_shortcut.id)
+    assert UserSidebarShortcut.exists?(other_shortcut.id)
+  end
+
   test "does not show deleted folders or deleted documents in folder contents" do
     sign_in users(:one)
     folder = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")

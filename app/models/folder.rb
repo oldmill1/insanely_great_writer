@@ -34,10 +34,14 @@ class Folder < ApplicationRecord
 
   def soft_delete_tree!
     deleted_at = Time.current
+    folder_ids = subtree_folder_ids
+    document_ids = subtree_document_ids
 
     transaction do
       user.folders.where(path: subtree_paths).update_all(is_deleted: true, updated_at: deleted_at)
       user.documents.where(path: subtree_paths).update_all(is_deleted: true, updated_at: deleted_at)
+      user.user_sidebar_shortcuts.where(item_kind: UserSidebarShortcut::FOLDER_KIND, item_id: folder_ids).delete_all
+      user.user_sidebar_shortcuts.where(item_kind: UserSidebarShortcut::DOCUMENT_KIND, item_id: document_ids).delete_all
     end
   end
 
@@ -70,6 +74,18 @@ class Folder < ApplicationRecord
     descendant_document_paths = user.documents.where("path LIKE ?", "#{prefix}%").pluck(:path)
 
     [ path, *descendant_folder_paths, *descendant_document_paths ].uniq
+  end
+
+  def subtree_folder_ids
+    prefix = "#{path}/"
+
+    [ id, *user.folders.where("path LIKE ?", "#{prefix}%").pluck(:id) ]
+  end
+
+  def subtree_document_ids
+    prefix = "#{path}/"
+
+    user.documents.where("path LIKE ?", "#{prefix}%").pluck(:id)
   end
 
   def ensure_desktop_shortcut!

@@ -61,6 +61,10 @@ class DocumentsController < ApplicationController
     document = current_user.documents.find(params[:id])
 
     if document.update(is_deleted: true)
+      current_user.user_sidebar_shortcuts.where(
+        item_kind: UserSidebarShortcut::DOCUMENT_KIND,
+        item_id: document.id
+      ).delete_all
       render json: { deleted: true, item_kind: document.kind, item_id: document.id }, status: :ok
     else
       render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
