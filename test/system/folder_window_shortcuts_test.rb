@@ -53,6 +53,35 @@ class FolderWindowShortcutsTest < ApplicationSystemTestCase
     assert_selector ".home__window[data-window-kind='document'][data-window-item-id='#{document.id}'] .ig-window__title", text: "Opening"
   end
 
+  test "removing a sidebar shortcut deletes it from the list and persistence" do
+    chapter = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
+    shortcut = users(:one).user_sidebar_shortcuts.create!(
+      target_key: "folder:#{chapter.id}",
+      item_kind: "folder",
+      item_id: chapter.id,
+      label: "Chapter 1",
+      thumbnail: Folder::FOLDER_SHORTCUT_THUMBNAIL,
+      position: 1
+    )
+
+    sign_in_as(users(:one))
+    visit root_path
+
+    open_folder_window(chapter)
+
+    find(".folder-window__sidebar-item[data-user-sidebar-shortcut-id='#{shortcut.id}']").right_click
+
+    within "[data-folder-browser-target='sidebarContextMenu']:not([hidden])" do
+      click_button "Remove"
+    end
+
+    assert_no_selector ".folder-window__sidebar-item[data-user-sidebar-shortcut-id='#{shortcut.id}']"
+
+    visit current_path
+
+    assert_no_selector ".folder-window__sidebar-item[data-user-sidebar-shortcut-id='#{shortcut.id}']"
+  end
+
   private
 
   def open_folder_window(folder)

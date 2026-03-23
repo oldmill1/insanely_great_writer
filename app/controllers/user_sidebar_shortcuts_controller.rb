@@ -23,6 +23,13 @@ class UserSidebarShortcutsController < ApplicationController
     render json: { shortcut: sidebar_shortcut_payload(shortcut, item:) }, status: :ok
   end
 
+  def destroy
+    shortcut = current_user.user_sidebar_shortcuts.find(params[:id])
+    shortcut.destroy!
+
+    render json: { deleted: true, shortcut_id: shortcut.id }, status: :ok
+  end
+
   private
 
   def find_sidebar_item(item_kind, item_id)

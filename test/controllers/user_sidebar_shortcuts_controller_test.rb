@@ -67,4 +67,25 @@ class UserSidebarShortcutsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "destroys a sidebar shortcut owned by the signed-in user" do
+    sign_in users(:one)
+    shortcut = users(:one).user_sidebar_shortcuts.create!(
+      target_key: "document:#{documents(:one).id}",
+      item_kind: "document",
+      item_id: documents(:one).id,
+      label: documents(:one).title,
+      thumbnail: Document::DOC_SHORTCUT_THUMBNAIL,
+      position: 1
+    )
+
+    assert_difference("UserSidebarShortcut.count", -1) do
+      delete user_sidebar_shortcut_path(shortcut), as: :json
+    end
+
+    assert_response :success
+    payload = JSON.parse(response.body)
+    assert_equal true, payload["deleted"]
+    assert_equal shortcut.id, payload["shortcut_id"]
+  end
 end

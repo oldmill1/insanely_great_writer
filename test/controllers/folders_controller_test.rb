@@ -75,11 +75,13 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Desktop"
     assert_includes response.body, "Chapter 1"
     assert_includes response.body, "data-user-sidebar-shortcut-id="
-    assert_includes response.body, 'data-action="folder-browser#navigateSidebarItem"'
+    assert_includes response.body, "openSidebarShortcutContextMenu"
+    assert_includes response.body, "navigateSidebarItem"
     assert_includes response.body, 'data-folder-path="root"'
     assert_includes response.body, 'data-show-path="/folders/root"'
     assert_includes response.body, 'data-folder-browser-target="shortcutDropzone"'
     assert_includes response.body, 'data-folder-browser-target="temporaryShortcuts"'
+    assert_includes response.body, 'data-folder-browser-target="sidebarContextMenu"'
     assert_not_includes response.body, "Drafts"
     assert_not_includes response.body, "Audio Notes"
     assert_includes response.body, "Smart Folders"

@@ -12,6 +12,7 @@ export default class extends Controller {
     createFolderPath: String,
     createDocumentPath: String,
     createSidebarShortcutPath: String,
+    deleteSidebarShortcutPathTemplate: String,
     renameFolderPathTemplate: String,
     renameDocumentPathTemplate: String,
     deleteFolderPathTemplate: String,
@@ -27,6 +28,7 @@ export default class extends Controller {
     "backButton",
     "deleteButton",
     "contextMenu",
+    "sidebarContextMenu",
     "sidebarGroup",
     "shortcutDropzone",
     "temporaryShortcuts"
@@ -39,6 +41,7 @@ export default class extends Controller {
     this.editingRow = null
     this.renameInput = null
     this.renameTextElement = null
+    this.selectedSidebarShortcut = null
     this.dragThreshold = 6
     this.dragState = null
     this.dragPreview = null
@@ -81,6 +84,7 @@ export default class extends Controller {
 
   clearSelectionFromPane(event) {
     this.hideContextMenu()
+    this.hideSidebarContextMenu()
     if (event.target.closest(".folder-window__name-input")) return
     if (event.target.closest(".folder-window__row")) return
 
@@ -111,14 +115,17 @@ export default class extends Controller {
   }
 
   closeContextMenuOnWindowPointerDown(event) {
-    if (!this.hasContextMenuTarget || this.contextMenuTarget.hidden) return
-    if (this.contextMenuTarget.contains(event.target)) return
+    const clickedInsideRowMenu = this.hasContextMenuTarget && !this.contextMenuTarget.hidden && this.contextMenuTarget.contains(event.target)
+    const clickedInsideSidebarMenu = this.hasSidebarContextMenuTarget && !this.sidebarContextMenuTarget.hidden && this.sidebarContextMenuTarget.contains(event.target)
+    if (clickedInsideRowMenu || clickedInsideSidebarMenu) return
 
     this.hideContextMenu()
+    this.hideSidebarContextMenu()
   }
 
   closeContextMenuWithEscape() {
     this.hideContextMenu()
+    this.hideSidebarContextMenu()
   }
 
   async handleContextMenuClick(event) {
@@ -134,6 +141,27 @@ export default class extends Controller {
     if (button.dataset.intent === "delete") {
       this.hideContextMenu()
       await this.deleteSelectedItem()
+    }
+  }
+
+  openSidebarShortcutContextMenu(event) {
+    event.preventDefault()
+
+    const shortcut = event.currentTarget
+    if (!shortcut?.dataset.userSidebarShortcutId) return
+    if (!this.hasSidebarContextMenuTarget) return
+
+    this.hideContextMenu()
+    this.selectedSidebarShortcut = shortcut
+    this.showMenuAtPointer(this.sidebarContextMenuTarget, event.clientX, event.clientY)
+  }
+
+  async handleSidebarContextMenuClick(event) {
+    const button = event.target.closest("[data-intent]")
+    if (!button || !this.hasSidebarContextMenuTarget || !this.sidebarContextMenuTarget.contains(button)) return
+
+    if (button.dataset.intent === "remove_sidebar_shortcut") {
+      await this.removeSelectedSidebarShortcut()
     }
   }
 
@@ -356,6 +384,28 @@ export default class extends Controller {
     this.hideContextMenu()
     this.clearSelection()
     this.refreshFrame()
+  }
+
+  async removeSelectedSidebarShortcut() {
+    const shortcut = this.selectedSidebarShortcut
+    const shortcutId = shortcut?.dataset.userSidebarShortcutId
+    const path = this.sidebarShortcutDeletePath(shortcutId)
+    if (!shortcut || !path) return
+
+    const response = await fetch(path, {
+      method: "DELETE",
+      headers: {
+        "Accept": "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      credentials: "same-origin"
+    })
+
+    if (!response.ok) return
+
+    this.hideSidebarContextMenu(false)
+    shortcut.remove()
+    this.selectedSidebarShortcut = null
   }
 
   refreshFrame() {
@@ -710,6 +760,17 @@ export default class extends Controller {
     this.contextMenuTarget.style.visibility = "hidden"
   }
 
+  hideSidebarContextMenu(clearSelection = true) {
+    if (this.hasSidebarContextMenuTarget) {
+      this.sidebarContextMenuTarget.hidden = true
+      this.sidebarContextMenuTarget.style.visibility = "hidden"
+    }
+
+    if (clearSelection) {
+      this.selectedSidebarShortcut = null
+    }
+  }
+
   cancelRename() {
     if (!this.renameInput || !this.renameTextElement) return
 
@@ -841,7 +902,7 @@ export default class extends Controller {
     const button = document.createElement("button")
     button.type = "button"
     button.className = "folder-window__sidebar-item"
-    button.dataset.action = "folder-browser#navigateSidebarItem"
+    button.dataset.action = "folder-browser#navigateSidebarItem contextmenu->folder-browser#openSidebarShortcutContextMenu"
     button.dataset.sidebarItemKind = "persisted"
     button.dataset.userSidebarShortcutId = String(shortcut.id)
     button.dataset.itemKind = shortcut.item_kind
@@ -876,5 +937,29 @@ export default class extends Controller {
 
     const label = item.querySelector("span")?.textContent?.trim() || item.dataset.folderName || "Item"
     this.desktopController()?.openDocumentWindow(itemId, label)
+  }
+
+  sidebarShortcutDeletePath(shortcutId) {
+    if (!shortcutId || !this.hasDeleteSidebarShortcutPathTemplateValue) return null
+
+    return this.deleteSidebarShortcutPathTemplateValue.replace("__ID__", encodeURIComponent(shortcutId))
+  }
+
+  showMenuAtPointer(menu, clientX, clientY) {
+    menu.hidden = false
+    menu.style.visibility = "hidden"
+    menu.style.left = `${clientX}px`
+    menu.style.top = `${clientY}px`
+
+    const rect = menu.getBoundingClientRect()
+    const margin = 8
+    const maxLeft = window.innerWidth - rect.width - margin
+    const maxTop = window.innerHeight - rect.height - margin
+    const left = Math.max(margin, Math.min(clientX, maxLeft))
+    const top = Math.max(margin, Math.min(clientY, maxTop))
+
+    menu.style.left = `${left}px`
+    menu.style.top = `${top}px`
+    menu.style.visibility = "visible"
   }
 }

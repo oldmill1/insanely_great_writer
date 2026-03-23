@@ -60,6 +60,7 @@
       data-folder-browser-create-folder-path-value="<%= folders_path %>"
       data-folder-browser-create-document-path-value="<%= documents_path %>"
       data-folder-browser-create-sidebar-shortcut-path-value="<%= user_sidebar_shortcuts_path %>"
+      data-folder-browser-delete-sidebar-shortcut-path-template-value="<%= user_sidebar_shortcut_path("__ID__") %>"
       data-folder-browser-rename-folder-path-template-value="<%= folder_path("__ID__") %>"
       data-folder-browser-rename-document-path-template-value="<%= doc_path("__ID__") %>"
       data-folder-browser-delete-folder-path-template-value="<%= delete_folder_path("__ID__") %>"
@@ -123,10 +124,13 @@
                 data-folder-browser-target="<%= "shortcutDropzone" if group[:key] == "shortcuts" %>"
               >
                 <% group[:items].each do |item| %>
+                  <% sidebar_actions = [] %>
+                  <% sidebar_actions << "folder-browser#navigateSidebarItem" if item[:actionable] %>
+                  <% sidebar_actions << "contextmenu->folder-browser#openSidebarShortcutContextMenu" if group[:key] == "shortcuts" && item[:id].present? %>
                   <button
                     type="button"
                     class="folder-window__sidebar-item"
-                    data-action="<%= "folder-browser#navigateSidebarItem" if item[:actionable] %>"
+                    data-action="<%= sidebar_actions.join(" ") %>"
                     data-sidebar-item-kind="<%= item[:item_kind] == "desktop" ? "static" : "persisted" %>"
                     data-user-sidebar-shortcut-id="<%= item[:id] %>"
                     data-item-kind="<%= item[:item_kind] %>"
@@ -307,6 +311,19 @@
             { label: "Rename", intent: "rename", kind: "action", icon: "/icons/write.png" },
             "break",
             { label: "Delete", intent: "delete", kind: "action", icon: "/icons/trash.png" }
+          ],
+          width: "10rem" %>
+      </div>
+
+      <div
+        class="folder-window__context-menu"
+        data-folder-browser-target="sidebarContextMenu"
+        data-action="click->folder-browser#handleSidebarContextMenuClick"
+        hidden
+      >
+        <%= render "shared/ig_menu",
+          items: [
+            { label: "Remove", intent: "remove_sidebar_shortcut", kind: "action", icon: "/icons/trash.png" }
           ],
           width: "10rem" %>
       </div>

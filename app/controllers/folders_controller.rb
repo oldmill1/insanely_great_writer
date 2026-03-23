@@ -65,8 +65,6 @@ class FoldersController < ApplicationController
   private
 
   def assign_folder_view_state(id:, name:, path:, show_path:)
-    UserSidebarShortcut.ensure_default_desktop_for(current_user)
-
     @folder_id = id
     @folder_name = name
     @folder_path = path
