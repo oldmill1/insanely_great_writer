@@ -1,5 +1,7 @@
 # Insanely Great Writer
 
+![Insanely Great Writer desktop home screen](docs/readme-screenshots/homepage-desktop.png)
+
 Insanely Great Writer (also referred to in project notes as manuscriptOS) is a Ruby on Rails 8.1 writing app with a retro Mac OS 9-inspired desktop interface.
 
 It is a Rails monolith that uses:
@@ -20,6 +22,16 @@ No Node.js or external database is required for local development.
 - Documents, folders, notes, and shortcuts
 - Devise-based authentication
 - SQLite-backed local setup with minimal moving parts
+
+## Screenshots
+
+### Folder window
+
+![Folder window screenshot](docs/readme-screenshots/folder-window.png)
+
+### Document window
+
+![Document window screenshot](docs/readme-screenshots/document-window.png)
 
 ## Requirements
 
