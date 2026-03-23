@@ -2,12 +2,26 @@ require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
   test "does not backfill default static shortcuts on home load" do
-    Shortcut.where(label: [ "New Draft", "New Scene" ]).delete_all
+    Shortcut.where(label: [ "New Draft", "New Folder" ]).delete_all
 
     get root_path
     assert_response :success
 
-    assert_equal 0, Shortcut.where(label: [ "New Draft", "New Scene" ]).count
+    assert_equal 0, Shortcut.where(label: [ "New Draft", "New Folder" ]).count
+  end
+
+  test "renders dock with new folder action" do
+    sign_in_as(users(:one))
+
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "New Document"
+    assert_includes response.body, "New Folder"
+    assert_includes response.body, 'data-intent="new_folder"'
+    assert_includes response.body, 'data-path="/folders"'
+    assert_includes response.body, 'data-parent-path="root"'
+    assert_not_includes response.body, "New Scene"
   end
 
   test "backfills missing document shortcuts only for the logged-in user" do

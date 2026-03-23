@@ -36,7 +36,16 @@ export default class extends Controller {
 
     const intent = button.dataset.intent
     if (intent === "new_draft") {
-      this.submitPost(button.dataset.path)
+      this.submitPost(button.dataset.path, {
+        parent_path: button.dataset.parentPath
+      })
+      return
+    }
+
+    if (intent === "new_folder") {
+      this.createDesktopItem(button.dataset.path, {
+        parent_path: button.dataset.parentPath
+      })
     }
   }
 
@@ -47,7 +56,7 @@ export default class extends Controller {
     })
   }
 
-  submitPost(path) {
+  submitPost(path, params = {}) {
     if (!path) return
 
     const form = document.createElement("form")
@@ -65,7 +74,64 @@ export default class extends Controller {
       form.append(tokenInput)
     }
 
+    Object.entries(params).forEach(([key, value]) => {
+      if (value == null || value === "") return
+
+      const input = document.createElement("input")
+      input.type = "hidden"
+      input.name = key
+      input.value = value
+      form.append(input)
+    })
+
     document.body.append(form)
     form.submit()
+  }
+
+  async createDesktopItem(path, params = {}) {
+    if (!path) return
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+
+    const response = await fetch(path, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken
+      },
+      credentials: "same-origin",
+      body: JSON.stringify(params)
+    })
+
+    if (!response.ok) return
+
+    await this.refreshDesktopShortcuts()
+  }
+
+  async refreshDesktopShortcuts() {
+    const response = await fetch("/desktop_items", {
+      method: "GET",
+      headers: {
+        "Accept": "application/json"
+      },
+      credentials: "same-origin"
+    })
+
+    if (!response.ok) return
+
+    const payload = await response.json()
+    if (!Array.isArray(payload?.shortcuts)) return
+
+    const desktopElement = document.querySelector("[data-controller~='desktop']")
+    if (!desktopElement) return
+
+    const desktopController = this.application.getControllerForElementAndIdentifier(
+      desktopElement,
+      "desktop"
+    )
+    if (!desktopController?.replaceShortcuts) return
+
+    desktopController.replaceShortcuts(payload.shortcuts)
   }
 }

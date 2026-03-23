@@ -35,8 +35,8 @@
   <div class="home__dock" aria-label="Application dock">
     <%= render "shared/ig_dock",
       items: [
-        { thumbnail: "/icons/write.png", label: "New Document", intent: "new_draft", kind: "action", path: documents_path },
-        { thumbnail: "/icons/scene.png", label: "New Scene", intent: "new_scene", kind: "action" }
+        { thumbnail: "/icons/write.png", label: "New Document", intent: "new_draft", kind: "action", path: documents_path, parent_path: VirtualFilesystem.root_path },
+        { thumbnail: "/icons/folders/default.png", label: "New Folder", intent: "new_folder", kind: "action", path: folders_path, parent_path: VirtualFilesystem.root_path }
       ] %>
   </div>
 
