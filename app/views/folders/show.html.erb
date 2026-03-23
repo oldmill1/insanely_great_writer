@@ -119,7 +119,7 @@
                 data-action="folder-browser#toggleSidebarGroup"
               ><%= group[:title] %></button>
               <div
-                class="folder-window__sidebar-list"
+                class="<%= ["folder-window__sidebar-list", ("folder-window__sidebar-list--dropzone" if group[:key] == "shortcuts")].compact.join(" ") %>"
                 id="<%= section_id %>"
                 data-folder-browser-target="<%= "shortcutDropzone" if group[:key] == "shortcuts" %>"
               >

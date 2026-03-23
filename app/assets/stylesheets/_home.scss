@@ -419,6 +419,11 @@
   position: relative;
 }
 
+.folder-window__sidebar-list--dropzone {
+  align-content: start;
+  min-height: 1.5rem;
+}
+
 .folder-window__sidebar-group.is-collapsed .folder-window__sidebar-list {
   display: none;
 }

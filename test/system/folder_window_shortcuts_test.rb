@@ -53,6 +53,21 @@ class FolderWindowShortcutsTest < ApplicationSystemTestCase
     assert_selector ".home__window[data-window-kind='document'][data-window-item-id='#{document.id}'] .ig-window__title", text: "Opening"
   end
 
+  test "dragging into an empty shortcuts list still creates a sidebar shortcut" do
+    chapter = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
+    scenes = Folder.create!(user: users(:one), name: "Scenes", path: "root/Chapter 1/Scenes")
+    users(:one).user_sidebar_shortcuts.delete_all
+
+    sign_in_as(users(:one))
+    visit root_path
+
+    open_folder_window(chapter)
+    drag_row_to_target(chapter, "Scenes", '[data-folder-browser-target="shortcutDropzone"]')
+
+    assert_sidebar_shortcut(chapter, "Scenes", count: 1)
+    assert_equal 1, users(:one).user_sidebar_shortcuts.where(target_key: "folder:#{scenes.id}").count
+  end
+
   test "removing a sidebar shortcut deletes it from the list and persistence" do
     chapter = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
     shortcut = users(:one).user_sidebar_shortcuts.create!(
