@@ -165,7 +165,9 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, "Deleted Scene Folder"
     assert_not_includes response.body, "Opening"
-    assert_includes response.body, "This folder is empty"
+    assert_includes response.body, "Chapter 1"
+    assert_includes response.body, "No items in this folder yet."
+    assert_not_includes response.body, "This folder is empty"
   end
 
   test "returns not found when showing a deleted folder" do
