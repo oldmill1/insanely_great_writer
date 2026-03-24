@@ -43,7 +43,7 @@ No Node.js or external database is required for local development.
 
 ### System packages
 
-The repo notes currently call out these dependencies:
+This app relies on these system dependencies:
 
 - `sqlite3`
 - `libvips-dev`
@@ -105,7 +105,7 @@ APP_PORT=3000
 
 Authentication is handled with Devise.
 
-Repo notes mention that Devise is configured with `:confirmable`. If you create a user manually in the Rails console for local testing, call:
+Devise is configured with `:confirmable`. If you create a user manually in the Rails console for local testing, call:
 
 ```ruby
 user.skip_confirmation!
@@ -115,7 +115,7 @@ before saving.
 
 ## App routes and capabilities
 
-The current app includes routes for:
+This app includes routes for:
 
 - home / desktop UI
 - authentication (`/login`, `/register`, `/logout`)
@@ -173,24 +173,7 @@ Production also uses SQLite, including separate files for cache, queue, and cabl
 
 ## Deployment
 
-Project notes indicate the app is currently deployed on Fly.io.
-
-Current Fly app:
-
-- `insanely-great-writer-holy-fog-4587`
-
-Current production URL:
-
-- <https://insanely-great-writer-holy-fog-4587.fly.dev/>
-
-Useful deploy commands:
-
-```bash
-flyctl deploy -a insanely-great-writer-holy-fog-4587
-flyctl status -a insanely-great-writer-holy-fog-4587
-flyctl logs -a insanely-great-writer-holy-fog-4587
-flyctl open -a insanely-great-writer-holy-fog-4587
-```
+A live version of this app is currently deployed on Fly.io as [https://www.manuscriptos.com](https://www.manuscriptos.com).
 
 Because production uses SQLite on a Fly volume, the current documented setup is a single-machine deployment.
 
