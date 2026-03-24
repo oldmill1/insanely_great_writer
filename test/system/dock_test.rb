@@ -17,4 +17,19 @@ class DockTest < ApplicationSystemTestCase
     assert_equal "Untitled Folder", folder.name
     assert_equal "root/Untitled Folder", folder.path
   end
+
+  test "going back after creating a document shows its desktop shortcut without a refresh" do
+    sign_in_as(users(:one))
+    visit root_path
+
+    assert_difference("Document.count", 1) do
+      click_button "New Document"
+      assert_current_path(/\/docs\/\d+/)
+    end
+
+    page.go_back
+
+    assert_current_path(root_path)
+    assert_selector ".ig-shortcut__label", text: "Untitled Document"
+  end
 end

@@ -15,17 +15,23 @@ export default class extends Controller {
     this.windowZCounter = this.constructor.WINDOW_Z_BASE
     this.draggingWindow = null
     this.resizePersistTimers = new Map()
+    this.shortcutsRequestToken = 0
     this.windowPointerMoveHandler = this.onWindowPointerMove.bind(this)
     this.windowPointerEndHandler = this.onWindowPointerEnd.bind(this)
+    this.pageShowHandler = this.onPageShow.bind(this)
     this.windowResizeObserver = null
     this.windowCleanupCallbacks = []
+
+    window.addEventListener("pageshow", this.pageShowHandler)
 
     this.render()
     this.bindWindows()
     this.restoreOpenWindows()
+    this.refreshShortcutsFromServer()
   }
 
   disconnect() {
+    window.removeEventListener("pageshow", this.pageShowHandler)
     window.removeEventListener("pointermove", this.windowPointerMoveHandler)
     window.removeEventListener("pointerup", this.windowPointerEndHandler)
     window.removeEventListener("pointercancel", this.windowPointerEndHandler)
@@ -40,6 +46,10 @@ export default class extends Controller {
 
     this.resizePersistTimers.forEach((timerId) => window.clearTimeout(timerId))
     this.resizePersistTimers.clear()
+  }
+
+  onPageShow() {
+    this.refreshShortcutsFromServer()
   }
 
   select(event) {
@@ -899,6 +909,31 @@ export default class extends Controller {
     this.shortcutsValue = shortcuts
     this.selectedShortcutId = null
     this.render()
+  }
+
+  async refreshShortcutsFromServer() {
+    const requestToken = this.shortcutsRequestToken + 1
+    this.shortcutsRequestToken = requestToken
+
+    try {
+      const response = await fetch("/desktop_items", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        },
+        credentials: "same-origin"
+      })
+
+      if (!response.ok) return
+
+      const payload = await response.json()
+      if (this.shortcutsRequestToken !== requestToken) return
+      if (!Array.isArray(payload?.shortcuts)) return
+
+      this.replaceShortcuts(payload.shortcuts)
+    } catch (_) {
+      // Keep the server-rendered shortcuts when refresh fails.
+    }
   }
 
   syncRenderedShortcutPositions() {
