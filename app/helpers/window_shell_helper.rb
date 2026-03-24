@@ -42,11 +42,13 @@ module WindowShellHelper
   def folder_window_shell_options(title:, folder_id: nil, window_key: nil, content_frame_id: nil, content_src: nil, dataset: {}, **layout)
     normalized_folder_id = folder_id.presence&.to_s
     frame_id = content_frame_id.presence || (normalized_folder_id ? "folder_window_#{normalized_folder_id}_content" : "folder_window_root_content")
-    frame_src = content_src.presence || if normalized_folder_id
-      folder_path(normalized_folder_id, frame_id: frame_id)
-    else
-      root_folders_path(frame_id: frame_id)
-    end
+    frame_src = content_src.presence || (
+      if normalized_folder_id
+        folder_path(normalized_folder_id, frame_id: frame_id)
+      else
+        root_folders_path(frame_id: frame_id)
+      end
+    )
 
     build_window_shell_options(
       window_kind: "folder",
