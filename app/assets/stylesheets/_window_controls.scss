@@ -65,6 +65,23 @@
   pointer-events: none;
 }
 
+.folder-window__nav-button--format,
+.document-window__nav-button--format {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.folder-window__nav-button--italic,
+.document-window__nav-button--italic {
+  font-style: italic;
+}
+
+.folder-window__nav-button--underline,
+.document-window__nav-button--underline {
+  text-decoration: underline;
+  text-underline-offset: 0.08em;
+}
+
 .folder-window__nav-button--transport:hover,
 .folder-window__nav-button--transport:focus-visible,
 .document-window__nav-button--transport:hover,

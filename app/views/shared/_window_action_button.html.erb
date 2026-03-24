@@ -22,6 +22,42 @@
       ],
       glyph_class: "#{namespace}__nav-glyph--back"
     },
+    "bold" => {
+      label: "B",
+      title: "Bold",
+      aria_label: "Bold",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--transport
+        #{namespace}__nav-button--format
+        #{namespace}__nav-button--bold
+      ],
+      glyph_class: nil
+    },
+    "italic" => {
+      label: "I",
+      title: "Italic",
+      aria_label: "Italic",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--transport
+        #{namespace}__nav-button--format
+        #{namespace}__nav-button--italic
+      ],
+      glyph_class: nil
+    },
+    "underline" => {
+      label: "U",
+      title: "Underline",
+      aria_label: "Underline",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--transport
+        #{namespace}__nav-button--format
+        #{namespace}__nav-button--underline
+      ],
+      glyph_class: nil
+    },
     "delete" => {
       label: "Delete",
       button_classes: %W[
@@ -60,8 +96,8 @@
   button_classes << local_assigns[:class_name] if local_assigns[:class_name].present?
 
   button_label = local_assigns[:label].presence || button_config[:label]
-  button_title = local_assigns.key?(:title) ? local_assigns[:title] : button_config[:label]
-  button_aria_label = local_assigns.key?(:aria_label) ? local_assigns[:aria_label] : button_config[:label]
+  button_title = local_assigns.key?(:title) ? local_assigns[:title] : (button_config[:title] || button_config[:label])
+  button_aria_label = local_assigns.key?(:aria_label) ? local_assigns[:aria_label] : (button_config[:aria_label] || button_config[:label])
   button_hidden = local_assigns[:hidden] == true
   button_disabled = local_assigns[:disabled] == true
 %>

@@ -87,6 +87,10 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'data-controller="doc-editor"'
     assert_includes response.body, 'class="document-window__toolbar"'
     assert_includes response.body, 'class="document-window__title"'
+    assert_includes response.body, 'aria-label="Bold"'
+    assert_includes response.body, 'aria-label="Italic"'
+    assert_includes response.body, 'aria-label="Underline"'
+    assert_includes response.body, 'aria-label="Delete"'
     assert_includes response.body, "Scene Heading"
   end
 
