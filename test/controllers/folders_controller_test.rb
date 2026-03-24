@@ -1,4 +1,5 @@
 require "test_helper"
+require "securerandom"
 
 class FoldersControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -221,16 +222,20 @@ class FoldersControllerTest < ActionDispatch::IntegrationTest
 
   test "does not show deleted folders or deleted documents in folder contents" do
     sign_in users(:one)
-    folder = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
-    Folder.create!(user: users(:one), name: "Deleted Scene Folder", path: "root/Chapter 1/Deleted Scene Folder", is_deleted: true)
-    Document.create!(user: users(:one), title: "Opening", content: "", path: "root/Chapter 1/Opening", is_deleted: true)
+    suffix = SecureRandom.hex(4)
+    folder_name = "Chapter 1 #{suffix}"
+    folder_path = "root/#{folder_name}"
+
+    folder = Folder.create!(user: users(:one), name: folder_name, path: folder_path)
+    Folder.create!(user: users(:one), name: "Deleted Scene Folder #{suffix}", path: "#{folder_path}/Deleted Scene Folder #{suffix}", is_deleted: true)
+    Document.create!(user: users(:one), title: "Opening #{suffix}", content: "", path: "#{folder_path}/Opening #{suffix}", is_deleted: true)
 
     get folder_path(folder), params: { frame_id: "folder_window_test" }
 
     assert_response :success
     assert_not_includes response.body, "Deleted Scene Folder"
     assert_not_includes response.body, "Opening"
-    assert_includes response.body, "Chapter 1"
+    assert_includes response.body, folder_name
     assert_includes response.body, "No items in this folder yet."
     assert_not_includes response.body, "This folder is empty"
   end
