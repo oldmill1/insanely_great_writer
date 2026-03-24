@@ -20,10 +20,6 @@ Canonical server entrypoint:
 
 - `app/views/shared/_window_shell.html.erb`
 
-Compatibility shim retained during migration:
-
-- `app/views/shared/_ig_window.html.erb`
-
 Shell data attributes are reserved for the shell contract:
 
 - `data-desktop-window-key`
@@ -86,7 +82,6 @@ Use namespaces consistently:
 - `ig-window__*` for shell chrome only
 - `folder-window__*` for folder browsing only
 - `document-window__*` for document window chrome/layout
-- `doc-terminal-*` only for inner editor semantics
 
 If a new window type needs shell-adjacent controls, add its namespace to the shared control styles rather than borrowing another type's classes.
 
