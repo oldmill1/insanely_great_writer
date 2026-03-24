@@ -1,0 +1,21 @@
+<%
+  raise ArgumentError, "DocumentWindow requires :document_id" unless local_assigns.key?(:document_id)
+
+  locals = document_window_shell_options(
+    document_id: local_assigns[:document_id],
+    title: local_assigns[:title].presence || "Document",
+    window_key: local_assigns[:window_key],
+    content_frame_id: local_assigns[:content_frame_id],
+    content_src: local_assigns[:content_src],
+    dataset: local_assigns[:dataset] || {},
+    x: local_assigns[:x],
+    y: local_assigns[:y],
+    width: local_assigns[:width],
+    height: local_assigns[:height],
+    centered: local_assigns[:centered],
+    content: local_assigns[:content],
+    class_name: local_assigns[:class_name]
+  )
+%>
+
+<%= render "shared/window_shell", **locals %>

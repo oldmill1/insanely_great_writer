@@ -85,8 +85,8 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, "data-controller=\"menu-bar\""
     assert_includes response.body, 'data-controller="doc-editor"'
-    assert_includes response.body, 'class="folder-window__toolbar doc-terminal-toolbar"'
-    assert_includes response.body, 'class="doc-terminal-toolbar__title"'
+    assert_includes response.body, 'class="document-window__toolbar"'
+    assert_includes response.body, 'class="document-window__title"'
     assert_includes response.body, "Scene Heading"
   end
 
@@ -97,7 +97,7 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, 'turbo-frame id="welcome_window_content"'
-    assert_includes response.body, 'class="doc-terminal-screen"'
+    assert_includes response.body, 'class="document-window"'
     assert_includes response.body, 'data-controller="doc-editor"'
     assert_includes response.body, %(data-doc-editor-save-path-value="#{doc_path(document)}")
   end

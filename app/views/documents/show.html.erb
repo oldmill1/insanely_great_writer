@@ -1,34 +1,34 @@
-<main class="doc-terminal-page">
+<main class="document-window-page">
   <%= turbo_frame_tag @terminal_frame_id do %>
     <section
-      class="doc-terminal-screen"
+      class="document-window"
       aria-label="Document terminal"
       data-controller="doc-editor"
       data-doc-editor-save-path-value="<%= doc_path(@document) %>"
     >
-      <header class="folder-window__toolbar doc-terminal-toolbar" aria-label="Document toolbar">
-        <div class="folder-window__toolbar-group folder-window__toolbar-group--nav">
-          <%= render "shared/ig_folder_button", kind: "up" %>
-          <%= render "shared/ig_folder_button", kind: "back" %>
-          <%= render "shared/ig_folder_button", kind: "delete" %>
+      <header class="document-window__toolbar" aria-label="Document toolbar">
+        <div class="document-window__toolbar-group document-window__toolbar-group--nav">
+          <%= render "shared/window_action_button", kind: "up", namespace: "document-window" %>
+          <%= render "shared/window_action_button", kind: "back", namespace: "document-window" %>
+          <%= render "shared/window_action_button", kind: "delete", namespace: "document-window" %>
         </div>
 
-        <h1 class="doc-terminal-toolbar__title"><%= @document.title %></h1>
+        <h1 class="document-window__title"><%= @document.title %></h1>
 
-        <div class="folder-window__toolbar-group folder-window__toolbar-group--actions">
-          <%= render "shared/ig_folder_button", kind: "new_folder" %>
-          <%= render "shared/ig_folder_button", kind: "new_document" %>
+        <div class="document-window__toolbar-group document-window__toolbar-group--actions">
+          <%= render "shared/window_action_button", kind: "new_folder", namespace: "document-window" %>
+          <%= render "shared/window_action_button", kind: "new_document", namespace: "document-window" %>
         </div>
       </header>
 
-      <div class="doc-terminal-body">
+      <div class="document-window__body">
         <div
           class="doc-terminal-content"
           contenteditable="true"
           data-doc-editor-target="content"
           data-action="input->doc-editor#handleInput keydown->doc-editor#handleKeydown"
         ><%= sanitize(@document.editor_html, tags: %w[p br], attributes: %w[data-element]) %></div>
-        <footer class="doc-terminal-bottom-bar" aria-label="Terminal status bar">
+        <footer class="document-window__status-bar" aria-label="Terminal status bar">
           <%= render "shared/ig_select",
             name: "insert_block_type",
             id: "insert-block-type",
@@ -48,10 +48,10 @@
               data: { action: "doc-editor#insertElement" }
             },
             width: "14rem" %>
-          <div class="doc-terminal-bottom-meta">
-            <span class="doc-terminal-save-status" aria-label="Save status">
+          <div class="document-window__status-meta">
+            <span class="document-window__save-status" aria-label="Save status">
               <span
-                class="doc-terminal-save-light"
+                class="document-window__save-light"
                 data-doc-editor-target="statusLight"
                 data-state="idle"
                 aria-hidden="true"

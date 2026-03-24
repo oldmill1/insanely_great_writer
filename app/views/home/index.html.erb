@@ -20,16 +20,54 @@
   ></section>
 
   <% @desktop_windows.each do |window| %>
-    <%= render "shared/ig_window",
-      window_key: window[:window_key],
-      title: window[:title],
-      content: window[:content],
-      content_src: window[:content_src],
-      content_frame_id: window[:content_frame_id],
-      x: window[:x],
-      y: window[:y],
-      width: window[:width],
-      height: window[:height] %>
+    <% if window[:window_kind] == "document" && window[:window_item_id].present? %>
+      <%= render "shared/document_window",
+        document_id: window[:window_item_id],
+        window_key: window[:window_key],
+        title: window[:title],
+        content: window[:content],
+        content_src: window[:content_src],
+        content_frame_id: window[:content_frame_id],
+        dataset: window[:dataset],
+        class_name: window[:class_name],
+        x: window[:x],
+        y: window[:y],
+        width: window[:width],
+        height: window[:height],
+        centered: window[:centered] %>
+    <% elsif window[:window_kind] == "folder" %>
+      <%= render "shared/folder_window",
+        folder_id: window[:window_item_id],
+        window_key: window[:window_key],
+        title: window[:title],
+        content: window[:content],
+        content_src: window[:content_src],
+        content_frame_id: window[:content_frame_id],
+        dataset: window[:dataset],
+        class_name: window[:class_name],
+        x: window[:x],
+        y: window[:y],
+        width: window[:width],
+        height: window[:height],
+        centered: window[:centered] %>
+    <% else %>
+      <%= render "shared/window_shell",
+        window_key: window[:window_key],
+        window_kind: window[:window_kind],
+        window_item_id: window[:window_item_id],
+        title: window[:title],
+        content: window[:content],
+        content_src: window[:content_src],
+        content_frame_id: window[:content_frame_id],
+        controls: window[:controls],
+        dataset: window[:dataset],
+        class_name: window[:class_name],
+        x: window[:x],
+        y: window[:y],
+        width: window[:width],
+        height: window[:height],
+        centered: window[:centered] %>
+    <% end %>
   <% end %>
 
   <div class="home__dock" aria-label="Application dock">

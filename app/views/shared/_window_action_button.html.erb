@@ -1,0 +1,89 @@
+<%
+  raise ArgumentError, "WindowActionButton requires :kind" unless local_assigns.key?(:kind)
+
+  namespace = local_assigns[:namespace].presence || "folder-window"
+  button_kind = local_assigns[:kind].to_s.strip.downcase
+  button_config = {
+    "up" => {
+      label: "Up",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--transport
+        #{namespace}__nav-button--up
+      ],
+      glyph_class: "#{namespace}__nav-glyph--up"
+    },
+    "back" => {
+      label: "Back",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--transport
+        #{namespace}__nav-button--back
+      ],
+      glyph_class: "#{namespace}__nav-glyph--back"
+    },
+    "delete" => {
+      label: "Delete",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--delete
+      ],
+      glyph_class: nil,
+      icon_path: "/icons/trash.png",
+      icon_class: "#{namespace}__nav-button-icon--delete"
+    },
+    "new_folder" => {
+      label: "New Folder",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--action
+      ],
+      glyph_class: nil,
+      icon_path: "/icons/folders/default.png",
+      icon_class: "#{namespace}__nav-button-icon--folder"
+    },
+    "new_document" => {
+      label: "New Document",
+      button_classes: %W[
+        #{namespace}__nav-button
+        #{namespace}__nav-button--action
+      ],
+      glyph_class: nil,
+      icon_path: "/icons/write.png",
+      icon_class: "#{namespace}__nav-button-icon--document"
+    }
+  }[button_kind]
+
+  raise ArgumentError, "Unknown WindowActionButton kind: #{button_kind.inspect}" if button_config.blank?
+
+  button_classes = button_config[:button_classes].dup
+  button_classes << local_assigns[:class_name] if local_assigns[:class_name].present?
+
+  button_label = local_assigns[:label].presence || button_config[:label]
+  button_title = local_assigns.key?(:title) ? local_assigns[:title] : button_config[:label]
+  button_aria_label = local_assigns.key?(:aria_label) ? local_assigns[:aria_label] : button_config[:label]
+  button_hidden = local_assigns[:hidden] == true
+  button_disabled = local_assigns[:disabled] == true
+%>
+
+<%= content_tag :button,
+  type: local_assigns[:type].presence || "button",
+  class: button_classes.join(" "),
+  data: local_assigns[:data],
+  title: button_title,
+  hidden: button_hidden,
+  disabled: button_disabled,
+  "aria-label": button_aria_label do %>
+  <% if button_config[:glyph_class].present? %>
+    <span class="<%= namespace %>__nav-glyph <%= button_config[:glyph_class] %>" aria-hidden="true"></span>
+  <% elsif button_config[:icon_path].present? %>
+    <img
+      class="<%= namespace %>__nav-button-icon <%= button_config[:icon_class] %>"
+      src="<%= button_config[:icon_path] %>"
+      alt=""
+      aria-hidden="true"
+    >
+  <% else %>
+    <%= button_label %>
+  <% end %>
+<% end %>

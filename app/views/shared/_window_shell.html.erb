@@ -1,0 +1,81 @@
+<%
+  raise ArgumentError, "WindowShell requires :window_key" unless local_assigns.key?(:window_key)
+
+  window_key = local_assigns[:window_key]
+  window_kind = local_assigns[:window_kind].presence || "generic"
+  window_item_id = local_assigns[:window_item_id].to_s
+  window_title = local_assigns[:title].presence || "Window"
+  window_content = local_assigns[:content].presence || "hello world"
+  window_content_src = local_assigns[:content_src].presence
+  window_content_frame_id = local_assigns[:content_frame_id].presence || "#{window_key}_content"
+  window_controls = Array(local_assigns[:controls]).first(3)
+  window_classes = ["ig-window", "home__window"]
+  window_classes << local_assigns[:class_name] if local_assigns[:class_name].present?
+
+  style_rules = []
+  window_width = ig_css_size(local_assigns[:width])
+  window_height = ig_css_size(local_assigns[:height])
+  style_rules << "width: #{window_width}" if window_width.present?
+  style_rules << "height: #{window_height}" if window_height.present?
+
+  if local_assigns[:centered] == true
+    style_rules << "left: 50%"
+    style_rules << "top: 50%"
+    style_rules << "transform: translate(-50%, -50%)"
+  else
+    window_x = local_assigns[:x]
+    window_y = local_assigns[:y]
+    style_rules << "left: #{window_x.is_a?(Numeric) ? "#{window_x}px" : window_x}" if window_x.present?
+    style_rules << "top: #{window_y.is_a?(Numeric) ? "#{window_y}px" : window_y}" if window_y.present?
+  end
+
+  dataset_attributes = {
+    "desktop-window-key" => window_key,
+    "window-kind" => window_kind,
+    "window-item-id" => window_item_id,
+    "window-title" => window_title,
+    "desktop-window-x" => local_assigns[:x] || 280,
+    "desktop-window-y" => local_assigns[:y] || 120,
+    "desktop-window-width" => local_assigns[:width] || 380,
+    "desktop-window-height" => local_assigns[:height] || 240
+  }
+
+  if local_assigns[:dataset].is_a?(Hash)
+    local_assigns[:dataset].each do |key, value|
+      next if value.blank?
+
+      dataset_attributes[key.to_s.dasherize] = value
+    end
+  end
+%>
+
+<section
+  class="<%= window_classes.join(" ") %>"
+  role="dialog"
+  aria-label="<%= window_title %>"
+  <% dataset_attributes.each do |key, value| %>data-<%= key %>="<%= value %>" <% end %>
+  <% if style_rules.any? %>style="<%= style_rules.join("; ") %>"<% end %>
+>
+  <header class="ig-window__titlebar">
+    <div class="ig-window__traffic" aria-hidden="true">
+      <% 3.times do |index| %>
+        <span
+          class="ig-window__dot"
+          <% if window_controls[index].present? %>data-window-control="<%= window_controls[index] %>"<% end %>
+        ></span>
+      <% end %>
+    </div>
+    <h2 class="ig-window__title"><%= window_title %></h2>
+    <span class="ig-window__grip" aria-hidden="true"></span>
+  </header>
+
+  <div class="ig-window__body">
+    <% if window_content_src.present? %>
+      <%= turbo_frame_tag window_content_frame_id, src: window_content_src, loading: "lazy" do %>
+        <%= window_content %>
+      <% end %>
+    <% else %>
+      <%= window_content %>
+    <% end %>
+  </div>
+</section>

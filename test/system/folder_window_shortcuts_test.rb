@@ -68,6 +68,49 @@ class FolderWindowShortcutsTest < ApplicationSystemTestCase
     assert_equal 1, users(:one).user_sidebar_shortcuts.where(target_key: "folder:#{scenes.id}").count
   end
 
+  test "restoring a folder snapshot rebuilds the folder window through the registry" do
+    folder = Folder.create!(user: users(:one), name: "Scenes", path: "root/Scenes")
+    sign_in_as(users(:one))
+    visit root_path
+
+    execute_script(<<~JS)
+      const desktopElement = document.querySelector("[data-controller~='desktop']")
+      const controller = window.Stimulus.getControllerForElementAndIdentifier(desktopElement, "desktop")
+      controller.restoreWindowSnapshot({
+        key: "folder_window_#{folder.id}",
+        kind: "folder",
+        itemId: "#{folder.id}",
+        title: "Scenes",
+        frameId: "folder_window_#{folder.id}_content",
+        frameSrc: "/folders/#{folder.id}?frame_id=folder_window_#{folder.id}_content"
+      })
+    JS
+
+    assert_selector ".home__window[data-desktop-window-key='folder_window_#{folder.id}'][data-window-kind='folder'][data-window-item-id='#{folder.id}'] .folder-window"
+  end
+
+  test "restoring a document snapshot rebuilds the document window through the registry" do
+    document = Document.create!(user: users(:one), title: "Opening", content: "Body", path: "root/Opening")
+    sign_in_as(users(:one))
+    visit root_path
+
+    execute_script(<<~JS)
+      const desktopElement = document.querySelector("[data-controller~='desktop']")
+      const controller = window.Stimulus.getControllerForElementAndIdentifier(desktopElement, "desktop")
+      controller.restoreWindowSnapshot({
+        key: "document_window_#{document.id}",
+        kind: "document",
+        itemId: "#{document.id}",
+        title: "Opening",
+        frameId: "document_window_#{document.id}_content",
+        frameSrc: "/docs/#{document.id}?terminal_frame_id=document_window_#{document.id}_content",
+        dataset: { documentPath: "/docs/#{document.id}" }
+      })
+    JS
+
+    assert_selector ".home__window[data-desktop-window-key='document_window_#{document.id}'][data-window-kind='document'][data-window-item-id='#{document.id}'] .ig-window__title", text: "Opening"
+  end
+
   test "removing a sidebar shortcut deletes it from the list and persistence" do
     chapter = Folder.create!(user: users(:one), name: "Chapter 1", path: "root/Chapter 1")
     shortcut = users(:one).user_sidebar_shortcuts.create!(

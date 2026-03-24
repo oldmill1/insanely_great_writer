@@ -1,0 +1,19 @@
+<%
+  locals = folder_window_shell_options(
+    folder_id: local_assigns[:folder_id],
+    title: local_assigns[:title].presence || "Folder",
+    window_key: local_assigns[:window_key],
+    content_frame_id: local_assigns[:content_frame_id],
+    content_src: local_assigns[:content_src],
+    dataset: local_assigns[:dataset] || {},
+    x: local_assigns[:x],
+    y: local_assigns[:y],
+    width: local_assigns[:width],
+    height: local_assigns[:height],
+    centered: local_assigns[:centered],
+    content: local_assigns[:content],
+    class_name: local_assigns[:class_name]
+  )
+%>
+
+<%= render "shared/window_shell", **locals %>

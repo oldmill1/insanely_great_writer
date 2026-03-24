@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { buildWindowConfig } from "window_registry"
 
 export default class extends Controller {
   static values = {
@@ -9,6 +10,17 @@ export default class extends Controller {
   static WINDOW_LAYOUT_COOKIE = "desktop_window_layouts"
   static OPEN_WINDOWS_COOKIE = "desktop_open_windows"
   static WINDOW_Z_BASE = 24
+  static WINDOW_SHELL_DATA_KEYS = [
+    "desktopWindowKey",
+    "windowKind",
+    "windowItemId",
+    "windowTitle",
+    "desktopWindowX",
+    "desktopWindowY",
+    "desktopWindowWidth",
+    "desktopWindowHeight",
+    "desktopWindowBound"
+  ]
 
   connect() {
     this.selectedShortcutId = null
@@ -261,9 +273,9 @@ export default class extends Controller {
       return
     }
 
-    const windowEl = itemKind === "folder"
-      ? this.buildFolderWindow(windowKey, itemId, titleText)
-      : this.buildDocumentWindow(windowKey, itemId, titleText)
+    const windowEl = this.buildWindowForKind(itemKind, windowKey, itemId, titleText)
+    if (!windowEl) return
+
     document.body.appendChild(windowEl)
 
     this.windowElements = this.windowElements || []
@@ -272,47 +284,33 @@ export default class extends Controller {
   }
 
   buildDocumentWindow(windowKey, documentId, titleText, options = {}) {
-    const frameId = options.frameId || `document_window_${documentId}_content`
-    const frameSrc = options.frameSrc || `/docs/${documentId}?terminal_frame_id=${encodeURIComponent(frameId)}`
-    return this.buildIGWindow({
-      windowKey,
-      kind: "document",
-      itemId: String(documentId),
-      titleText,
-      width: 760,
-      height: 520,
-      frameId,
-      frameSrc,
-      loadingText: "Loading document...",
-      controls: ["close", null, "open-document"],
-      dataset: {
-        documentPath: `/docs/${documentId}`
-      }
-    })
+    return this.buildWindowForKind("document", windowKey, documentId, titleText, options)
   }
 
   buildFolderWindow(windowKey, folderId, titleText, options = {}) {
-    const normalizedFolderId = folderId == null || folderId === "" ? null : String(folderId)
-    const frameId = options.frameId || (normalizedFolderId ? `folder_window_${normalizedFolderId}_content` : "folder_window_root_content")
-    const frameSrc = options.frameSrc || (normalizedFolderId
-      ? `/folders/${normalizedFolderId}?frame_id=${encodeURIComponent(frameId)}`
-      : `/folders/root?frame_id=${encodeURIComponent(frameId)}`)
+    return this.buildWindowForKind("folder", windowKey, folderId, titleText, options)
+  }
 
-    return this.buildIGWindow({
+  buildWindowForKind(kind, windowKey, itemId, titleText, options = {}) {
+    const config = buildWindowConfig(kind, itemId, titleText, options)
+    if (!config) return null
+
+    return this.buildWindowShell({
       windowKey,
-      kind: "folder",
-      itemId: normalizedFolderId || "",
-      titleText,
-      width: 680,
-      height: 440,
-      frameId,
-      frameSrc,
-      loadingText: "Loading folder...",
-      controls: ["close", null, null]
+      kind: config.kind,
+      itemId: config.itemId,
+      titleText: config.titleText,
+      width: config.width,
+      height: config.height,
+      frameId: config.frameId,
+      frameSrc: config.frameSrc,
+      loadingText: config.loadingText,
+      controls: config.controls,
+      dataset: config.dataset
     })
   }
 
-  buildIGWindow({
+  buildWindowShell({
     windowKey,
     kind,
     itemId,
@@ -344,8 +342,8 @@ export default class extends Controller {
       windowEl.dataset[key] = value
     })
 
-    windowEl.appendChild(this.buildIGWindowTitlebar(titleText, controls))
-    windowEl.appendChild(this.buildIGWindowBody(frameId, frameSrc, loadingText))
+    windowEl.appendChild(this.buildWindowTitlebar(titleText, controls))
+    windowEl.appendChild(this.buildWindowBody(frameId, frameSrc, loadingText))
 
     return windowEl
   }
@@ -360,10 +358,10 @@ export default class extends Controller {
     }
   }
 
-  buildIGWindowTitlebar(titleText, controls = []) {
+  buildWindowTitlebar(titleText, controls = []) {
     const titlebar = document.createElement("header")
     titlebar.className = "ig-window__titlebar"
-    titlebar.appendChild(this.buildIGWindowTraffic(controls))
+    titlebar.appendChild(this.buildWindowTraffic(controls))
 
     const title = document.createElement("h2")
     title.className = "ig-window__title"
@@ -378,7 +376,7 @@ export default class extends Controller {
     return titlebar
   }
 
-  buildIGWindowTraffic(controls = []) {
+  buildWindowTraffic(controls = []) {
     const traffic = document.createElement("div")
     traffic.className = "ig-window__traffic"
     traffic.setAttribute("aria-hidden", "true")
@@ -396,7 +394,7 @@ export default class extends Controller {
     return traffic
   }
 
-  buildIGWindowBody(frameId, frameSrc, loadingText) {
+  buildWindowBody(frameId, frameSrc, loadingText) {
     const body = document.createElement("div")
     body.className = "ig-window__body"
 
@@ -643,19 +641,11 @@ export default class extends Controller {
     const existingWindow = document.querySelector(`.home__window[data-desktop-window-key="${key}"]`)
     if (existingWindow) return
 
-    let windowEl = null
-
-    if (kind === "document" && snapshot.itemId) {
-      windowEl = this.buildDocumentWindow(key, snapshot.itemId, title, {
-        frameId: snapshot.frameId,
-        frameSrc: snapshot.frameSrc
-      })
-    } else if (kind === "folder") {
-      windowEl = this.buildFolderWindow(key, snapshot.itemId || null, title, {
-        frameId: snapshot.frameId,
-        frameSrc: snapshot.frameSrc
-      })
-    }
+    const windowEl = this.buildWindowForKind(kind, key, snapshot.itemId || null, title, {
+      frameId: snapshot.frameId,
+      frameSrc: snapshot.frameSrc,
+      dataset: snapshot.dataset || {}
+    })
 
     if (!windowEl) return
 
@@ -678,8 +668,19 @@ export default class extends Controller {
       title: windowEl.querySelector(".ig-window__title")?.textContent?.trim() || windowEl.dataset.windowTitle || "Window",
       frameId: frame.id,
       frameSrc: frame.getAttribute("src") || "",
-      documentPath: windowEl.dataset.documentPath || null
+      documentPath: windowEl.dataset.documentPath || null,
+      dataset: this.windowDatasetSnapshot(windowEl)
     }
+  }
+
+  windowDatasetSnapshot(windowEl) {
+    return Object.entries(windowEl.dataset).reduce((snapshot, [key, value]) => {
+      if (!value) return snapshot
+      if (this.constructor.WINDOW_SHELL_DATA_KEYS.includes(key)) return snapshot
+
+      snapshot[key] = value
+      return snapshot
+    }, {})
   }
 
   readOpenWindowsCookie() {
@@ -987,9 +988,8 @@ export default class extends Controller {
       return
     }
 
-    const windowEl = itemKind === "folder"
-      ? this.buildFolderWindow(windowKey, itemId, titleText)
-      : this.buildDocumentWindow(windowKey, itemId, titleText)
+    const windowEl = this.buildWindowForKind(itemKind, windowKey, itemId, titleText)
+    if (!windowEl) return
 
     document.body.appendChild(windowEl)
     this.windowElements = this.windowElements || []

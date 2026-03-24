@@ -73,20 +73,23 @@
     >
       <header class="folder-window__toolbar">
         <div class="folder-window__toolbar-group folder-window__toolbar-group--nav">
-          <%= render "shared/ig_folder_button",
+          <%= render "shared/window_action_button",
             kind: "up",
+            namespace: "folder-window",
             data: {
               folder_browser_target: "upButton",
               action: "folder-browser#goUp"
             } %>
-          <%= render "shared/ig_folder_button",
+          <%= render "shared/window_action_button",
             kind: "back",
+            namespace: "folder-window",
             data: {
               folder_browser_target: "backButton",
               action: "folder-browser#goBack"
             } %>
-          <%= render "shared/ig_folder_button",
+          <%= render "shared/window_action_button",
             kind: "delete",
+            namespace: "folder-window",
             data: {
               folder_browser_target: "deleteButton",
               action: "folder-browser#deleteSelectedItem"
@@ -97,11 +100,13 @@
         <div class="folder-window__toolbar-spacer" aria-hidden="true"></div>
 
         <div class="folder-window__toolbar-group folder-window__toolbar-group--actions">
-          <%= render "shared/ig_folder_button",
+          <%= render "shared/window_action_button",
             kind: "new_folder",
+            namespace: "folder-window",
             data: { action: "folder-browser#createFolder" } %>
-          <%= render "shared/ig_folder_button",
+          <%= render "shared/window_action_button",
             kind: "new_document",
+            namespace: "folder-window",
             data: { action: "folder-browser#createDocument" } %>
         </div>
       </header>
@@ -242,6 +247,7 @@
                   </div>
                 </div>
                 <p class="folder-window__empty-title"><%= @folder_name %></p>
+                <p class="folder-window__empty-copy">No items in this folder yet.</p>
               </div>
             </section>
           <% end %>
