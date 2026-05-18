@@ -9,7 +9,7 @@ It focuses on two things:
 
 ## 1) Product readiness
 
-- [ ] Confirm the production URL is correct: <https://insanely-great-writer-holy-fog-4587.fly.dev/>
+- [ ] Confirm the production URL is correct: <https://www.manuscriptos.com/>
 - [ ] Confirm the latest launch branch has been merged to `main`
 - [ ] Confirm the production deployment completed successfully on Fly.io
 - [ ] Confirm the home page, login, registration, document flow, folders, notes, and shortcuts all work in production
@@ -66,7 +66,7 @@ Required Fly secrets/config from current repo notes:
 - `SMTP_DOMAIN`
 - `DEVISE_MAILER_SENDER`
 - `SECRET_KEY_BASE`
-- `APP_HOST=insanely-great-writer-holy-fog-4587.fly.dev`
+- `APP_HOST=www.manuscriptos.com`
 - `APP_PORT=443`
 
 ## 5) Anti-hacking / security checks

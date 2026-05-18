@@ -1,4 +1,15 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    resources :documents
+    resources :folders
+    resources :notes
+    resources :shortcuts
+    resources :users
+    resources :user_sidebar_shortcuts
+
+    root to: "users#index"
+  end
+
   devise_for :users,
     path: "",
     skip: [ :sessions, :registrations ]

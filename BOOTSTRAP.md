@@ -12,7 +12,7 @@ Current Fly app:
 
 Current production URL:
 
-- `https://insanely-great-writer-holy-fog-4587.fly.dev/`
+- `https://www.manuscriptos.com/`
 
 Notes:
 
@@ -107,7 +107,7 @@ Fly runtime config lives in:
 
 Important Fly env values currently expected:
 
-- `APP_HOST=insanely-great-writer-holy-fog-4587.fly.dev`
+- `APP_HOST=www.manuscriptos.com`
 - `APP_PORT=443`
 - `SOLID_QUEUE_IN_PUMA=true`
 - `RAILS_LOG_LEVEL=info`
